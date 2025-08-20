@@ -1,0 +1,25 @@
+[data-bs-theme=light] {
+    --bs-body-color: #212529;
+    --bs-body-bg: green;
+}
+
+[data-bs-theme=dark] {
+color-scheme: dark;
+    --bs-body-color: #dee2e6;
+    --bs-body-bg: #212529;
+}
+
+.cke_editable {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.cke_top {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.cke_wysiwyg_frame, .cke_wysiwyg_div {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}

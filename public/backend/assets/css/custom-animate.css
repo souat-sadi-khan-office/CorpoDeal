@@ -1,0 +1,232 @@
+.istiyak {
+    --border-width: 1px;
+
+    position: relative;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    font-family: Lato, sans-serif;
+    /*text-transform: uppercase;*/
+    color: var(--bs-body-color);
+    /*margin: 0 5px;*/
+    background: var(--bs-body-bg);
+    border-radius: 10px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.istiyak:hover {
+    background:var(--bs-body-color);
+    color:var(--bs-body-bg);
+}
+
+.bw-2{
+    --border-width: 2px!important;
+}
+
+.optimize {
+    --border-width: 1px;
+
+    position: relative;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+    font-family: Lato, sans-serif;
+    /*text-transform: uppercase;*/
+    color:black;
+    margin: 0 5px;
+    background: white;
+    border-radius: 10px;
+}
+[data-bs-theme=light] .optimize:hover {
+    background: #495057;
+    color:crimson;
+}
+[data-bs-theme=dark] .optimize:hover {
+    background: #000;
+    color:var(--bs-body-color);
+}
+.istiyak::after , .optimize:after {
+    position: absolute;
+    content: "";
+    top: calc(-1 * var(--border-width));
+    left: calc(-1 * var(--border-width));
+    z-index: -1;
+    width: calc(100% + var(--border-width) * 2);
+    height: calc(100% + var(--border-width) * 2);
+    background: linear-gradient(
+        60deg,
+        hsl(224, 85%, 66%),
+        hsl(269, 85%, 66%),
+        hsl(314, 85%, 66%),
+        hsl(359, 85%, 66%),
+        hsl(44, 85%, 66%),
+        hsl(89, 85%, 66%),
+        hsl(134, 85%, 66%),
+        hsl(179, 85%, 66%)
+    );
+    background-size: 300% 300%;
+    background-position: 0 50%;
+    border-radius: 10px;
+    animation: moveGradient 4s alternate infinite;
+}
+
+.graph-animate {
+    --border-width: 2px;
+
+    position: relative;
+    font-family: Lato, sans-serif;
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+}
+
+.graph-animate::after {
+    position: absolute;
+    content: "";
+    top: calc(-1 * var(--border-width));
+    left: calc(-1 * var(--border-width));
+    z-index: -1;
+    width: calc(100% + var(--border-width) * 2);
+    height: calc(100% + var(--border-width) * 2);
+    background: linear-gradient(
+        60deg,
+        #cd70ec,
+        #A6F6FF,
+        #9EDDFF,
+        #6499E9,
+        #3A0088,
+        #AF47D2,
+        #965ff2,
+        #099896
+    );
+    background-size: 300% 300%;
+    background-position: 0 50%;
+    border-radius:3px;
+    animation: moveGradient 4s alternate infinite;
+}
+
+[data-bs-theme=dark] .navAni {
+    border-radius: 9px;
+    margin: 1px 3px;
+    border: 1px #000000 solid;
+}
+
+.optimize-btn {
+    --border-width: 2px;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 10px;
+   border:var(--border-width);
+}
+
+
+@keyframes moveGradient {
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Base button styling */
+/* Remove underline for <a> tags */
+a.corposhop-icon,
+a.corposhop-icon-sm {
+    text-decoration: none;
+}
+
+/* Base button styling */
+.corposhop-icon {
+    background: none;
+    padding: 0; /* Remove default padding */
+    color: #6c757d; /* Default icon color */
+    transition: all 0.3s ease;
+    border-radius: 5px; /* Slightly rounded corners */
+    width: 40px; /* Fixed width */
+    height: 40px; /* Fixed height */
+    display: flex;
+    border: 1px black solid;
+    align-items: center;
+    justify-content: center;
+}
+/* Small variant */
+.corposhop-icon-sm {
+    width: 30px; /* Smaller width */
+    height: 30px; /* Smaller height */
+}
+.corposhop-icon-sm i {
+    font-size: 0.875rem; /* Smaller icon size */
+}
+/* Hover effect */
+.corposhop-icon:hover {
+    background-color: #000; /* Black background on hover */
+    color: #fff; /* White icon color on hover */
+}
+/* Active/focus effect */
+.corposhop-icon:focus, .corposhop-icon:active {
+    outline: none;
+    background-color: #333; /* Slightly lighter black for focus/active state */
+    color: #fff;
+}
+
+/* Dark theme styles */
+[data-bs-theme="dark"] .corposhop-icon {
+    border: 1px white solid;
+    color: #adb5bd; /* Light gray for dark theme */
+}
+[data-bs-theme="dark"] .corposhop-icon:hover {
+    background-color: #fff; /* White background on hover */
+    color: #000; /* Black icon color on hover */
+}
+[data-bs-theme="dark"] .corposhop-icon:focus,
+[data-bs-theme="dark"] .corposhop-icon:active {
+    background-color: #f8f9fa; /* Slightly off-white for focus/active state */
+    color: #000;
+}
+
+/* Notification Dropdown */
+.notification-dropdown {
+    min-width: 300px;
+    max-width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 14px; /* Adjust font size */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Notification Item */
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item strong {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.notification-item small {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+
+/* Notification Badge */
+.notification-badge {
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
