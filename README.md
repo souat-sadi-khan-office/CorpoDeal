@@ -1,53 +1,112 @@
-<p align="center">
-    <a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a>
-</p>
+# CorpoDeal Single Vendor Multi Location Multi Currency eCommerce Website (Laravel + jQuery)
 
-<!-- <p align="center">
-    <a href="https://github.com/laravel/framework/actions">
-        <img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/l/laravel/framework" alt="License">
-    </a>
-</p> -->
+A **modern, scalable and feature-rich eCommerce platform** built with **Laravel** (backend) and **jQuery** (frontend).  
+Designed for performance, flexibility, and seamless shopping experience.
 
-## Setup CPL E-commerce App in your Computer 
+---
 
-1. PHP 8.2
-2. MySQL 
-3. Xampp - above PHP 8.2
+## Features
 
-### Pre-requirement
+- **User Authentication**
+  - Customer Registration & Login
+  - Social Login (Google, Facebook)
+  - Forgot & Reset Password via OTP
 
-1. On your PHP ini file the below option must be enabled:
-* Zip
-* gd
-* intl
+- **Product Management**
+  - Categories, Brands, Tags
+  - Product Variants (Size, Color, etc.)
+  - Discount & Flash Deals
+  - Product Search & Filters
 
-### Get project from git
-1. Open a folder on your directory. 
-2. Under the folder open command prompt or git bash. 
-3. type - 'git init'
-4. type - 'git pull https://github.com/cplwali/CPL.ECOMMERCE.git'
+- **Shopping & Checkout**
+  - Add to Cart / Wishlist / Compare
+  - Coupon & Discount System
+  - Guest Checkout Support
+  - Multiple Payment Gateways
 
-### Update Env File
-copy .env-example file and rename as .env 
+- **Order Management**
+  - Place Orders via Web & API
+  - Order Tracking System
+  - Tier-based Discounts
+  - Invoice & Transaction History
 
-### Creating Database
+- **Dashboard & Reports**
+  - Sales Analytics
+  - Stock & Inventory Reports
+  - User Activity Logs
 
-Go to your PHPMyAdmin and create a new database. Change the database name on the .env file. 
+- **Mobile App Ready**
+  - API Endpoints with Laravel Sanctum
+  - Flutter App Integration
 
-### Update the composer
+---
 
-Now under the project folder open command prompt or git bash and type 'composer update'. After updating composer type 'php artisan key:generate'. 
+## Tech Stack
 
-### Setup database migrate
+- **Backend:** [Laravel 10+](https://laravel.com/)  
+- **Frontend:** jQuery, Bootstrap 5  
+- **Database:** MySQL  
+- **Authentication:** Laravel Sanctum / Socialite  
+- **API Documentation:** Laravel Scribe  
+- **Payment:** SSLCommerz, Stripe, PayPal (extensible)  
 
-Now on the terminal type 'php artisan migrate' <br>
-After that type 'php artisan db:seed'
+---
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/souat-sadi-khan-office/CorpoDeal
+   cd CorpoDeal
+
+2. Install dependencies:
+   ```bash
+    composer install
+    npm install && npm run dev
+
+3. Create environment file:
+   ```bash
+    cp .env.example .env
+    php artisan key:generate
+
+4. Setup database:
+   ```bash
+    php artisan migrate --seed
+
+5. Start development server:
+   ```bash
+    php artisan serve
+
+## API Documentation
+
+- REST APIs powered by **Laravel Sanctum**  
+- Auto-generated docs using **Laravel Scribe**
+
+### Example Endpoints
+- `POST /api/v1/register` → Register user  
+- `POST /api/v1/login` → Login user  
+- `POST /api/v1/checkout` → Place an order  
+
+---
+
+## Contributing
+
+Contributions are always welcome!  
+Please fork this repo and submit a pull request.
+
+---
+
+## License
+
+This project is licensed under the **CorpoEx**.  
+You are not free to use, modify, and distribute with attribution.
+
+---
+
+## Author
+
+**CorpoEx**  
+*Web Developer | Software Engineer | Laravel & jQuery Specialist*  
+
+- 🌐 Portfolio: [corpoex.com](https://corpoex.com)  
+- 📧 Email: sadi.khan@projukti-bd.com  
