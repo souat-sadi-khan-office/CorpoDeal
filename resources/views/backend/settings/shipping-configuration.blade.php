@@ -7,7 +7,9 @@
         <div class="col-md-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h1 class="h5 mb-0">Shipping Configuration</h1>
+                    <h1 class="h6 mb-0">
+                        <b>Shipping Configuration</b>
+                    </h1>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -17,28 +19,28 @@
                                     <div class="col-md-12 form-group">
                                         <div class="form-check">
                                             <input {{ get_settings('shipping_cost_type') == 'free_shipping' ? 'checked' : '' }} class="form-check-input" type="radio" name="shipping_cost_type" id="free_shipping_cost" value="free_shipping">
-                                            <label class="text-info form-check-label" for="free_shipping_cost">
+                                            <label style="font-weight:bold;" class="text-success form-check-label" for="free_shipping_cost">
                                                 Free shipping
                                             </label>
                                             <p>Free shipping is applicable if Free shipping method is enabled. <b>Free shipping Cost calculation</b>: How many products a customer purchase, doesn't matter. Shipping cost is always free.</p>
                                         </div>
                                         
-                                        <div class="form-check">
+                                        {{-- <div class="form-check">
                                             <input {{ get_settings('shipping_cost_type') == 'product_wise' ? 'checked' : '' }} class="form-check-input" type="radio" name="shipping_cost_type" id="product_wise_shipping_cost" value="product_wise">
-                                            <label class="text-info form-check-label" for="product_wise_shipping_cost">
+                                            <label style="font-weight:bold;" class="text-success form-check-label" for="product_wise_shipping_cost">
                                                 Product Wise Shipping Cost
                                             </label>
                                             <p><b>Product Wise Shipping Cost calculation</b>: Shipping cost is calculate by addition of each product shipping cost.</p>
-                                        </div>
+                                        </div> --}}
                                         
                                         <div class="form-check">
                                             <input {{ get_settings('shipping_cost_type') == 'flat_rate' ? 'checked' : '' }} class="form-check-input" type="radio" name="shipping_cost_type" id="flat_rate_shipping_cost" value="flat_rate">
-                                            <label class="text-info form-check-label" for="flat_rate_shipping_cost">
+                                            <label style="font-weight:bold;" class="text-success form-check-label" for="flat_rate_shipping_cost">
                                                 Flat Rate Shipping Cost
                                             </label>
                                             <p>Flat rate shipping cost is applicable if Flat rate shipping is enabled. <b>Flat Rate Shipping Cost calculation</b>: How many products a customer purchase, doesn't matter. Shipping cost is fixed.</p>
                                         </div>
-                                        <div class="form-check">
+                                        {{-- <div class="form-check">
                                             <input {{ get_settings('shipping_cost_type') == 'carrier_wise' ? 'checked' : '' }} class="form-check-input" type="radio" name="shipping_cost_type" id="carrier_wise_shipping_cost" value="area_wise">
                                             <label class="text-info form-check-label" for="carrier_wise_shipping_cost">
                                                 Carrier Based Shipping Cost
@@ -51,7 +53,7 @@
                                                 Area Wise Flat Shipping Cost
                                             </label>
                                             <p><b>Area Wise Flat Shipping Cost calculation</b>: Fixed rate for each area. If customers purchase multiple products from one seller shipping cost is calculated by the customer shipping area. To configure area wise shipping cost go to Shipping Zone, Country, Cities Records.</p>
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <div style="display: {{ get_settings('shipping_cost_type') == 'flat_rate' ? 'block' : 'none' }}" class="col-md-12 flat_type form-group mb-3">
@@ -74,18 +76,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12 mt-3 form-group text-end">
-            @if (auth()->guard('admin')->user()->hasPermissionTo('shipping-configuration.update') === false)
-                <button type="submit" id="submit" class="btn btn-soft-success">
+        <div class="col-md-12 mx-auto">
+            {{-- @if (auth()->guard('admin')->user()->hasPermissionTo('shipping-configuration.update') === false) --}}
+                <button type="submit" id="submit" class="btn btn-sm btn-dark">
                     <i class="bi bi-send"></i>
-                    Update
+                    Update Shipping Configuration
                 </button>
-                <button type="button" style="display: none;" id="submitting" class="btn btn-soft-warning">
+                <button type="button" style="display: none;" id="submitting" class="btn btn-sm btn-outline-dark">
                     <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </button>
-            @endif
+            {{-- @endif --}}
         </div>
     </div>
 </form>

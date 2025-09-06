@@ -72,13 +72,10 @@ class ImportController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 
-        // if(is_array($rows) && count($rows) > 201) {
-        //     return response()->json([
-        //         'row' => count($rows),
-        //         'status' => false,
-        //         'message' => 'Maximum 200 column at a single time',
-        //     ]);
-        // }
+        $rows = array_slice($rows, 0, 200);
+        $rows = array_map(function($row) {
+            return array_slice($row, 0, 12);
+        }, $rows);
 
         $importedCategories = [];
         $errors = [];
@@ -94,14 +91,19 @@ class ImportController extends Controller
                 continue;
             }
 
-            if(Category::where('name', $row[1])->first()) {
+            if(Category::where('slug', $row[2])->first()) {
                 continue;
             }
+
             
             $parentId = $row[0] ?? null;
-            if ($row[0] !== 'parent') {
-                $parentCategory = Category::where('name', $row[0])->first();
-                $parentId = $parentCategory->id;
+            if ($row[0] != 'parent') {
+                $parentCategory = Category::where('slug', $row[0])->first();
+                if(!$parentCategory) {
+                    $parentId = null;
+                } else {
+                    $parentId = $parentCategory->id;
+                }
             } else {
                 $parentId = null;
             }
@@ -121,7 +123,6 @@ class ImportController extends Controller
                 $imagePath = Images::uploadImageFromUrl($imageUrl, 'categories', $row[11]);
                 if (!$imagePath) {
                     $errors[] = "Image upload failed for row $key.";
-                    continue;
                 }
             }
 
@@ -314,13 +315,13 @@ class ImportController extends Controller
                 continue;
             }
 
-            if($row[3] == '') {
+            if($row[4] == '') {
                 continue;
             }
 
             // check for categoryId
             $categoryId = null;
-            if(!$category = Category::select('id', 'name')->where('name', $row[0])->first()) {
+            if(!$category = Category::select('id', 'name')->where('slug', $row[0])->first()) {
                 continue;
             }
             $categoryId = $category->id;
@@ -338,19 +339,19 @@ class ImportController extends Controller
             }
 
             // Ignore if the slug is empty
-            if($row[3] == '') {
-                $errors[] = "Name for {$row[3]} can not be empty.";
+            if($row[4] == '') {
+                $errors[] = "Name for {$row[4]} can not be empty.";
                 continue;
             }
 
             // Ignore if the Product name is already exist
-            if(Product::where('name', $row[3])->first()) {
+            if(Product::where('slug', $row[5])->first()) {
                 
-                $errors[] = "Product: {$row[3]} is already exist.";
+                $errors[] = "Product: {$row[4]} is already exist.";
                 continue;
             }
 
-            $slug = $row[4];
+            $slug = $row[5];
             $request->merge(['slug' => $slug]);
             $slugExists = $helperController->checkSlug($request);
             
@@ -361,28 +362,29 @@ class ImportController extends Controller
             }
 
             $imagePath = null;
-            $imageUrl = $row[19] ?? null;
+            $imageUrl = $row[20] ?? null;
             if ($imageUrl) {
-                $imagePath = Images::uploadImageFromUrl($imageUrl, 'products', $row[2]);
-                if (!$imagePath) {
-                    $errors[] = "Image upload failed for row $row[3].";
-                    continue;
-                }
+                $imagePath = str_contains($imageUrl, 'https://www.corposhop.com/') ? str_replace('https://www.corposhop.com/', '', $imageUrl) : $imageUrl;
+                // $imagePath = Images::uploadImageFromUrl($imageUrl, 'products', $row[4]);
+                // if (!$imagePath) {
+                //     $errors[] = "Image upload failed for row $row[4].";
+                //     continue;
+                // }
             }
 
-            $stage = $row[27];
-            if(strtolower($row[27]) == 'pre order') {
+            $stage = $row[28];
+            if(strtolower($row[28]) == 'pre order') {
                 $stage = 'pre-order';
-            } elseif (strtolower($row[27]) == 'upcoming') {
+            } elseif (strtolower($row[28]) == 'upcoming') {
                 $stage = 'upcoming';
             } else {
                 $stage = 'normal';
             }
 
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
-            $discountStartDate = $row[24];
-            $discountEndDate = $row[25];
+            $discountStartDate = $row[25];
+            $discountEndDate = $row[26];
             $dateStart = \DateTime::createFromFormat('d/m/Y', $discountStartDate);
             $dateEnd = \DateTime::createFromFormat('d/m/Y', $discountEndDate);
 
@@ -403,21 +405,21 @@ class ImportController extends Controller
                 'category_id'   =>  $categoryId,
                 'brand_id'      =>  $brandId ?? null,
                 'brand_type_id' =>  $brandTypeId ?? null,
-                'product_type'  =>  $row[9] == 'Physical' ? 'physical' : 'digital',
-                'name'          =>  $row[3],
-                'slug'          =>  $slug,
+                'product_type'  =>  $row[10] == 'Physical' ? 'physical' : 'digital',
+                'name'          =>  $row[4],
+                'slug'          =>  trim($slug),
                 'thumb_image'   =>  $imagePath ?? null,
-                'sku'           =>  $row[5],
-                'status'        =>  $row[26] == 'Active' ? 1 : 0,
+                'sku'           =>  $row[6],
+                'status'        =>  1,
                 'stage'         =>  $stage,
-                'is_featured'   =>  $row[28] == 'Yes' ? 1 : 0,
-                'is_discounted' =>  $row[21] == 'Yes' ? 1 : 0,
-                'discount_type' =>  strtolower($row[22]) == 'flat' ? 'amount' : 'percentage',
-                'discount'      =>  strtolower($row[22]) == 'flat'  ? covert_to_usd($row[23]) : $row[23],
+                'is_featured'   =>  $row[29] == 'Yes' ? 1 : 0,
+                'is_discounted' =>  $row[22] == 'Yes' ? 1 : 0,
+                'discount_type' =>  strtolower($row[23]) == 'flat' ? 'amount' : 'percentage',
+                'discount'      =>  strtolower($row[23]) == 'flat'  ? covert_to_usd($row[24]) : $row[24],
                 'discount_start_date'   =>  $dateStart,
                 'discount_end_date'     =>  $dateEnd,
-                'is_returnable'         =>  $row[32] == 'Yes' ? 1 : 0,
-                'return_deadline'       =>  $row[33] ?? null,
+                'is_returnable'         =>  $row[33] == 'Yes' ? 1 : 0,
+                'return_deadline'       =>  $row[34] ?? null,
                 'stock_types'           =>  'globally'
             ]);
 
@@ -425,36 +427,36 @@ class ImportController extends Controller
 
                 $details = ProductDetail::create([
                     'product_id'            => $product->id,
-                    'video_provider'        => $row[12] ?? null,
+                    'video_provider'        => $row[13] ?? null,
                     'current_stock'         => 0,
-                    'low_stock_quantity'    => $row[31] ?? 0,
-                    'cash_on_delivery'      => strtolower($row[32]) == 'yes' ? 1 : 0,
-                    'est_shipping_days'     => $row[33] ?? null,
-                    'video_link'            => $row[13] ?? null,
-                    'points'                => $row[10] ?? 0,
-                    'shipping_cost'         => $row[18] ? covert_to_usd($row[18]) : 0,
+                    'low_stock_quantity'    => $row[32] ?? 0,
+                    'cash_on_delivery'      => strtolower($row[33]) == 'yes' ? 1 : 0,
+                    'est_shipping_days'     => $row[34] ?? null,
+                    'video_link'            => $row[14] ?? null,
+                    'points'                => $row[11] ?? 0,
+                    'shipping_cost'         => $row[19] ? covert_to_usd($row[19]) : 0,
                     'number_of_sale' => 0,
                     'average_rating' => 0,
                     'number_of_rating' => 0,
                     'average_purchase_price' => 0,
-                    'site_title'            => $row[14] ? $row[14] : $row[3],
-                    'meta_title'            => $row[15] ? $row[15] : $row[3],
-                    'meta_keyword'          => $row[16] ? $row[16] : null,
-                    'meta_description'      => $row[17] ? $row[17] : $row[3],
+                    'site_title'            => $row[15] ? $row[15] : $row[4],
+                    'meta_title'            => $row[16] ? $row[16] : $row[4],
+                    'meta_keyword'          => $row[17] ? $row[17] : null,
+                    'meta_description'      => $row[18] ? $row[18] : $row[4],
                 ]);
 
                 // Stock Purchase
-                if($row[6] != '' && is_int((int) $row[6]) && $row[7] != '' && is_int((int) $row[7])) {
+                if($row[7] != '' && is_int((int) $row[7]) && $row[8] != '' && is_int((int) $row[8])) {
 
                     $stockPurchase = new StockPurchase;
                     $stockPurchase->product_id = $product->id;
                     $stockPurchase->admin_id = $product->admin_id;
                     $stockPurchase->currency_id = 1;
-                    $stockPurchase->sku = $row[5];
-                    $stockPurchase->quantity = (int) $row[6];
-                    $stockPurchase->unit_price = covert_to_usd((int) $row[7]);
-                    $stockPurchase->purchase_unit_price = covert_to_usd((int) $row[8]);
-                    $stockPurchase->purchase_total_price = covert_to_usd((int) $row[6] * (int) $row[8]);
+                    $stockPurchase->sku = $row[6];
+                    $stockPurchase->quantity = (int) $row[7];
+                    $stockPurchase->unit_price = covert_to_usd((int) $row[8]);
+                    $stockPurchase->purchase_unit_price = covert_to_usd((int) $row[9]);
+                    $stockPurchase->purchase_total_price = covert_to_usd((int) $row[7] * (int) $row[9]);
                     $stockPurchase->is_sellable = 1;
                     $stockPurchase->save();
                     if ($stockPurchase) {
@@ -471,26 +473,28 @@ class ImportController extends Controller
                         $stock->stock_purchase_id  = $stockPurchase->id;
                         $stock->in_stock = 1;
                         $stock->number_of_sale = 0;
-                        $stock->stock = (int) $row[6];
+                        $stock->stock = (int) $row[7];
                         $stock->save();
 
                         // update current_stock data on product_details table
-                        $details->current_stock = (int) $row[6];
+                        $details->current_stock = (int) $row[7];
                         $details->save();
 
-                        $product->unit_price = covert_to_usd((int) $row[7]);
+                        $product->unit_price = covert_to_usd((int) $row[8]);
                         $product->save();
                     }
                 }
 
-                if($row[20]) {
-                    $images = explode(',', $row[20]);
+                if($row[21]) {
+                    $images = explode(',', $row[21]);
                     foreach($images as $image) {
                         if($image != '') {
                             $image = trim($image);
-                            $imagePath = Images::uploadImageFromUrl($image, 'products', $row[3]);
+                            $imagePath = str_contains($image, 'https://www.corposhop.com/') ? str_replace('https://www.corposhop.com/', '', $image) : $imageUrl;
+
+                            // $imagePath = Images::uploadImageFromUrl($image, 'products', $row[21]);
                             if (!$imagePath) {
-                                $errors[] = "Image upload failed for row $row[3].";
+                                $errors[] = "Image upload failed for row $row[21].";
                                 continue;
                             } else {
                                 ProductImage::create([
@@ -504,7 +508,7 @@ class ImportController extends Controller
                 }
             }
 
-            DB::commit();
+            // DB::commit();
         }
 
         if(count($errors) > 0) {
@@ -749,6 +753,8 @@ class ImportController extends Controller
                 $result[] = $item;
             }
             
+            $globalPosition = 1;
+
             foreach ($result as $key => $row) {
 
                 if($row[0] == null) {
@@ -805,7 +811,8 @@ class ImportController extends Controller
                     'key_id' => $specificationKey->id,
                     'type_id' => $specificationKeyType->id,
                     'attribute_id' => $specificationKeyTypeAttribute->id,
-                    'key_features' => isset($row[3]) && strtolower($row[3]) == 'featured' ? 1 : 0
+                    'key_feature' => isset($row[3]) && strtolower($row[3]) == 'featured' ? 1 : 0,
+                    'position' => $globalPosition++,
                 ]);
             }
 

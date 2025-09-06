@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ConfigurationSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ConfigurationSettingController extends Controller
@@ -52,6 +53,9 @@ class ConfigurationSettingController extends Controller
             break;
             case 'all_categories':
                 $page = 'All Categories Page';
+            break;
+            case 'all_products':
+                $page = 'All Products Page';
             break;
             case 'all_brand':
                 $page = 'All Brand Page';
@@ -336,5 +340,71 @@ class ConfigurationSettingController extends Controller
             'message' => 'Configuration updated',
             'load' => true
         ]);
+    }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+        
+            // Define dynamic folders
+            $type = 'uploads'; // You can also make this dynamic if needed
+            $folder = 'ckeditor';
+        
+            // Generate filename
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+        
+            // Store file in: storage/app/public/uploads/ckeditor/
+            $file->storeAs($type . '/' . $folder, $fileName, 'public');
+        
+            // Generate public URL
+            $url = asset("storage/{$type}/{$folder}/{$fileName}");
+        
+            // CKEditor integration
+            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+            $msg = 'Image uploaded successfully';
+            $response = "<script>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$url', '$msg');</script>";
+        
+            return response($response)->header('Content-Type', 'text/html; charset=utf-8');
+        }
+    }
+
+    /**
+     * Get configuration settings
+     *
+     * This endpoint returns all system configuration settings or a specific setting based on query parameter.
+     *
+     * @queryParam type string Optional. The specific setting key to retrieve. Example: system_name
+     *
+     * @response 200 {
+     *  "system_name": "CorpoHR",
+     *  "currency": "BDT",
+     *  "timezone": "Asia/Dhaka"
+     * }
+     *
+     * @response 200 {
+     *  "type": "system_name",
+     *  "value": "CorpoHR"
+     * }
+     *
+     * @response 200 {
+     *  "type": "not_found",
+     *  "value": null
+     * }
+     */
+    public function api(Request $request)
+    {
+        $type = $request->query('type');
+
+        if ($type) {
+            $setting = ConfigurationSetting::where('type', $type)->first();
+            return response()->json([
+                'type'  => $type,
+                'value' => $setting ? $setting->value : null,
+            ]);
+        }
+
+        $settings = ConfigurationSetting::all()->pluck('value', 'type');
+        return response()->json($settings);
     }
 }

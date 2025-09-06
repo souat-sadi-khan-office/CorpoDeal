@@ -101,10 +101,13 @@ class OrderController extends Controller
     
     }
     
-
-
     public function updateStatus(Request $request, $orderId)
     {
         return $this->orderRepository->updateStatus($request, $orderId);
+    }
+
+    public function updateOrderWithNote(Request $request, $orderId)
+    {
+        return $this->orderRepository->updateOrderWithNote($request, $orderId);
     }
 }

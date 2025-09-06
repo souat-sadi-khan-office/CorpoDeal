@@ -4,25 +4,27 @@
     <div class="app-content-header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Create new Home Page Category</h1>
+                <div class="col-sm-8">
+                    <h1 class="h3 mb-0">
+                        <b>Create new Home Page Category</b>
+                    </h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.banner.index') }}">Home Page Category Management</a>
+                            <a style="color: #000;" href="{{ route('admin.banner.index') }}">Home Page Category Management</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Create new Home Page Category</li>
+                        <li class="breadcrumb-item active" aria-current="page">Add New Category</li>
                     </ol>
                 </div>
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view')) --}}
-                    <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.home-page-category.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                    <div class="col-sm-4 text-end">
+                        <a href="{{ route('admin.home-page-category.index') }}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     </div>
@@ -36,7 +38,7 @@
 @endpush
 @section('content')
     <div class="row">
-        <div class="col-md-7 mx-auto">
+        <div class="col-md-12">
             <form action="{{ route('admin.home-page-category.store') }}" enctype="multipart/form-data" class="content_form" method="post">
                 <div class="card">
                     <div class="card-body">
@@ -57,35 +59,35 @@
                                 <span class="text-danger">Logo size is <b>385 X 535</b> pixrl. Please use <b>.WEBP</b> format picture for better performance.</span>
                             </div>
 
-                            <div class="col-md-12 mb-3 form-group">
+                            <div class="col-md-4 mb-3 form-group">
                                 <label for="alt_tag">Picture Alter Tag</label>
                                 <input type="text" name="alt_tag" id="name" class="form-control">
                             </div>
-                            <div class="col-md-12 mb-3 form-group">
+                            <div class="col-md-4 mb-3 form-group">
                                 <label for="status">Alignment <span class="text-danger">*</span></label>
                                 <select name="is_right" id="is_right" class="form-control" required>
                                     <option selected value="0">LTR</option>
                                     <option value="1">RTL</option>
                                 </select>
                             </div>
-                            <div class="col-md-12 mb-3 form-group">
+                            <div class="col-md-4 mb-3 form-group">
                                 <label for="status">Status <span class="text-danger">*</span></label>
-                                <select name="status" id="status" class="form-control select" required>
+                                <select name="status" id="status" class="form-control" required>
                                     <option selected value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
                             </div>
 
                             <div class="col-md-12 form-group">
-                                <button type="submit" class="btn btn-soft-success"  id="submit">
+                                <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                                     <i class="bi bi-send"></i>
                                     Create
                                 </button>
-                                <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
                                 </button>
-                                <a href="{{ route('admin.home-page-category.index') }}" class="btn btn-soft-danger">
+                                <a href="{{ route('admin.home-page-category.index') }}" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-backspace"></i>
                                     Back
                                 </a>

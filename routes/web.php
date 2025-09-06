@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\InstallmentPlanController;
 use App\Http\Controllers\Frontend\VerificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SslCommerzPaymentController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Frontend\Auth\LoginController;
@@ -22,6 +23,10 @@ use Illuminate\Support\Facades\DB;
 // Route::get('/', function () {
 //     return view('frontend.homepage.index');
 // })->name('home');
+
+Route::get('/server-error', function () {
+    abort(500);
+});
 
 Route::get('admin', function() {
     return redirect()->route('admin.login');
@@ -55,9 +60,6 @@ Route::get('login/google/callback', [LoginController::class, 'handleGoogleCallba
 Route::get('login/facebook', [LoginController::class, 'redirectToFacebook'])->name('login.facebook');
 Route::get('login/facebook/callback', [LoginController::class, 'handleFacebookCallback']);
 
-Route::get('resent/otp', [RegisterController::class, 'resent_otp'])->name('resend.otp');
-Route::get('phone/verify', [VerificationController::class, 'phone'])->name('verify.phone');
-
 Route::middleware(['auth:customer'])->group(function () {
     Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
@@ -81,10 +83,12 @@ Route::middleware(['isCustomer', 'web', 'ipSession', 'email.verify'])->group(fun
     Route::get('buy/{slug}', [CartController::class, 'buyProductNow'])->name('buy.now');
     Route::post('buy-now', [CartController::class, 'buyNow'])->name('buy-now');
     Route::get('account/dashboard', [UserController::class, 'index'])->name('dashboard');
+    Route::post('order/{orderId}/upload-payment-slip', [OrderController::class, 'uploadPaymentSlip'])->name('payment-slip.upload');
     Route::prefix('account')->name('account.')->group(function () {
         Route::resource('phone-book', PhoneBookController::class);
         Route::resource('address-book', AddressController::class);
         Route::get('my-orders', [UserController::class, 'myOrders'])->name('my_orders');
+        Route::get('repay-order/{id}', [UserController::class, 'repay'])->name('repay');
         Route::get('my-order/{id}', [UserController::class, 'orderDetails'])->name('my_order_details');
         Route::get('order-invoice/{id}', [UserController::class, 'orderInvoice'])->name('order.invoice');
         Route::get('quotes', [UserController::class, 'quotes'])->name('quote');
@@ -109,16 +113,17 @@ Route::middleware(['isCustomer', 'web', 'ipSession', 'email.verify'])->group(fun
         Route::any('place', [OrderController::class, 'store'])->name('store');
         Route::post('get_address/{id}', [OrderController::class, 'address'])->name('address');
         Route::get('confirmation/{id}', [OrderController::class, 'orderConfirmation'])->name('confirm');
+        Route::get('failed/{id}', [OrderController::class, 'orderFailed'])->name('failed');
     });
 
     Route::any('sslcommerz/process', [SslCommerzController::class, 'order'])->name('sslcommerz.process');
 
+
 });
-Route::middleware('sslCommerzCsrf')->prefix('sslcommerz')->name('sslcommerz.')->group(function () {
-    // Route::prefix('sslcommerz')->name('sslcommerz.')->group(function () {
+Route::prefix('sslcommerz')->name('sslcommerz.')->group(function () {
     Route::post('success', [SslCommerzController::class, 'success'])->name('success');
-    Route::any('failure', [SslCommerzController::class, 'failure'])->name('failure');
-    Route::any('cancel', [SslCommerzController::class, 'cancel'])->name('cancel');
+    Route::post('failure', [SslCommerzController::class, 'failure'])->name('failure');
+    Route::post('cancel', [SslCommerzController::class, 'cancel'])->name('cancel');
     Route::post('ipn', [SslCommerzController::class, 'ipn'])->name('ipn');
 });
 
@@ -155,6 +160,7 @@ Route::middleware(['web', 'ipSession'])->group(function () {
     Route::post('submit-review-form', [HomePageController::class, 'submitReviewForm'])->name('review.submit');
     Route::any('quick-view/{slug}', [HomePageController::class, 'quickview'])->name('quick.view');
     Route::get('brands', [HomePageController::class, 'allBrands'])->name('brands');
+    Route::get('products', [HomePageController::class, 'allProducts'])->name('products');
     Route::get('categories', [HomePageController::class, 'allCategories'])->name('categories');
     Route::get('get-categories', [HomePageController::class, 'getAllCategories'])->name('get-categories');
 
@@ -169,6 +175,7 @@ Route::middleware(['web', 'ipSession'])->group(function () {
     Route::post('search/product-by-id', [SearchController::class, 'searchByProductId'])->name('search.product_id');
     Route::post('search/product-stock', [SearchController::class, 'searchForProductStock'])->name('search.product_stock');
     Route::post('search/product-data', [SearchController::class, 'searchForProductDetails'])->name('search.product_data');
+    Route::post('search/flash-deals-product-data', [SearchController::class, 'searchForFlashDealsProductDetails'])->name('search.product_data');
     Route::post('search/brand-types', [SearchController::class, 'searchForBrandTypes'])->name('search.brand-types');
     Route::post('get-laptop-by-finder', [SearchController::class, 'getLapTopByFinder']);
     Route::post('clear-laptop-search', [SearchController::class, 'clearLaptopSearch']);

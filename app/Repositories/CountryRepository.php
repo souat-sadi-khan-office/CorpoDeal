@@ -28,7 +28,7 @@ class CountryRepository implements CountryRepositoryInterface
                     return $model->zone->name;
                 })
                 ->editColumn('cost', function($model) {
-                    return '$'. number_format(covert_to_defalut_currency($model->cost), 2);
+                    return 'BDT '. number_format(covert_to_defalut_currency($model->cost), 2);
                 })
                 ->editColumn('image', function ($model) {
                     return Images::show($model->image);

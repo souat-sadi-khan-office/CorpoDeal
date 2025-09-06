@@ -1,105 +1,65 @@
-<h3 class="m-4">Specifications - {{ $product_name }}</h3>
+<style>
+    .table-specification {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+</style>
+<form action="{{ route('admin.product.specification.add', $product_id) }}" method="POST" class="ajax-form" >
+    @csrf
 
-<div class="card">
-
-    <div class="card-body">
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <strong>Specifications - {{ $product_name }}</strong>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
         <div class="row">
-            <div class="col-md-12 table-responsive">
-                
-                @foreach ($models as $data)
-                    <hr>
-
-                    <h5>{{ @$data[0]['specificationKey'] }}</h5>
-                    <hr>
-                    @foreach ($data as $item)
-                        <div class="row mx-3 my-1" data-row-id="{{ $item['id'] }}">
-                            <div class="col-md-4 border-end">
-                                {{ $item['specificationKeyType'] }}
-                            </div>
-                            <div class="col-md-5 border-end">
-                                {{ $item['specificationKeyTypeAttribute'] }}
-                            </div>
-                            <div class="col-md-3">
-                                <div class="row">
-                                    <div class="form-check form-switch col-md-7"
-                                        style=" padding-left: 2.9em!important;">
-                                        <span>Key Feature? </span>
-                                        <input
-                                            data-url="{{ route('admin.product.specification.keyfeature', $item['id']) }}"
-                                            class="form-check-input" type="checkbox" role="switch" name="is_featured"
-                                            id="status{{ $item['id'] }}"
-                                            {{ $item['key_feature'] == 1 ? 'checked' : '' }}
-                                            data-id="{{ $item['id'] }}">
-                                    </div>
-                                    <div class="col-md-5">
-                                        <a class="btn btn-sm btn-outline-danger" href="javascript:;"
-                                            id="delete_specification" data-id ="{{ $item['id'] }}"
-                                            data-url="{{ route('admin.product.specification.delete', $item['id']) }}">
-                                            <i class="bi bi-trash"></i>
-                                            Remove
-                                        </a>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    @endforeach
-                @endforeach
-
-                <form action="{{ route('admin.product.specification.add', $product_id) }}" method="POST"
-                    class="content_form" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <div class="row">
-                                <!-- Product Specification -->
-                                <div class="col-mb-12 mb-4">
-                                    <div class="card">
-                                        <div class="card-header">
-
-                                            <button id="add-another" type="button" class="btn btn-primary mt-2"
-                                                style="display:none;">Add New
-                                                Specification</button>
-                                            <span class="text-danger mx-5"> Duplicate Types Will be Not Counted for a
-                                                Specification Key</span>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="col-md-12">
-                                                <div class="specification_key row"></div>
-                                                {{-- <button id="add-another" type="button" class="btn btn-primary mt-2" style="display:none;">Add Another
-                                                    Specification</button> --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-
-                        <div class="col-md-12 form-group mb-3 text-end">
-                            <button class="btn btn-soft-success" type="submit" id="submit">
-                                <i class="bi bi-send"></i>
-                                Create
-                            </button>
-                            <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button"
-                                disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                Loading...
-                            </button>
-                        </div>
+            <div class="col-md-12 mb-3 table-responsive table-specification">
+                @if (count($models) > 0)
+                    <div id="specificationTable">
+                        @include('backend.product.specification._table', ['models' => $models])
                     </div>
-                </form>
+                @else   
+                    <p class="text-center text-danger my-2">No Specification found for this product.</p>
+                @endif
+                
+            </div>
+
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-mb-12 mb-4">
+                        <div class="specification_key row"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="modal-footer">
+        <div class="col-md-12 text-end">
+            <button type="button" class="btn btn-sm btn-outline-danger" type="button" data-bs-dismiss="modal" aria-label="Close">
+                <i class="bi bi-x" style="margin-right: 10px;"></i>
+                Close
+            </button>
+            <button id="add-another" type="button" class="btn btn-sm btn-outline-success" style="display:none;">
+                <i class="bi bi-plus" style="margin-right: 10px;"></i>
+                Add New Specification
+            </button>
+            <button class="btn btn-sm btn-dark" type="submit" id="submit">
+                <i class="bi bi-send" style="margin-right: 10px;"></i>
+                Create
+            </button>
+            <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading...
+            </button>
+        </div>
+    </div>
+</form>
 
 <script>
     $(document).ready(function() {
         // Initialize validation and select components
-        _initializeMultipleFormsValidation();
         _componentSelect();
 
         // Fetch specifications based on the category ID
@@ -150,6 +110,7 @@
             if (specDiv) {
                 specDiv.find('select[name^="specification_key"]').select2({
                     width: '100%',
+                    placeholder: 'Select Specification Group/Key',
                     dropdownParent: $(specDiv)
                 });
             }
@@ -158,7 +119,7 @@
         }
 
         function createSpecificationDiv(specifications, index) {
-            const specDiv = $('<div>', {
+            const specDiv = $('<div class="col-md-12">', {
                 class: 'form-group mb-3 specification-group border border-3 py-2 col-md-12'
             });
             const label = $('<label>', {
@@ -283,6 +244,7 @@
             // Initialize Select2
             typeSelect.select2({
                 width: '100%',
+                placeholder: 'Select Type',
                 dropdownParent: $(typesDiv)
             });
 
@@ -391,6 +353,7 @@
             // Initialize Select2
             attrSelect.select2({
                 width: '100%',
+                placeholder: 'Select Attributes',
                 dropdownParent: $(attributesDiv)
             });
         }

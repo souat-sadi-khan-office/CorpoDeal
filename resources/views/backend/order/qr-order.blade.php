@@ -1,4 +1,4 @@
-@extends('backend.layouts.app', ['modal' => 'lg'])
+@extends('backend.layouts.app', ['modal' => 'md'])
 @section('title', 'QR Cart')
 @section('page_name')
     <div class="app-content-header">
@@ -14,13 +14,16 @@
                         <li class="breadcrumb-item active" aria-current="page">QR Cart</li>
                     </ol>
                 </div>
-                <div class="col-sm-6 text-end form-group mt-4 mb-3">
-                    <a id="content_management" href="javascript:;"
-                       data-url="{{ route('admin.customer.create') }}?from=offline-sale"
-                       class="btn btn-soft-success">
+                <div class="col-sm-6 text-end form-group">
+                    <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.create') }}?from=offline-sale" class="btn btn-sm btn-outline-dark">
                         <i class="bi bi-plus"></i>
-                        Create Customer
+                        Add New Customer
                     </a>
+                </div>
+                <div class="col-md-12 form-group">
+                    <div class="callout callout-success">
+                        <strong>Send QR</strong> to Customers with <strong>Cart Items</strong> - Add to Cart QR
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,22 +42,16 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-8 form-group mb-3">
+                    <div class="col-md-12 form-group mb-3">
                         <label for="user_id">Customer</label>
-                        <select name="user_id" id="customer_id" class="form-control" required></select>
+                        <select name="user_id" id="customer_id" class="form-control" required data-parsley-errors-container="#customer_id_error"></select>
+                        <span id="customer_id_error"></span>
                     </div>
 
-                    <div class="col-md-4 form-group mt-2">
-                        <div class="callout callout-success">
-                            <strong>Send QR</strong> to Customers with <strong>Cart Items</strong><br>
-                            - Add to Cart QR
-                        </div>
-                    </div>
                     <div class="col-md-12 mb-3 form-group">
                         <label for="product_id">Products </label>
-                        <select multiple id="product_id" class="form-control"></select>
-                        <small class="text-muted">For selecting multiple product at a time, use your keyboard
-                            <b>Control</b> key and click on the products that you want to add. </small>
+                        <select multiple name="product[]" id="product_id" class="form-control"></select>
+                        <small class="text-muted">For selecting multiple product at a time, use your keyboard <b>Control</b> key and click on the products that you want to add. </small>
                     </div>
                 </div>
             </div>
@@ -103,6 +100,7 @@
 @push('script')
     <script>
         _formValidation();
+        
         $('#customer_id').select2({
             width: '100%',
             placeholder: 'Select Customer',
@@ -128,91 +126,6 @@
 
         _componentRemoteModalLoadAfterAjax();
 
-        $(document).on('change', '#product_id', function () {
-            let value = $(this).val();
-            $('.product-area').html("");
-            $('.product_area').html(`
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            `);
-            $.ajax({
-                url: '/search/product-data',
-                method: 'POST',
-                data: {
-                    data: value
-                },
-                dataType: 'JSON',
-                cache: true,
-                success: function (data) {
-                    let content = `
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <th>Product</th>
-                                <th>Base Price</th>
-                                <th>Quantity</th>
-                                <th>Sub Total</th>
-                                <th>Current Stock</th>
-                                <th>Remove</th>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    $.each(data, function (index, product) {
-
-                        var row = `
-                            <tr class="main_row_` + index + `">
-                                <td>
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <img src="` + product.thumb_image + `" alt="` + product.name + `" width="50">
-                                        </div>
-                                        <div class="col">` + product.name + `</div>
-                                    </div>
-                                    <input type="hidden" name="product[` + index + `][id]" value="` + product.id + `">
-                                </td>
-                                <td>
-                                    ` + product.unit_price + `
-                                    <input type="hidden" id="product_price_` + index + `" name="product[` + index + `][unit_price]" value="` + product.unit_price + `">
-                                </td>
-                                <td>
-                                    <input type="number" data-id="` + index + `" name="product[` + index + `][quantity]" value="1" id="quantity_` + index + `" max="` + product.stock + `" min="1" class="quantity form-control number">
-                                </td>
-                                <td>
-                                    <span class="product_sub_total_price_` + index + `">
-                                        ` + product.unit_price + `
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="product_current_stock` + index + ` ` + (product.stock > 0 ? '' : 'text-danger') + `">
-                                        ` + product.stock + `
-                                    </span>
-                                </td>
-                                <td>
-                                    <a data-id=` + index + ` href="javascript:;" class="remove_item btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-x"></i>
-                                    </a>
-                                </td>
-                            </tr>`;
-
-                        content = content.concat(row);
-                    });
-
-                    footer = `
-                            </tbody>
-                        </table>
-                    `;
-                    content = content.concat(footer);
-
-                    $('.product_area').html("");
-                    $('.product_area').html(content);
-
-                }
-            })
-        });
-
         $(document).on('click', '.remove_item', function () {
             let id = $(this).data('id');
             $('.main_row_' + id).remove();
@@ -228,12 +141,99 @@
 
         });
 
+        $(document).on('change', '#product_id', function() {
+            let value = $(this).val();
+            $('.product-area').html("");
+            $('.product_area').html(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `);
+            $.ajax({
+                url: '/search/flash-deals-product-data',
+                method: 'POST',
+                data: {
+                    data: value
+                },
+                dataType: 'JSON',
+                cache: true,
+                success: function(data) {
+                    let content = `
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <th>Product</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Discount</th>
+                                <th>Discount Type</th>
+                            </thead>
+                            <tbody>
+                    `;
 
-        // for froducts
+                    $.each(data, function(index, product) {
+                        var row = `
+                            <tr>
+                                <td>
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <img src="${product.thumb_image}" 
+                                                alt="${product.name} ${index}" 
+                                                width="50" class="img-thumbnail">
+                                        </div>
+                                        <div class="col">
+                                            ${product.name}
+                                            <input type="hidden" name="product[${index}][id]" value="${product.id}">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    ${product.unit_price}
+                                    <input type="hidden" name="product[${index}][unit_price]" value="${product.unit_price}">
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                        name="product[${index}][quantity]" 
+                                        value="1" 
+                                        class="form-control number" min="1">
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                        name="product[${index}][discount]" 
+                                        value="0" 
+                                        id="discount_${index}" 
+                                        class="form-control number">
+                                </td>
+                                <td>
+                                    <select name="product[${index}][discount_type]" 
+                                            id="discount_type_${index}" 
+                                            class="form-control">
+                                        <option value="amount">Flat</option>
+                                        <option value="percentage">Percent</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                        content = content.concat(row);
+                    });
+                                
+                    footer = `
+                            </tbody>
+                        </table>
+                    `;
+                    content = content.concat(footer);
+
+                    $('.product_area').html("");
+                    $('.product_area').html(content);
+                }
+            })
+        })
+
         $('#product_id').select2({
             width: '100%',
             placeholder: 'Select products',
-            templateResult: formatProductOption,
+            templateResult: formatProductOption, 
             templateSelection: formatProductSelection,
             ajax: {
                 url: '/search/product',
@@ -249,7 +249,7 @@
 
                 processResults: function (response) {
                     return {
-                        results: response
+                        results:response
                     };
                 }
             }

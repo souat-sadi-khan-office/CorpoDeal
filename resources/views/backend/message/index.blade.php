@@ -17,15 +17,6 @@
                         <li class="breadcrumb-item active" aria-current="page">Contact Messages</li>
                     </ol>
                 </div>
-
-                {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('brand.create')) --}}
-                    {{-- <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.brand.create') }}" class="btn btn-soft-success">
-                            <i class="bi bi-plus"></i>
-                            Create New
-                        </a>
-                    </div> --}}
-                {{-- @endif --}}
             </div>
         </div>
     </div>

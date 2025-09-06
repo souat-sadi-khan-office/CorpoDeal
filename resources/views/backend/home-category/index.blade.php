@@ -10,7 +10,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
@@ -20,9 +20,9 @@
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('brand.create')) --}}
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.home-page-category.create') }}" class="btn btn-soft-success">
-                            <i class="bi bi-plus"></i>
-                            Create New
+                        <a href="{{ route('admin.home-page-category.create') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-plus" style="margin-right: 5px;"></i>
+                            Add New Category
                         </a>
                     </div>
                 {{-- @endif --}}
@@ -44,8 +44,8 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Alignment</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th style="text-align: left;">Status</th>
+                                <th style="text-align: left;">Actions</th>
                             </tr>
                         </thead>
                     </table>
@@ -80,7 +80,7 @@
                     {data: 'name', name: 'name'},
                     {data: 'category_id', name: 'category_id'},
                     {data: 'align', name: 'align'},
-                    {data: 'status', name: 'status'},
+                    {data: 'status', name: 'status', orderable: false, searchable: false},
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                 ],
                 order: [0, 'DESC']

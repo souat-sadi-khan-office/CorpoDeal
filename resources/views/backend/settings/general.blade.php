@@ -17,12 +17,20 @@
 
                             <div class="col-md-12 form-group mb-3">
                                 <label for="">Select Default Laptop Category</label>
-                                <select name="default_laptop_category" id="default_laptop_category" required
+                                <select name="default_laptop_category" id="default_laptop_category"
                                         class="form-control select">
                                     <option selected value="{{ get_settings('default_laptop_category') }}">Laptop
                                     </option>
                                 </select>
                                 <small class="text-muted">Please select the parent category for Laptop</small>
+                            </div>
+
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="negative_balance_module">Negative Balance Module</label>
+                                <select name="negative_balance_module" id="negative_balance_module" class="form-control">
+                                    <option value="1" {{ get_settings('negative_balance_module') == 1 ? 'selected' : '' }}>Active</option>
+                                    <option value="0" {{ get_settings('negative_balance_module') == 0 ? 'selected' : '' }}>Inactive</option>
+                                </select>
                             </div>
 
                             <div class="col-md-12 form-group mb-3">
@@ -161,7 +169,10 @@
                                     </option>
                                 </select>
                             </div>
-
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="manual_payment_instruction">Manual Payment Instructions <span class="text-danger">*</span></label>
+                                <textarea name="manual_payment_instruction" id="manual_payment_instruction" class="form-control" rows="5" required> {{ get_settings('manual_payment_instruction') ?? ''}}</textarea>
+                            </div>
                             <div class="col-md-12 form-group text-end">
                                 <button type="submit" id="submit" class="btn btn-soft-success">
                                     <i class="bi bi-send"></i>
@@ -184,6 +195,53 @@
 
         <div class="col-md-5">
             <div class="row">
+
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h5 mb-0">Store Pickup</h2>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('admin.settings.update') }}" method="POST" class="ajax_form_store_pickup">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-12 form-group mb-3">
+                                        <label for="enable_store_pickup">Store Pickup <span class="text-danger">*</span></label>
+                                        <select name="enable_store_pickup" id="enable_store_pickup" class="form-control select" >
+                                            <option {{ get_settings('enable_store_pickup') == 0 ? 'selected' : '' }} value="0">Disabled</option>
+                                            <option {{ get_settings('enable_store_pickup') == 1 ? 'selected' : '' }} value="1">Enabled</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-12 mb-3 form-group">
+                                        <label for="store_pickup_fee">Store PickUp Fee <span class="text-danger">* </span></label>
+                                        <input type="text" name="store_pickup_fee" id="store_pickup_fee" class="form-control number" required value="{{ round(covert_to_defalut_currency(get_settings('store_pickup_fee')),2) }}">
+                                    </div>
+
+                                    <div class="col-md-12 mb-3 form-group">
+                                        <label for="store_pickup_address">Store PickUp Address <span class="text-danger">* </span></label>
+                                        <textarea name="store_pickup_address" id="store_pickup_address" cols="30" rows="3" class="form-control">{{ get_settings('store_pickup_address') }}</textarea>
+                                    </div>
+
+                                    <div class="col-md-12 form-group text-end">
+                                        <button type="submit" id="store_pickup_submit" class="btn btn-soft-success">
+                                            <i class="bi bi-send"></i>
+                                            Update
+                                        </button>
+                                        <button class="btn btn-soft-warning" style="display: none;" id="store_pickup_submitting"
+                                                type="button" disabled>
+                                            <span class="spinner-border spinner-border-sm" role="status"
+                                                  aria-hidden="true"></span>
+                                            Loading...
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12">
                     <div class="card mb-4">
                         <div class="card-header">
@@ -272,6 +330,44 @@
                                             Update
                                         </button>
                                         <button class="btn btn-soft-warning" style="display: none;" id="ActivityLOG"
+                                                type="button" disabled>
+                                            <span class="spinner-border spinner-border-sm" role="status"
+                                                  aria-hidden="true"></span>
+                                            Loading...
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h2 class="h5 mb-0">SslCommerz Extra Charge (%)</h2>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('admin.settings.update') }}" method="POST"
+                                  enctype="multipart/form-data" class="ajax_form_ssl">
+                                @csrf
+                                <div class="row">
+                                    <label for="ssl_charge">+ Charge (%) <span
+                                            class="text-danger">*</span></label>
+                                    <div class="col-md-12 form-group input-group mb-3">
+
+                                        <input type="text" name="ssl_charge" id="activity_log_delete_day"
+                                               value="{{get_settings('ssl_charge')}}"
+                                               class="form-control">
+                                        <span class="input-group-text" id="ssl_charge">%</span>
+                                    </div>
+
+                                    <div class="col-md-12 form-group text-end">
+                                        <button type="submit" id="ssl" class="btn btn-soft-success">
+                                            <i class="bi bi-send"></i>
+                                            Update
+                                        </button>
+                                        <button class="btn btn-soft-warning" style="display: none;" id="ssl_charge"
                                                 type="button" disabled>
                                             <span class="spinner-border spinner-border-sm" role="status"
                                                   aria-hidden="true"></span>
@@ -484,10 +580,32 @@
 @endsection
 @push('script')
     <script src="{{ asset('backend/assets/js/dropify.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js" integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <script>
+        let _initCkEditor = function(editorName, startupFocus = false, editorHeight = false) {
+            CKEDITOR.replace(editorName, {
+                filebrowserUploadUrl: "{{ route('admin.editor.upload', ['_token' => csrf_token() ]) }}",
+                filebrowserUploadMethod: 'form',
+                height: editorHeight ? editorHeight : '',
+                startupFocus: startupFocus == 1 ? true : false,
+                removePlugins: 'exportpdf',
+                toolbar: [
+                    ['Format', 'Font', 'FontSize', '-'],
+                    ['Bold', 'Italic', 'Underline', 'Table', '-', 'NumberedList', 'BulletedList', '-'],
+                    ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+                    ['Link', 'Blockquote', 'Maximize', 'Image', 'TextColor', '-', 'Source']
+                ],
+                contentsCss: [
+                    'https://cdn.ckeditor.com/4.16.0/standard-all/contents.css',
+                    '/backend/assets/css/ck-editor-custom.css'
+                ],
+                bodyClass: 'ckeditor-dark-mode',
+            });
+        }
+    </script>
     <script>
         _componentSelect();
         _formValidation();
-
+        _initCkEditor('manual_payment_instruction');
         $('.dropify').dropify({
             imgFileExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
         });
@@ -678,6 +796,70 @@
 
                     $('#Activity').show();
                     $('#ActivityLOG').hide();
+                },
+
+            });
+        });
+        $('.ajax_form_ssl').on('submit', function (e) {
+            e.preventDefault();
+
+            $('#ssl').hide();
+            $('#ssl_charge').show();
+
+            $(".ajax_error").remove();
+
+            var submit_url = $('.ajax_form_ssl').attr('action');
+            var formData = new FormData($(".ajax_form_ssl")[0]);
+
+            //Start Ajax
+            $.ajax({
+                url: submit_url,
+                type: 'POST',
+                data: formData,
+                contentType: false, // The content type used when sending data to the server.
+                cache: false, // To unable request pages to be cached
+                processData: false,
+                dataType: 'JSON',
+                success: function (data) {
+                    console.log(data)
+                    if (!data.status) {
+                        if (data.validator) {
+                            for (const [key, messages] of Object.entries(data.message)) {
+                                messages.forEach(message => {
+                                    toastr.error(message);
+                                });
+                            }
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    } else {
+                        toastr.success(data.message);
+
+                        $('.ajax_form_ssl')[0].reset();
+                        if (data.goto) {
+                            setTimeout(function () {
+
+                                window.location.href = data.goto;
+                            }, 500);
+                        }
+
+                        if (data.load) {
+                            setTimeout(function () {
+
+                                window.location.href = "";
+                            }, 500);
+                        }
+
+                        if (data.load) {
+                            setTimeout(function () {
+
+                                window.location.href = "";
+                            }, 1000);
+                        }
+                    }
+
+                    $('#ssl').show();
+                    $('#ssl_charge').hide();
                 },
 
             });
@@ -985,5 +1167,110 @@
         };
 
         _formValidation7();
+
+        var _formValidation8 = function () {
+            if ($('.ajax_form_store_pickup').length > 0) {
+                $('.ajax_form_store_pickup').parsley().on('field:validated', function () {
+                    var ok = $('.parsley-error').length === 0;
+                    $('.bs-callout-info').toggleClass('hidden', !ok);
+                    $('.bs-callout-warning').toggleClass('hidden', ok);
+                });
+            }
+
+            $('.ajax_form_store_pickup').on('submit', function (e) {
+                e.preventDefault();
+
+                $('#store_pickup_submit').hide();
+                $('#store_pickup_submitting').show();
+
+                $(".ajax_error").remove();
+
+                var submit_url = $('.ajax_form_store_pickup').attr('action');
+                var formData = new FormData($(".ajax_form_store_pickup")[0]);
+
+                //Start Ajax
+                $.ajax({
+                    url: submit_url,
+                    type: 'POST',
+                    data: formData,
+                    contentType: false, // The content type used when sending data to the server.
+                    cache: false, // To unable request pages to be cached
+                    processData: false,
+                    dataType: 'JSON',
+                    success: function (data) {
+                        console.log(data)
+                        if (!data.status) {
+                            if (data.validator) {
+                                for (const [key, messages] of Object.entries(data.message)) {
+                                    messages.forEach(message => {
+                                        toastr.error(message);
+                                    });
+                                }
+                            } else {
+                                toastr.error(data.message);
+                            }
+                        } else {
+                            toastr.success(data.message);
+
+                            $('.ajax_form_store_pickup')[0].reset();
+                            if (data.goto) {
+                                setTimeout(function () {
+
+                                    window.location.href = data.goto;
+                                }, 500);
+                            }
+
+                            if (data.load) {
+                                setTimeout(function () {
+
+                                    window.location.href = "";
+                                }, 500);
+                            }
+
+                            if (data.load) {
+                                setTimeout(function () {
+
+                                    window.location.href = "";
+                                }, 1000);
+                            }
+                        }
+
+                        $('#store_pickup_submit').show();
+                        $('#store_pickup_submitting').hide();
+                    },
+                    error: function (data) {
+                        var jsonValue = $.parseJSON(data.responseText);
+                        const errors = jsonValue.errors;
+                        if (errors) {
+                            var i = 0;
+                            $.each(errors, function (key, value) {
+                                const first_item = Object.keys(errors)[i]
+                                const message = errors[first_item][0];
+                                if ($('#' + first_item).length > 0) {
+                                    $('#' + first_item).parsley().removeError('required', {
+                                        updateClass: true
+                                    });
+                                    $('#' + first_item).parsley().addError('required', {
+                                        message: value,
+                                        updateClass: true
+                                    });
+                                }
+                                // $('#' + first_item).after('<div class="ajax_error" style="color:red">' + value + '</div');
+                                toastr.error(value);
+                                i++;
+
+                            });
+                        } else {
+                            toastr.warning(jsonValue.message);
+                        }
+
+                        $('#store_pickup_submit').show();
+                        $('#store_pickup_submitting').hide();
+                    }
+                });
+            });
+        };
+
+        _formValidation8();
     </script>
 @endpush

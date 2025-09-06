@@ -20,21 +20,21 @@
                     <h1 class="h3 mb-0">Update product information</h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.product.index') }}">
+                            <a style="color: #000;" href="{{ route('admin.product.index') }}">
                                 Product Management
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Update product information</li>
+                        <li class="breadcrumb-item active" aria-current="page">Update Product Information</li>
                     </ol>
                 </div>
                 <div class="col-sm-6 text-end">
                     @if (Auth::guard('admin')->user()->hasPermissionTo('product.view'))
-                        <a href="{{ route('admin.product.index') }}" class="btn btn-soft-danger">
+                        <a href="{{ route('admin.product.index') }}" class="btn btn-sm btn-soft-danger">
                             <i class="bi bi-backspace"></i>
                             Back
                         </a>
@@ -67,7 +67,7 @@
                                     <!-- component_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="component_type">Component Type</label>
-                                        <select name="component_type" id="component_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="component_type" id="component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->details->component_type == 'core' ? 'selected' : '' }} value="core">Core Components</option>
                                             <option {{ $model->details->component_type == 'peri' ? 'selected' : '' }} value="peri">Peripherals & Others</option>
@@ -77,8 +77,8 @@
 
                                 <div class="row core-component-area" style="display: {{ $model->details->component_type == 'core' ? 'block' : 'none' }};">
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="core_component_type">Componnt Type</label>
-                                        <select name="core_component_type" id="core_component_type" class="form-control select" data-placeholder="Select one">
+                                        <label for="core_component_type">Component Type</label>
+                                        <select name="core_component_type" id="core_component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->comp_type == 'processor' ? 'selected' : '' }} value="processor">Processor</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->comp_type == 'cpu_cooler' ? 'selected' : '' }} value="cpu_cooler">CPU Cooler</option>
@@ -94,8 +94,8 @@
 
                                 <div class="row peri-component-area" style="display: {{ $model->details->component_type == 'peri' ? 'block' : 'none' }};">
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="peri_component_type">Componnt Type</label>
-                                        <select name="peri_component_type" id="peri_component_type" class="form-control select" data-placeholder="Select one">
+                                        <label for="peri_component_type">Component Type</label>
+                                        <select name="peri_component_type" id="peri_component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->details->peri_component_type == 'monitor' ? 'selected' : '' }} value="monitor">Monitor</option>
                                             <option {{ $model->details->peri_component_type == 'casing_fan' ? 'selected' : '' }} value="casing_fan">Casing Fan</option>
@@ -113,7 +113,7 @@
                                     <!-- cpu_brand -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="cpu_brand">CPU Brand</label>
-                                        <select name="cpu_brand" id="cpu_brand" class="form-control select" data-placeholder="Select one">
+                                        <select name="cpu_brand" id="cpu_brand" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_brand == 'intel' ? 'selected' : '' }} value="intel">Intel</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_brand == 'amd' ? 'selected' : '' }} value="amd">AMD</option>
@@ -123,7 +123,7 @@
                                     <!-- cpu_generation -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="cpu_generation">CPU Generation</label>
-                                        <select name="cpu_generation" id="cpu_generation" class="form-control select" data-placeholder="Select one">
+                                        <select name="cpu_generation" id="cpu_generation" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '7' ? 'selected' : '' }}  value="7">7th Gen</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '8' ? 'selected' : '' }}  value="8">8th Gen</option>
@@ -134,8 +134,8 @@
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '13' ? 'selected' : '' }}  value="13">13th Gen</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '14' ? 'selected' : '' }}  value="14">14th Gen</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '15' ? 'selected' : '' }}  value="15">15th Gen</option>
-                                            <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '5000' ? 'selected' : '' }}  value="5000">5000 Serices Processor</option>
-                                            <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '7000' ? 'selected' : '' }}  value="7000">7000 Serices Processor</option>
+                                            <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '5000' ? 'selected' : '' }}  value="5000">5000 Series Processor</option>
+                                            <option {{ $model->pc_builder && $model->pc_builder->cpu_generation == '7000' ? 'selected' : '' }}  value="7000">7000 Series Processor</option>
                                         </select>
                                     </div>
 
@@ -158,7 +158,7 @@
                                     <!-- mb_supported_cpu_brand -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_supported_cpu_brand">Supported CPU Brand</label>
-                                        <select name="mb_supported_cpu_brand" id="mb_supported_cpu_brand" class="form-control select">
+                                        <select name="mb_supported_cpu_brand" id="mb_supported_cpu_brand" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_supported_cpu_brand == 'intel' ? 'selected' : '' }} value="intel">Intel</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_supported_cpu_brand == 'amd' ? 'selected' : '' }} value="amd">AMD</option>
@@ -168,7 +168,7 @@
                                     <!-- mb_cpu_generation -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_cpu_generation">Supported CPU Generation</label>
-                                        <select name="mb_cpu_generation" id="mb_cpu_generation" class="form-control select" data-placeholder="Select one">
+                                        <select name="mb_cpu_generation" id="mb_cpu_generation" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '7' ? 'selected' : '' }} value="7">7th Gen</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '8' ? 'selected' : '' }} value="8">8th Gen</option>
@@ -179,8 +179,8 @@
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '13' ? 'selected' : '' }} value="13">13th Gen</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '14' ? 'selected' : '' }} value="14">14th Gen</option>
                                             <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '15' ? 'selected' : '' }} value="15">15th Gen</option>
-                                            <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '5000' ? 'selected' : '' }} value="5000">5000 Serices Processor</option>
-                                            <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '7000' ? 'selected' : '' }} value="7000">7000 Serices Processor</option>
+                                            <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '5000' ? 'selected' : '' }} value="5000">5000 Series Processor</option>
+                                            <option {{ $model->pc_builder &&  $model->pc_builder->mb_cpu_generation == '7000' ? 'selected' : '' }} value="7000">7000 Series Processor</option>
                                         </select>
                                     </div>
 
@@ -193,7 +193,7 @@
                                     <!-- mb_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_form_factor">Form Factor</label>
-                                        <select name="mb_form_factor" id="mb_form_factor" class="form-control select">
+                                        <select name="mb_form_factor" id="mb_form_factor" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_form_factor == 'atx' ? 'selected' : '' }} value="atx">ATX</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_form_factor == 'matx' ? 'selected' : '' }} value="matx">MATX</option>
@@ -205,7 +205,7 @@
                                     <!-- mb_supported_memory_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_supported_memory_type">Supported memory type</label>
-                                        <select name="mb_supported_memory_type" id="mb_supported_memory_type" class="form-control select">
+                                        <select name="mb_supported_memory_type" id="mb_supported_memory_type" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_supported_memory_type == 'DDR 3' ? 'selected' : '' }} value="DDR 3">DDR 3</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_supported_memory_type == 'DDR 4' ? 'selected' : '' }} value="DDR 4">DDR 4</option>
@@ -222,7 +222,7 @@
                                     <!-- mb_number_of_ram -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_number_of_ram">Number of RAM Channel</label>
-                                        <select name="mb_number_of_ram" id="mb_number_of_ram" class="form-control select">
+                                        <select name="mb_number_of_ram" id="mb_number_of_ram" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_number_of_ram == '1' ? 'selected' : '' }} value="1">Single</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_number_of_ram == '2' ? 'selected' : '' }} value="2">Dual</option>
@@ -233,7 +233,7 @@
                                     <!-- mb_xmp_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_xmp_support">XMP Support?</label>
-                                        <select name="mb_xmp_support" id="mb_xmp_support" class="form-control select">
+                                        <select name="mb_xmp_support" id="mb_xmp_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_xmp_support == '1' ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_xmp_support == '0' ? 'selected' : '' }} value="0">No</option>
@@ -243,7 +243,7 @@
                                     <!-- mb_m2_storage_support -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="mb_m2_storage_support">M.2 Storage Support ?</label>
-                                        <select name="mb_m2_storage_support" id="mb_m2_storage_support" class="form-control select">
+                                        <select name="mb_m2_storage_support" id="mb_m2_storage_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_m2_storage_support == '1' ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_m2_storage_support == '0' ? 'selected' : '' }} value="0">No</option>
@@ -259,7 +259,7 @@
                                     <!-- mb_sata_storage_support -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="mb_sata_storage_support">SATA Storage Support ?</label>
-                                        <select name="mb_sata_storage_support" id="mb_sata_storage_support" class="form-control select">
+                                        <select name="mb_sata_storage_support" id="mb_sata_storage_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_sata_storage_support == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_sata_storage_support == 0 ? 'selected' : '' }} value="0">No</option>
@@ -275,7 +275,7 @@
                                     <!-- mb_lic_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_lic_support">Liquid Cooler Support?</label>
-                                        <select name="mb_lic_support" id="mb_lic_support" class="form-control select">
+                                        <select name="mb_lic_support" id="mb_lic_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_lic_support == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_lic_support == 0 ? 'selected' : '' }} value="0">No</option>
@@ -284,8 +284,8 @@
 
                                     <!-- mb_pcie_slot -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="mb_pcie_slot">Graphics Card Supportd PCIe Slot</label>
-                                        <select name="mb_pcie_slot" id="mb_pcie_slot" class="form-control select" data-placeholder="Select one">
+                                        <label for="mb_pcie_slot">Graphics Card Supported PCIe Slot</label>
+                                        <select name="mb_pcie_slot" id="mb_pcie_slot" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_pcie_slot == 'pcie-3' ? 'selected' : '' }} value="pcie-3">PCIe 3</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->mb_pcie_slot == 'pcie-4' ? 'selected' : '' }} value="pcie-4">PCIe 4</option>
@@ -298,7 +298,7 @@
                                     <!-- ram_memory_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="ram_memory_type">Memory Type</label>
-                                        <select name="ram_memory_type" id="ram_memory_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="ram_memory_type" id="ram_memory_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->ram_memory_type == 'DDR 3' ? 'selected' : '' }} value="DDR 3">DDR 3</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->ram_memory_type == 'DDR 4' ? 'selected' : '' }} value="DDR 4">DDR 4</option>
@@ -315,7 +315,7 @@
                                     <!-- ram_xmp_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="ram_xmp_support">XMP Supported?</label>
-                                        <select name="ram_xmp_support" id="ram_xmp_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="ram_xmp_support" id="ram_xmp_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->ram_xmp_support == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->ram_xmp_support == 0 ? 'selected' : '' }} value="0">No</option>
@@ -334,7 +334,7 @@
                                     <!-- storage_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_type">Storage Type</label>
-                                        <select name="storage_type" id="storage_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_type" id="storage_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_type == 'hdd' ? 'selected' : '' }} value="hdd">HardDisk</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_type == 'ssd' ? 'selected' : '' }} value="ssd">SSD</option>
@@ -344,7 +344,7 @@
                                     <!-- storage_m2_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_m2_support">M.2 Supported?</label>
-                                        <select name="storage_m2_support" id="storage_m2_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_m2_support" id="storage_m2_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_m2_support == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_m2_support == 0 ? 'selected' : '' }} value="0">No</option>
@@ -354,7 +354,7 @@
                                     <!-- storage_sata_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_sata_support">SATA Supported?</label>
-                                        <select name="storage_sata_support" id="storage_sata_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_sata_support" id="storage_sata_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_sata_support == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->storage_sata_support == 0 ? 'selected' : '' }} value="0">No</option>
@@ -375,8 +375,8 @@
                                 <div class="row core-component-item-area" id="gCard_area" style="display: {{ $model->pc_builder && $model->pc_builder->comp_type == 'graphics-card' ? 'block' : 'none' }};">
                                     <!-- gc_supported_pcie_slot -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="gc_supported_pcie_slot">Supportd PCIe Slot</label>
-                                        <select name="gc_supported_pcie_slot" id="gc_supported_pcie_slot" class="form-control select" data-placeholder="Select one">
+                                        <label for="gc_supported_pcie_slot">Supported PCIe Slot</label>
+                                        <select name="gc_supported_pcie_slot" id="gc_supported_pcie_slot" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->gc_supported_pcie_slot == 'pcie-2' ? 'selected' : '' }} value="pcie-2">PCIe 2</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->gc_supported_pcie_slot == 'pcie-3' ? 'selected' : '' }} value="pcie-3">PCIe 3</option>
@@ -386,8 +386,8 @@
                                     </div>
                                     <!-- gc_supported_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="gc_supported_form_factor">Supportd Form Factor</label>
-                                        <select name="gc_supported_form_factor" id="gc_supported_form_factor" class="form-control select" data-placeholder="Select one">
+                                        <label for="gc_supported_form_factor">Supported Form Factor</label>
+                                        <select name="gc_supported_form_factor" id="gc_supported_form_factor" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->gc_supported_form_factor == 'atx' ? 'selected' : '' }} value="atx">ATX</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->gc_supported_form_factor == 'matx' ? 'selected' : '' }} value="matx">MATX</option>
@@ -416,7 +416,7 @@
                                     <!-- casing_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_form_factor">Form Factor</label>
-                                        <select name="casing_form_factor" id="casing_form_factor" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_form_factor" id="casing_form_factor" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_form_factor == 'atx' ? 'selected' : '' }} value="atx">ATX</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_form_factor == 'matx' ? 'selected' : '' }} value="matx">MATX</option>
@@ -428,7 +428,7 @@
                                     <!-- casing_psu_installed -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_psu_installed">PSU Installed</label>
-                                        <select name="casing_psu_installed" id="casing_psu_installed" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_psu_installed" id="casing_psu_installed" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_psu_installed == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_psu_installed == 0 ? 'selected' : '' }} value="0">No</option>
@@ -438,7 +438,7 @@
                                     <!-- casing_fan_installed -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_fan_installed">Fan Installed</label>
-                                        <select name="casing_fan_installed" id="casing_fan_installed" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_fan_installed" id="casing_fan_installed" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_fan_installed == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->pc_builder && $model->pc_builder->casing_fan_installed == 0 ? 'selected' : '' }} value="0">No</option>
@@ -475,13 +475,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Information</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Product Information</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="add_to_pc_build">Add this product as PC Builder item?</label>
-                                        <select name="add_to_pc_build" id="add_to_pc_build" class="form-control">
+                                        <select name="add_to_pc_build" id="add_to_pc_build" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->details->pc_builder_item == 1 ? 'selected' : '' }} value="1">Yes</option>
                                             <option {{ $model->details->pc_builder_item == 0 ? 'selected' : '' }} value="0">No</option>
                                         </select>
@@ -489,13 +491,13 @@
 
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="points">Points <span class="text-danger">*</span></label>
-                                        <input type="text" name="points" id="points" class="form-control number" value="{{ $model->points ? $model->points : 0 }}" required>
+                                        <input type="text" name="points" id="points" class="form-control number" value="{{ $model->details->points }}" required>
                                     </div>
 
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="product_type">Product Type <span class="text-danger">*</span></label>
-                                        <select name="product_type" id="product_type" class="form-control">
-                                            <option {{ $model->product_type == 'digital' ? 'selected' : '' }} value="digital">Digital</option>
+                                        <select name="product_type" id="product_type" class="form-control select" data-minimum-results-for-search="Infinity">
+                                            <option disabled {{ $model->product_type == 'digital' ? 'selected' : '' }} value="digital">Digital</option>
                                             <option {{ $model->product_type == 'physical' ? 'selected' : '' }} value="physical">Physical</option>
                                         </select>
                                     </div>
@@ -537,30 +539,14 @@
                                         </select>
                                     </div>
 
-                                    @if ($model->brand_type_id != null)
-                                        <div class="col-md-12 form-group mb-3" id="brand_type_area">
-                                            <label for="brand_type_id">Brand type</label>
-                                            <select name="brand_type_id" id="brand_type_id" class="form-control select">
-                                                @if ($brandTypes)
-                                                    @foreach ($brandTypes as $brandType)
-                                                        <option {{ $brandType->id == $model->brand_type_id ? 'selected' : '' }} value="{{ $brandType->id }}">{{ $brandType->name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                    @else
-                                        <div class="col-md-12 form-group mb-3" style="display:none;" id="brand_type_area">
-                                            <label for="brand_type_id">Brand type</label>
-                                            <select name="brand_type_id" id="brand_type_id" class="form-control"></select>
-                                        </div>
-                                    @endif
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="unit">Unit</label>
-                                        <select name="unit" id="unit" class="form-control select" >
+                                        <select name="unit" id="unit" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->details->unit == 'piece' ? 'selected' : '' }} value="piece">Piece</option>
                                             <option {{ $model->details->unit == 'kg' ? 'selected' : '' }} value="kg">KG</option>
                                         </select>
                                     </div>
+
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="minus_stock">Minus Stock <span class="text-danger">*</span></label>
                                         <input type="number" name="minus_stock" min="0" max="9999999999" id="minus_stock" class="form-control" value="{{$model->minus_stock}}">
@@ -574,16 +560,18 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Images</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Product Images</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="images">Gallery Images (540 X 600)</label>
+                                        <label for="images">Gallery Images (1:1)</label>
                                         <input type="file" name="images[]" id="images" class="form-control" multiple
                                             data-max-file-size="2M">
                                         <small class="text-muted">These images are visible in product details page gallery.
-                                            Use 600x600 sizes images.</small>
+                                            Use 1:1 sizes images.</small>
                                     </div>
 
                                     <div id="imagePreview" class="col-md-12.mb-3">
@@ -600,11 +588,11 @@
                                     </div>
 
                                     <div class="col-md-12 form-group">
-                                        <label for="thumb_image">Thumbnail Image (540 X 600)</label>
+                                        <label for="thumb_image">Thumbnail Image (500 X 500)</label>
                                         <input type="file" name="thumb_image" id="thumb_image"
                                             class="form-control dropify" data-max-file-size="2M"
                                             data-default-file="{{ $model->thumb_image ? asset($model->thumb_image) : '' }}">
-                                        <small class="text-muted">This image is visible in all product box. Use 300x300
+                                        <small class="text-muted">This image is visible in all product box. Use 500X500px
                                             sizes image. Keep some blank space around main object of your image as we had to
                                             crop some edge in different devices to make it responsive.</small>
                                     </div>
@@ -617,22 +605,22 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Videos</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Product Videos</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="video_provider">Video Provider</label>
-                                        <input type="text" name="video_provider" id="video_provider"
-                                            class="form-control" placeholder="YouTube" value="{{ $model->video_provider }}">
+                                        <input type="text" name="video_provider" id="video_provider" class="form-control" placeholder="YouTube" value="{{ $model->details->video_provider }}">
                                     </div>
 
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="video_link">Video Link</label>
-                                        <textarea name="video_link" id="video_link" cols="30" rows="4" class="form-control">{{ $model->video_link }}</textarea>
-                                            <small class="text-muted">Use the proper embed code from youtube.</small>
+                                        <textarea name="video_link" id="video_link" cols="30" rows="4" class="form-control">{{ $model->details->video_link }}</textarea>
+                                        <small class="text-muted">Use the proper embed code from youtube.</small>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -642,7 +630,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Description</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Product Description</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -658,19 +648,19 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">SEO Meta Tags</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>SEO Meta Tags</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="site_title">Site title</label>
-                                        <input type="text" name="site_title" id="site_title" class="form-control"
-                                            placeholder="Site Title" value="{{ $model->details->site_title }}">
+                                        <input type="text" name="site_title" id="site_title" class="form-control" placeholder="Site Title" value="{{ $model->details->site_title }}">
                                     </div>
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="meta_title">Meta title</label>
-                                        <input type="text" name="meta_title" id="meta_title" class="form-control"
-                                            placeholder="Meta Title" value="{{ $model->details->meta_title }}">
+                                        <input type="text" name="meta_title" id="meta_title" class="form-control" placeholder="Meta Title" value="{{ $model->details->meta_title }}">
                                     </div>
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="meta_keyword">Meta keyword</label>
@@ -680,11 +670,7 @@
                                         <label for="meta_description">Meta description</label>
                                         <textarea name="meta_description" id="meta_description" cols="30" rows="4" class="form-control">{{ $model->details->meta_description }}</textarea>
                                     </div>
-                                    <div class="col-md-6 form-group mb-3">
-                                        <label for="meta_article_tags">Meta article tag</label>
-                                        <textarea name="meta_article_tags" id="meta_article_tags" cols="30" rows="4" class="form-control">{{ $model->details->meta_article_tags }}</textarea>
-                                    </div>
-                                    <div class="col-md-6 form-group mb-3">
+                                    <div class="col-md-12 form-group mb-3">
                                         <label for="meta_script_tags">Meta script tag</label>
                                         <textarea name="meta_script_tags" id="meta_script_tags" cols="30" rows="4" class="form-control">{{ $model->details->meta_script_tags }}</textarea>
                                     </div>
@@ -697,7 +683,9 @@
                     <div style="display: {{ $model->category->hasParentCategory(get_settings('default_laptop_category')) ? 'block' : 'none'}}" class="col-md-12 mb-4 laptop-finder-module">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Laptop Finder</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Laptop Finder</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -766,13 +754,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Discount</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Discount</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_discounted">Discount Available</label>
-                                        <select name="is_discounted" id="is_discounted" class="form-control">
+                                        <select name="is_discounted" id="is_discounted" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->is_discounted == 0 ? 'selected' : '' }} value="0">No
                                             </option>
                                             <option {{ $model->is_discounted == 1 ? 'selected' : '' }} value="1">Yes
@@ -781,8 +771,7 @@
                                     </div>
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="discount_type">Discount Type </label>
-                                        <select name="discount_type" id="discount_type" class="form-control"
-                                            {{ $model->is_discounted == 0 ? 'disabled' : '' }}>
+                                        <select name="discount_type" id="discount_type" class="form-control select" data-minimum-results-for-search="Infinity" {{ $model->is_discounted == 0 ? 'disabled' : '' }}>
                                             <option {{ $model->discount_type == 'amount' ? 'selected' : '' }}
                                                 value="amount">Amount</option>
                                             <option {{ $model->discount_type == 'amount' ? 'percentage' : '' }}
@@ -817,19 +806,21 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Status</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Status</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
-                                        <select name="status" id="status" class="form-control">
+                                        <select name="status" id="status" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->status == '1' ? 'selected' : '' }} value="1">Active</option>
                                             <option {{ $model->status == '0' ? 'selected' : '' }} value="0">Inactive
                                         </select>
                                     </div>
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="stage">Stage </label>
-                                        <select name="stage" id="stage" class="form-control select">
+                                        <select name="stage" id="stage" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->stage == 'normal' ? 'selected' : '' }} value="normal">Normal</option>
                                             <option {{ $model->stage == 'pre-order' ? 'selected' : '' }} value="pre-order">Pre Order</option>
                                             <option {{ $model->stage == 'upcoming' ? 'selected' : '' }} value="upcoming">Upcoming</option>
@@ -844,13 +835,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Feature Product</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Feature Product</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_featured">Feature Product</label>
-                                        <select name="is_featured" id="is_featured" class="form-control">
+                                        <select name="is_featured" id="is_featured" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->is_featured == 0 ? 'selected' : '' }} value="0">No
                                             </option>
                                             <option {{ $model->is_featured == 1 ? 'selected' : '' }} value="1">Yes
@@ -866,13 +859,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Return Policy</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Return Policy</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_returnable">Is Returnable</label>
-                                        <select name="is_returnable" id="is_returnable" class="form-control">
+                                        <select name="is_returnable" id="is_returnable" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option {{ $model->is_returnable == 0 ? 'selected' : '' }} value="0">No
                                             </option>
                                             <option {{ $model->is_returnable == 1 ? 'selected' : '' }} value="1">Yes
@@ -899,7 +894,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Low Stock Quantity Warning</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Low Stock Quantity Warning</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -918,19 +915,29 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Cash on Delivery</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Cash on Delivery</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <!-- shipping_cost -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="shipping_cost">Shipping Cost <span class="text-danger">*</span></label>
-                                        <input type="text" name="shipping_cost" id="shipping_cost" class="form-control" value="{{ covert_to_defalut_currency($model->details->shipping_cost) }}" required >
+                                        <input type="text" name="shipping_cost" id="shipping_cost" class="form-control" value="{{ covert_to_defalut_currency($model->details->shipping_cost != '' ? $model->details->shipping_cost : 0) }}" required >
+                                    </div>
+
+                                    <div class="col-md-12 form-group mb-3">
+                                        <label for="delivery_type">Delivery Type</label>
+                                        <select name="delivery_type" id="delivery_type" class="form-control select" data-minimum-results-for-search="Infinity">
+                                            <option {{ $model->details ? ($model->details->delivery_type == 'available' ? 'selected' : '') : 0 }} value="available">Available</option>
+                                            <option {{ $model->details ? ($model->details->delivery_type == 'overseas' ? 'selected' : '') : 0 }} value="overseas">Shipped from Overseas</option>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="cash_on_delivery">Cash on Delivery</label>
-                                        <select name="cash_on_delivery" id="case_on_deliver" class="form-control">
+                                        <select name="cash_on_delivery" id="case_on_deliver" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option
                                                 {{ $model->details ? ($model->details->cash_on_delivery == 1 ? 'selected' : '') : 0 }}
                                                 value="1">Available</option>
@@ -948,7 +955,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Estimate Shipping Time</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Estimate Shipping Time</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -970,7 +979,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Vat & TAX</h2>
+                                <h2 class="h6 mb-0">
+                                    <strong>Vat & TAX</strong>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 @foreach ($model->taxes as $tax)
@@ -985,10 +996,10 @@
                                         <div class="col-md-6 form-group mb-3">
                                             <label for="tax_type_{{ $tax->id }}">Type</label>
                                             <select name="tax_types[]" id="tax_type_{{ $tax->id }}"
-                                                class="form-control">
+                                                class="form-control select" data-minimum-results-for-search="Infinity">
                                                 <option {{ $tax->tax_type == 'amount' ? 'select' : '' }} value="flat">
                                                     Flat</option>
-                                                <option {{ $tax->tax_type == 'pencent' ? 'select' : '' }} value="percent">
+                                                <option {{ $tax->tax_type == 'percent' ? 'select' : '' }} value="percent">
                                                     Percent</option>
                                             </select>
                                         </div>
@@ -1014,13 +1025,16 @@
     </form>
 
     <input type="hidden" id="default_laptop_category" value="{{ get_settings('default_laptop_category') }}">
-
 @endsection
 
 @push('script')
     <script src="{{ asset('backend/assets/js/dropify.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/tempus-dominus.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/pc-builder.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/juejin.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
     <script>
         $(document).ready(function() {
             _componentSelect();
@@ -1149,6 +1163,22 @@
                     }
                 });
             });
+        });
+
+        const editor = CodeMirror.fromTextArea(document.getElementById('meta_script_tags'), {
+            mode: "javascript",
+            lineNumbers: true,
+            theme: "juejin",
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            indentUnit: 4,
+            tabSize: 4,
+            autoSave: true,
+            lineWrapping: true
+        });
+
+        editor.on("change", () => {
+            editor.save();
         });
     </script>
     <script src="{{ asset('backend/assets/js/addproduct.js') }}"></script>

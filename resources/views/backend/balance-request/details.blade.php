@@ -17,7 +17,7 @@
                     </ol>
                 </div>
                 <div class="col-sm-6 text-end">
-                    <a href="{{ route('admin.customer.view',$data->user->id) }}" class="btn btn-soft-success istiyak bw-2">
+                    <a href="{{ route('admin.customer.view',$data->user->id) }}" class="btn btn-sm btn-outline-dark">
                         <i class="bi bi-arrow-bar-right"></i>
                         Customer Info
                     </a>
@@ -28,152 +28,194 @@
 @endsection
 
 @section('content')
-    <div class="p-3 mb-3 row">
-
+    <div class="row">
         <div class="col-md-12">
-            <!-- Table row -->
-            <div class="row">
-                <div class="col-12 table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Customer</th>
-                            <th>Status</th>
-                            <th>Currency</th>
-                            <th>Amount</th>
-                            <th>Installment</th>
-                            <th>Document 1</th>
-                            <th>Document 2</th>
-                            <th>Additional Documents</th>
-                            <th>Created At</th>
-                            <th>Updated At</th>
-                            <th>Updated By</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{$data->user->name}}</td>
-                            <td class="bg-{{$data->is_declined?'danger':($data->is_approved?'success':'warning')}}">
-                                {{$data->is_declined?'Declined':($data->is_approved?'Approved':'Pending')}}
-                            </td>
-                            <td>{{$data->currency->code}}
-                                - {{$data->currency->symbol}}</td>
-                            <td>{{$data->amount}}</td>
-                            <td> {{$data->installmentPlan->name}}
-                                - {{$data->installmentPlan->length}} Months
-                                + {{$data->installmentPlan->extra_charge_percent}}%
-                            </td>
-                            <td class="text-center">
-                                <a target="_blank"
-                                   href="{{asset($data->document)}}">
-                                    <i class="bi bi-file-binary-fill"></i>
-
-                                </a>
-                            </td>
-                            <td class="text-center">
-                                <a target="_blank"
-                                   href="{{asset($data->document_2)}}">
-                                    <i class="bi bi-file-earmark-ruled"></i>
-
-                                </a>
-                            </td>
-                            <td class="text-center">
-                                @if(json_decode($data->document_3) !== null)
-                                    @foreach(json_decode($data->document_3) as $additional)
-                                        <a class="mx-auto" target="_blank"
-                                           href="{{asset($additional)}}">
-                                            <i class="bi bi-file-earmark-ruled"></i>
-                                        </a>
-                                    @endforeach
-                                @endif
-                            </td>
-
-                            <td>
-                                {{get_system_date($data->created_at)}} {{get_system_time($data->created_at)}}
-                            </td>
-                            <td>
-                                {{get_system_date($data->updated_at)}} {{get_system_time($data->updated_at)}}
-                            </td>
-                            <td>
-                                {{$data->admin?$data->admin->name:"N/A"}}
-                            </td>
-                        </tr>
-
-                        </tbody>
-                    </table>
-                    @if(isset($data->description))
-                        <p>
-                            Request Message: {{$data->description}}
-                        </p>
-                    @endif
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="h6 mb-0">
+                        <strong>Request Information</strong>
+                    </h4>
                 </div>
-                <!-- /.col -->
-            </div>
-            <!-- /.row -->
-            <div class="row">
-            @if(!$data->is_declined && !$data->is_approved)
-
-                <!-- accepted payments column -->
-                    <div class="col-12">
-                        <form method="POST" id="balance-form"
-                              action="{{ route('admin.balance.request.update',$data->id) }}">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="status">Approve or Decline <span class="required">*</span></label>
-                                    <select name="status" class="form-control" id="status" required>
-                                        <option selected disabled>--Select--</option>
-                                        <option value="approved" {{$data->is_approved?'selected':''}}>Approved</option>
-                                        <option value="declined" {{$data->is_declined?'selected':''}}>Declined</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="installment_start">Assign next Installment Date</label>
-                                    <input type="date" class="form-control" required name="installment_start"
-                                           id="installment_start">
-
-                                </div>
-                            </div>
-
-                            <label for="description">Additional Massage (if Any)</label>
-                            <textarea name="description" id="description" class="form-control"
-                                      cols="15" rows="7"></textarea>
-
-                            <button type="submit" class="btn btn-primary btn-fill-out my-4" id="submit">Update
-                            </button>
-                            <button style="display: none;" class="btn btn-white" disabled
-                                    id="submitting" type="button">
-                                                    <span class="spinner-border spinner-border-sm" role="status"
-                                                          aria-hidden="true"></span>
-                                Loading...
-                            </button>
-
-                        </form>
-                    </div>
-            @endif
-
-            <!-- /.col -->
-                <div class="col-12">
-                    <h4>Documents Preview:</h4>
+                <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
-                            {!! renderFile($data->document) !!}
+                        <div class="col-12 table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <td width="30%">Customer</td>
+                                    <td>
+                                        {{ $data->user->name }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Status</td>
+                                    <td class="bg-{{ $data->is_declined ? 'danger' : ( $data->is_approved ? 'success text-white' : 'warning') }}">
+                                        <strong>{{ $data->is_declined ? 'Declined' : ($data->is_approved ? 'Approved' : 'Pending') }}</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Currency</td>
+                                    <td>
+                                        {{ $data->currency->code }} - {{ $data->currency->symbol }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Amount</td>
+                                    <td>{{ $data->currency->code }} {{ number_format($data->amount, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Installment Plan</td>
+                                    <td> 
+                                        {{ $data->installmentPlan->name }}
+                                        - ({{ $data->installmentPlan->length }} Months)
+                                        + {{ $data->installmentPlan->extra_charge_percent }}%
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Document 1</td>
+                                    <td>
+                                        <a style="color:#000;" target="_blank" href="{{ asset($data->document) }}">
+                                            <i class="bi bi-file-binary-fill"></i>
+                                            Preview
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Document 2</td>
+                                    <td>
+                                        <a target="_blank" style="color:#000;" href="{{asset($data->document_2)}}">
+                                            <i class="bi bi-file-earmark-ruled"></i>
+                                            Preview
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Additional Documents</td>
+                                    <td>
+                                        @if(json_decode($data->document_3) !== null)
+                                            @foreach(json_decode($data->document_3) as $additional)
+                                                <a class="mx-auto" target="_blank" style="color:#000;" href="{{asset($additional)}}">
+                                                    <i class="bi bi-file-earmark-ruled"></i> Preview
+                                                </a>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Created At</td>
+                                    <td>
+                                        {{ get_system_date($data->created_at) }} {{ get_system_time($data->created_at) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Updated At</td>
+                                    <td>
+                                        @if ($data->created_at != $data->updated_at)
+                                            {{ get_system_date($data->updated_at) }} {{ get_system_time($data->updated_at) }}
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="30%">Updated By</td>
+                                    <td>
+                                        {{ $data->admin ? $data->admin->name : "N/A" }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Request Message</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        {!! nl2br($data->description) !!}
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-                        <div class="col-md-4">
-                            {!! renderFile($data->document_2) !!}
-                        </div>
-                        <div class="col-md-4">
-                            @if(json_decode($data->document_3) !== null)
-                                @foreach(json_decode($data->document_3) as $additional)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                @if(!$data->is_declined && !$data->is_approved)
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="h6 mb-0">
+                                    <strong>Update Request Information</strong>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" id="balance-form" action="{{ route('admin.balance.request.update',$data->id) }}">
+                                    @csrf
                                     <div class="row">
-                                        <div class="col-md-12">
-                                            {!! renderFile($additional) !!}
+                                        <div class="col-md-6 form-group mb-3">
+                                            <label for="status">
+                                                Approve or Decline 
+                                                <span class="required">*</span>
+                                            </label>
+                                            <select name="status" class="form-control select" id="status" required data-placeholder="Select Any" data-minimum-results-for-search="Infinity" data-parsley-errors-container="#status_error">
+                                                <option value="">Select Any</option>
+                                                <option value="approved" {{ $data->is_approved ? 'selected' : '' }}>Approved</option>
+                                                <option value="declined" {{ $data->is_declined ? 'selected' : '' }}>Declined</option>
+                                            </select>
+                                            <span id="status_error"></span>
+                                        </div>
+                                        <div class="col-md-6 form-group mb-3">
+                                            <label for="installment_start">
+                                                Assign next Installment Date
+                                            </label>
+                                            <input type="date" class="form-control" required name="installment_start" id="installment_start">
+                                        </div>
+
+                                        <div class="col-md-12 form-group mb-3">
+                                            <label for="description">Additional Massage (if Any)</label>
+                                            <textarea name="description" id="description" class="form-control" cols="15" rows="7"></textarea>
                                         </div>
                                     </div>
-                                @endforeach
-                            @else
-                                <p>No additional documents available.</p>
-                            @endif
+
+                                    <button type="submit" class="btn btn-sm btn-dark btn-fill-out my-4" id="submit">
+                                        <i class="bi bi-send" style="margin-right: 5px;"></i>
+                                        Update 
+                                    </button>
+                                    <button style="display: none;" class="btn btn-sm btn-outline-dark" disabled id="submitting" type="button">
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="h6 mb-0">
+                                <strong>Documents Preview</strong>
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    {!! renderFile($data->document) !!}
+                                </div>
+                                <div class="col-md-4">
+                                    {!! renderFile($data->document_2) !!}
+                                </div>
+                                <div class="col-md-4">
+                                    @if(json_decode($data->document_3) !== null)
+                                        @foreach(json_decode($data->document_3) as $additional)
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    {!! renderFile($additional) !!}
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p>No additional documents available.</p>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -301,5 +343,6 @@
         };
 
         _formValidation();
+        _componentSelect();
     </script>
 @endpush

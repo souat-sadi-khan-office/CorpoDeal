@@ -18,8 +18,12 @@ class Coupon extends Model
         'end_date',
         'status',
         'is_sellable',
-        'points_to_buy'
+        'points_to_buy',
+        'is_new_user',
+        'deadline',
+        'platform',
     ];
+
 
     public function userBroughtCoupon()
     {

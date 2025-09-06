@@ -19,20 +19,29 @@ use App\Models\User;
 use App\Models\UserPoint;
 use App\Models\OrderDetail;
 use App\Models\ProductStock;
+use App\Models\OrderLog;
 use App\Models\OrderStatusHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Repositories\Interface\OrderRepositoryInterface;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class OrderRepository implements OrderRepositoryInterface
 {
     public function index($request)
     {
-        return Order::when(isset($request->status) && $request->status == 'pending', function ($q) {
-            $q->where('status', 'pending');
-        })
+        return Order::
+            when(isset($request->status) && $request->status == 'new_order', function ($q) {
+                $q->where('status', 'new_order');
+            })
+            ->when(isset($request->status) && $request->status == 'cancelled', function ($q) {
+                $q->where('status', 'cancelled');
+            })
+            ->when(isset($request->status) && $request->status == 'pending', function ($q) {
+                $q->where('status', 'pending');
+            })
             ->when(isset($request->status) && $request->status == 'packaging', function ($q) {
                 $q->where('status', 'packaging');
             })
@@ -59,17 +68,19 @@ class OrderRepository implements OrderRepositoryInterface
             })
             ->when(isset($request->status) && $request->status == 'refund_requested', function ($q) {
                 $q->where('is_refund_requested', 1);
-            })->with('details:id,order_id,phone,email', 'user:id,name', 'payment:id,currency,gateway_name', 'currency:id,code,symbol')->get()->map(function ($order) {
+            })->with('details:id,order_id,phone,email', 'user:id,name', 'payment:id,currency,gateway_name,status', 'currency:id,code,symbol')->get()->map(function ($order) {
                 return [
                     'id' => $order->id,
                     'unique_id' => $order->unique_id,
                     'user_name' => $order->user->name,
                     'phone' => $order->details->phone,
                     'email' => $order->details->email,
-                    'currency' => isset($order->payment->currency) ? $order->payment->currency : $order->currency->code,
-                    'currency_symbol' => isset($order->currency->symbol) ? $order->currency->symbol : null,
-                    'gateway_name' => $order->is_cod ? 'Cash on Delivery' : (isset($order->payment->gateway_name) ? $order->payment->gateway_name : null),
-                    'payment_status' => $order->payment_status,
+                    'currency' => $order->payment->currency ?? $order->currency->code,
+                    'currency_symbol' => $order->currency->symbol ?? null,
+                    'gateway_name' => $order->is_cod ? 'Cash on Delivery' :
+                        ($order->is_manual_pay ? 'Manual Bank Pay' :
+                            ($order->payment->gateway_name ?? null)),
+                    'payment_status' => $order->status === 'failed' && $order->payment ? $order->payment->status ?? str_replace('_', ' ', $order->payment_status) : str_replace('_', ' ', $order->payment_status),
                     'status' => $order->is_refund_requested ? "Refund Requested" : $order->status,
                     'amount' => $order->final_amount * $order->exchange_rate,
                     'created_at' => $order->created_at
@@ -77,16 +88,25 @@ class OrderRepository implements OrderRepositoryInterface
             });
     }
 
-    public function userOrders()
+    public function userOrders($userId = null)
     {
-        return Order::where('user_id', Auth::guard('customer')->id())->select('id', 'unique_id', 'final_amount', 'exchange_rate', 'payment_status', 'status', 'created_at', 'payment_id', 'currency_id', 'is_cod', 'is_refund_requested')->with('payment:id,currency,gateway_name', 'currency:id,code,symbol')->latest()->paginate()->map(function ($order) {
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
+
+        return Order::where('user_id', $userId)->select('id', 'unique_id', 'final_amount', 'exchange_rate', 'payment_status', 'is_manual_pay', 'status', 'created_at', 'payment_id', 'currency_id', 'is_cod', 'is_refund_requested')->with('payment:id,currency,gateway_name,status', 'currency:id,code,symbol')->latest()->paginate()->map(function ($order) {
             return [
                 'id' => $order->id,
                 'unique_id' => $order->unique_id,
-                'currency' => isset($order->payment->currency) ? $order->payment->currency : @$order->currency->code,
-                'currency_symbol' => isset($order->currency->symbol) ? $order->currency->symbol : null,
-                'gateway_name' => $order->is_cod ? 'Cash on Delivery' : (isset($order->payment->gateway_name) ? $order->payment->gateway_name : null),
-                'payment_status' => $order->payment_status,
+                'currency' => $order->payment->currency ?? @$order->currency->code,
+                'currency_symbol' => $order->currency->symbol ?? null,
+                'gateway_name' => $order->is_cod ? 'Cash on Delivery' :
+                    ($order->is_manual_pay ? 'Manual Bank Pay' :
+                        $order->payment->gateway_name ?? ''),
+                'payment_status' => $order->status === 'failed' && $order->payment
+                    ? ($order->payment->status ?? ($order->payment_status === 'Not_Paid' ? 'Unpaid' : str_replace('_', ' ', $order->payment_status)))
+                    : ($order->payment_status === 'Not_Paid' ? 'Unpaid' : str_replace('_', ' ', $order->payment_status)),
+                'is_manual_pay' => $order->is_manual_pay,
                 'status' => $order->is_refund_requested ? "Refund Requested" : $order->status,
                 'amount' => $order->final_amount * $order->exchange_rate,
                 'created_at' => $order->created_at->format('d M Y, h:i:s A')
@@ -94,9 +114,11 @@ class OrderRepository implements OrderRepositoryInterface
         });
     }
 
-    public function userData()
+    public function userData($userId = null)
     {
-        $userId = Auth::guard('customer')->id();
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
 
         // Use a single query with selective columns and proper aggregations
         $data = Order::where('user_id', $userId)
@@ -132,32 +154,48 @@ class OrderRepository implements OrderRepositoryInterface
                 }
                 return '<div class="text-center"><span class="badge bg-' . $badge . '">' . ucfirst($model['status']) . '</div>';
             })->editColumn('payment_status', function ($model) {
-                $paymentBadge = $model['payment_status'] == 'Paid' ? 'success' : 'danger';
-                return '<div class="text-center"><span class="badge bg-' . $paymentBadge . ' text-white">' . str_replace('_', ' ', ucfirst($model['payment_status'])) . '</div>';
+                $paymentBadge = $model['payment_status'] == 'Paid' ? 'success' :($model['payment_status'] == 'Not Paid'?'warning': 'danger') ;
+                return '<div class="text-center"><span class="badge bg-' . $paymentBadge . ' text-white">' . str_replace('_', ' ', ucfirst($model['payment_status'] === 'Not Paid'?"Unpaid":$model['payment_status'])) . '</div>';
             })
             ->editColumn('gateway_name', function ($model) {
                 $gatewayBadge = $model['gateway_name'] == 'Cash on Delivery' ? 'dark' : 'success';
                 return '<div class="text-center"><span class="badge bg-' . $gatewayBadge . ' text-white">' . ucfirst($model['gateway_name']) . '</div>';
             })->editColumn('unique_id', function ($model) {
-
-                return '<a class="dropdown-item" href="' . route('admin.order.invoice', $model['id']) . '">
-                <i class="bi bi-receipt"></i>
-               ' . strtoupper(str_replace('#', '', $model['unique_id'])) . '
-                </a>';
+                return '
+                    <i class="bi bi-calendar"></i> '. preg_replace('/,/', ',', $model['created_at']->format('d M Y, h:i:s A'), 1) .'
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
+                        
+                        <a class="dropdown-item" href="' . route('admin.order.invoice', $model['id']) . '">
+                            <i class="bi bi-receipt"></i>
+                            ' . strtoupper(str_replace('#', '', $model['unique_id'])) . '
+                        </a>
+                        <button class="btn btn-xs p-0 ms-1" data-bs-toggle="tooltip" data-bs-position="top" title="Copy" onclick="copyUniqueId(\'' . strtoupper(str_replace('#', '', $model['unique_id'])) . '\')">
+                            <i class="bi bi-copy"></i>
+                        </button>
+                    </div>
+                ';
             })
+
             ->editColumn('amount', function ($model) {
 
-                return $model['currency_symbol'] . round($model['amount'], 2);
+                return $model['currency_symbol'] . number_format(round($model['amount'], 2), 2);
             })
-            ->editColumn('created_at', function ($model) {
+            // ->editColumn('created_at', function ($model) {
 
-                return preg_replace('/,/', ',<br>', $model['created_at']->format('d M Y, h:i:s A'), 1);
-            })
+            //     return 
+            // })
             ->addColumn('customer', function ($model) {
-                return ' <div class="row">
-                            <div class="col-md-12">' . $model['user_name'] . '</div>
-                            <div class="col-md-12">' . $model['email'] . '</div>
-                        </div>';
+                $html = '<b>' . $model['user_name'] . '</b> <br>';
+
+                if($model['email'] != '') {
+                    $html .= '<a style="color: #000;" href="mailto:'. $model['email'] .'" target="_blank">'. $model['email'] .'</a><br>';
+                }
+
+                if($model['phone'] != '') {
+                    $html .= '<a style="color: #000;" href="tel:'. $model['phone'] .'"> '. $model['phone'] .'</a>';
+                }
+
+                return $html;
             })
             ->addColumn('action', function ($model) {
                 return view('backend.order.action', compact('model'));
@@ -171,17 +209,17 @@ class OrderRepository implements OrderRepositoryInterface
 
         // Step 1: Validate and Modify Data
         $this->validateRequest($request);
-        $getProductsData = $this->productsdata($request['product'], $request['country_id'], isset($request['shipping_city']) ? $request['shipping_city'] : $request['billing_city']);
+        $getProductsData = $this->productsdata($request['product'], $request['country_id'], $request['shipping_city'] ?? $request['billing_city']);
 
         $productIds = $getProductsData->pluck('id')->toArray();
-        $details['products'] = $getProductsData->map(function ($item) {
+        $details['products'] = $getProductsData->map(function ($item) use($request) {
             return [
                 'id' => $item['id'],
                 'stock_id' => $item['stock']->id,
                 'name' => $item['name'],
                 'qty' => $item['order_qty'],
                 'slug' => $item['slug'],
-                'total_price' => $item['unit_price'] * $item['order_qty'],
+                'total_price' =>$item['unit_price'] * $item['order_qty'],
                 'unit_price' => $item['unit_price'],
                 'discount' => $item['discount'],
                 'discount_type' => $item['discount_type'],
@@ -211,7 +249,6 @@ class OrderRepository implements OrderRepositoryInterface
 
             // Multi Tier
             $tierInfo = $this->multiTierApplied($request);
-
             // Step 2: Create the order
             $order = Order::create([
                 'unique_id' => uniqid('#'),
@@ -224,9 +261,10 @@ class OrderRepository implements OrderRepositoryInterface
                 'exchange_rate' => get_exchange_rate(Session::get('currency_code')),
                 'currency_id' => Session::get('currency_id') ?? Auth::guard('customer')->user()->currency_id,
                 'payment_status' => 'Not_Paid',
-                'status' => 'pending',
+                'status' => 'new_order',
                 'is_delivered' => false,
                 'is_cod' => $request['payment_option'] === 'cash_on_delivery',
+                'is_manual_pay' => $request['payment_option'] === 'manual_pay',
                 'is_negative_balance_order' => $request['payment_option'] === 'negative_balance',
                 'is_refund_requested' => false,
             ]);
@@ -239,8 +277,8 @@ class OrderRepository implements OrderRepositoryInterface
                 'order_id' => $order->id,
                 'product_ids' => json_encode($productIds),
                 'details' => json_encode($details),
-                'notes' => isset($request['notes']) ? $request['notes'] : null,
-                'shipping_method' => isset($request['shipping_method']) ? $request['shipping_method'] : 'Default',
+                'notes' => $request['notes'] ?? null,
+                'shipping_method' => $request['shipping_method'] ?? 'Default',
                 'shipping_address' => $shippingAddress,
                 'billing_address' => $billingAddress,
                 'phone' => $request['customer_phone'],
@@ -283,6 +321,9 @@ class OrderRepository implements OrderRepositoryInterface
 
         if ($orderStatus) {
             switch ($status) {
+                case 'new_order':
+                    $orderStatus->pending_time = now();
+                    break;
                 case 'pending':
                     $orderStatus->pending_time = now();
                     break;
@@ -321,6 +362,9 @@ class OrderRepository implements OrderRepositoryInterface
             $orderStatus->order_id = $order->id;
 
             switch ($status) {
+                case 'new_order':
+                    $orderStatus->pending_time = now();
+                    break;
                 case 'pending':
                     $orderStatus->pending_time = now();
                     break;
@@ -357,11 +401,10 @@ class OrderRepository implements OrderRepositoryInterface
         }
     }
 
-
     public function details($id)
     {
         $order = Order::where('id', $id)
-            ->with('details', 'payment:id,currency,gateway_name', 'currency:id,code,symbol', 'user:id,name')
+            ->with('details', 'logs', 'payment:id,currency,gateway_name,status', 'currency:id,code,symbol', 'user:id,name')
             ->first();
 
         if ($order) {
@@ -376,6 +419,8 @@ class OrderRepository implements OrderRepositoryInterface
                 'user_name' => ucfirst($order->user->name),
                 'phone' => $order->details->phone,
                 'email' => $order->details->email,
+                'payment_slip' => $order->details->payment_slip,
+                'slip_number' => $order->details->slip_number,
                 'product_ids' => json_decode($order->details->product_ids),
                 'user_company' => json_decode($order->details->details)->company_name,
                 'details' => collect(json_decode($order->details->details)->products)->transform(function ($product) use ($exchange_rate, $symbol) {
@@ -386,6 +431,7 @@ class OrderRepository implements OrderRepositoryInterface
                     $product->tax = $symbol . round($product->tax * $exchange_rate, 2);
                     return $product;
                 }),
+                'logs' => $order->logs,
                 'premium_user_discount_amount' => (isset(json_decode($order->details->details)->premium_user_order) && json_decode($order->details->details)->premium_user_order == 'true' ? $symbol . round(json_decode($order->details->details)->premium_user_discount_amount * $exchange_rate, 2) : 0),
                 'order_discount_amount' => $symbol . ($order_discount_amount * $exchange_rate),
                 'tier_info' => json_decode($order->details->tier_info),
@@ -396,10 +442,13 @@ class OrderRepository implements OrderRepositoryInterface
                     ];
                 }, json_decode($order->details->details)->products),
                 'currency' => $order->payment->currency ?? $order->currency->code,
-                'gateway_name' => $order->is_cod ? 'Cash on Delivery' : ($order->payment->gateway_name ?? null),
+                'gateway_name' => $order->is_cod ? 'Cash on Delivery' :
+                    ($order->is_manual_pay ? 'Manual Bank Pay' :
+                        ($order->payment->gateway_name ?? $order?->payment?->gateway_name)),
+                'is_manual_pay' => $order->is_manual_pay,
                 'is_delivered' => $order->is_delivered,
                 'is_cod' => $order->is_cod,
-                'payment_status' => str_replace('_', ' ', $order->payment_status),
+                'payment_status' => $order->status === 'failed' && $order->payment ? $order->payment->status ?? ($order->payment_status === 'Not_Paid' ? "Unpaid" : $order->payment_status) : ($order->payment_status === 'Not_Paid' ? "Unpaid" : $order->payment_status),
                 'status' => $order->status,
                 'is_refund_requested' => $order->is_refund_requested,
                 'refunded_details' => json_decode($order->refunded_details) ?? null,
@@ -565,7 +614,8 @@ class OrderRepository implements OrderRepositoryInterface
 
         // Define restricted transitions
         $restrictedTransitions = [
-            'packaging' => ['pending'],
+            'pending' => ['new_order'],
+            'packaging' => ['new_order', 'pending'],
             'shipping' => ['pending', 'packaging'],
             'out_of_delivery' => ['pending', 'packaging', 'shipping'],
             'delivered' => ['pending', 'packaging', 'shipping', 'out_of_delivery'],
@@ -579,6 +629,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'message' => "Cannot change status from $currentStatus to $newStatus."
             ]);
         }
+        
         // Check if payment_status changes from Unpaid to Paid
         if ($type === 'payment_status' && $order->payment_status === 'Not_Paid' && $newStatus === 'Paid' && $order->is_cod) {
             // Get stock_ids and quantities from the order
@@ -590,14 +641,14 @@ class OrderRepository implements OrderRepositoryInterface
                 return response()->json($stock);
             }
 
-            if($order->details && $order->details->phone != '') {
+            if ($order->details && $order->details->phone != '') {
 
                 $template = get_settings('sms_password_reset_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
 
             // Assign Points to the user
@@ -618,8 +669,8 @@ class OrderRepository implements OrderRepositoryInterface
             $this->deductPoints($order->id, $order->user_id);
         }
 
-        // No restrictions for 'failed'
-        if ($type === 'order_status' && $newStatus === 'failed') {
+        // No restrictions for 'failed' and 'cancelled'
+        if ($type === 'order_status' && $newStatus === 'failed' && $newStatus == 'cancelled') {
             $order->status = $newStatus;
         } elseif ($type === 'order_status') {
             if ($newStatus === 'delivered') {
@@ -633,17 +684,17 @@ class OrderRepository implements OrderRepositoryInterface
         $order->save();
         if ($order) {
 
-            if($newStatus == 'packaging' && $order->details && $order->details->phone != '') {
+            if ($newStatus == 'packaging' && $order->details && $order->details->phone != '') {
 
                 $template = get_settings('sms_phone_number_verification_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
 
-            if($newStatus == 'shipping' && get_settings('sms_order_placement_status') == 1 && $order->details && $order->details->phone != '') {
+            if ($newStatus == 'shipping' && get_settings('sms_order_placement_status') == 1 && $order->details && $order->details->phone != '') {
 
                 $trackOrderLink = route('order.tracking.information', $order->unique_id);
 
@@ -652,31 +703,31 @@ class OrderRepository implements OrderRepositoryInterface
                 $template = str_replace('[[TRACKING_LINK]]', $trackOrderLink, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
 
-            if($newStatus == 'out_of_delivery' && get_settings('sms_out_for_delivery_status') == 1 && $order->details && $order->details->phone != '') {
+            if ($newStatus == 'out_of_delivery' && get_settings('sms_out_for_delivery_status') == 1 && $order->details && $order->details->phone != '') {
 
                 $template = get_settings('sms_out_for_delivery_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
 
-            if($newStatus == 'delivered' && get_settings('sms_delivery_status_change') == 1 && $order->details && $order->details->phone != '') {
+            if ($newStatus == 'delivered' && get_settings('sms_delivery_status_change') == 1 && $order->details && $order->details->phone != '') {
 
                 $template = get_settings('sms_order_processing_update_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
-            
-            if($newStatus == 'returned' && get_settings('sms_order_return_status') == 1 && $order->details && $order->details->phone != '') {
+
+            if ($newStatus == 'returned' && get_settings('sms_order_return_status') == 1 && $order->details && $order->details->phone != '') {
 
                 $trackOrderLink = route('order.tracking.information', $order->unique_id);
                 $template = get_settings('sms_order_return_template');
@@ -685,8 +736,8 @@ class OrderRepository implements OrderRepositoryInterface
                 $template = str_replace('[[RETURN_LINK]]', $trackOrderLink, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
 
-                $sms = new SmsHelper();   
-                $sms->sendSms($order->details->phone, $template);   
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
             }
 
             $this->createOrUpdateOrderStatus($order, $newStatus);
@@ -697,6 +748,165 @@ class OrderRepository implements OrderRepositoryInterface
             'message' => ucfirst(str_replace('_', ' ', $type)) . ' updated successfully.'
         ]);
     }
+
+    public function updateOrderWithNote($request, $orderId)
+    {
+        $order = Order::find($orderId);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Order not found.'
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string|in:order_status,payment_status',
+            'value' => 'required|string',
+            'content' => 'required|string',
+            // Optional: 'stock_ids_and_qtys' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'validator' => true,
+                'message' => $validator->errors()
+            ]);
+        }
+
+        $type = $request->input('type');
+        $newStatus = $request->input('value');
+        $content = $request->input('content');
+        $currentStatus = $order->status;
+
+        // Restricted status transitions for order_status only
+        $restrictedTransitions = [
+            'pending' => ['new_order'],
+            'packaging' => ['new_order', 'pending'],
+            'shipping' => ['pending', 'packaging'],
+            'out_of_delivery' => ['pending', 'packaging', 'shipping'],
+            'delivered' => ['pending', 'packaging', 'shipping', 'out_of_delivery'],
+            'returned' => ['pending', 'packaging', 'shipping', 'out_of_delivery', 'delivered'],
+        ];
+
+        if (
+            $type === 'order_status' &&
+            isset($restrictedTransitions[$currentStatus]) &&
+            in_array($newStatus, $restrictedTransitions[$currentStatus])
+        ) {
+            return response()->json([
+                'status' => false,
+                'message' => "Cannot change status from $currentStatus to $newStatus."
+            ]);
+        }
+
+        // COD Paid → Unpaid (allow with stock restore)
+        if ($order->is_cod && $type === 'payment_status' && $order->payment_status === 'Paid' && $newStatus === 'Not_Paid') {
+            $this->updateStockByOrderId($order->id, 'returned');
+            $this->deductPoints($order->id, $order->user_id);
+        }
+
+        // Prevent Online Paid → Unpaid
+        if (!$order->is_cod && $type === 'payment_status' && $order->payment_status === 'Paid' && $newStatus === 'Not_Paid') {
+            return response()->json([
+                'status' => false,
+                'message' => "Cannot change Paid Payments to Unpaid."
+            ]);
+        }
+
+        // COD Unpaid → Paid (update stock quantities and assign points)
+        if ($type === 'payment_status' && $order->payment_status === 'Not_Paid' && $newStatus === 'Paid' && $order->is_cod) {
+            $stockIdsAndQtys = json_decode($request->input('stock_ids_and_qtys', '[]'), true);
+            $stockUpdateResult = $this->updateStockQuantities($stockIdsAndQtys);
+
+            if (!$stockUpdateResult['status']) {
+                return response()->json($stockUpdateResult);
+            }
+
+            if ($order->details && !empty($order->details->phone)) {
+                $template = get_settings('sms_password_reset_template');
+                $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
+                $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
+
+                $sms = new SmsHelper();
+                $sms->sendSms($order->details->phone, $template);
+            }
+
+            $this->assignPoints($order->id, $order->user_id);
+        }
+
+        // Apply status changes
+        if ($type === 'order_status') {
+            if ($newStatus === 'delivered') {
+                $order->is_delivered = !$order->is_delivered;
+            }
+            $order->status = $newStatus;
+        } elseif ($type === 'payment_status') {
+            $order->payment_status = $newStatus;
+        }
+
+        $order->save();
+
+        // Send SMS notifications for specific statuses
+        if ($order->details && !empty($order->details->phone)) {
+            $phone = $order->details->phone;
+            $sms = new SmsHelper();
+            $template = '';
+
+            switch ($newStatus) {
+                case 'packaging':
+                    $template = get_settings('sms_phone_number_verification_template');
+                    break;
+                case 'shipping':
+                    if (get_settings('sms_order_placement_status') == 1) {
+                        $template = get_settings('sms_online_order_placement_template');
+                        $template = str_replace('[[TRACKING_LINK]]', route('order.tracking.information', $order->unique_id), $template);
+                    }
+                    break;
+                case 'out_of_delivery':
+                    if (get_settings('sms_out_for_delivery_status') == 1) {
+                        $template = get_settings('sms_out_for_delivery_template');
+                    }
+                    break;
+                case 'delivered':
+                    if (get_settings('sms_delivery_status_change') == 1) {
+                        $template = get_settings('sms_order_processing_update_template');
+                    }
+                    break;
+                case 'returned':
+                    if (get_settings('sms_order_return_status') == 1) {
+                        $template = get_settings('sms_order_return_template');
+                        $template = str_replace('[[STATUS]]', "Returned", $template);
+                        $template = str_replace('[[RETURN_LINK]]', route('order.tracking.information', $order->unique_id), $template);
+                    }
+                    break;
+            }
+
+            if ($template) {
+                $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
+                $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
+                $sms->sendSms($phone, $template);
+            }
+        }
+
+        // Update or create order status record (assuming this is your method)
+        $this->createOrUpdateOrderStatus($order, $newStatus);
+
+        // Save the order note/log
+        OrderLog::create([
+            'order_id' => $order->id,
+            'user_id' => auth()->guard('admin')->id(),
+            'subject' => ucfirst(str_replace('_', ' ', $type)) . ' Activity log changed',
+            'content' => $content,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'load' => true,
+            'message' => ucfirst(str_replace('_', ' ', $type)) . ' updated & note saved.'
+        ]);
+    }
+
 
     public function assignPoints($orderId, $userId)
     {
@@ -1032,7 +1242,7 @@ class OrderRepository implements OrderRepositoryInterface
         }
 
         $userBoughtCoupon = null;
-        if ($coupon->is_sellable == 1 && Auth::guard('customer')->user()->coupons->exists()) {
+        if ($coupon->is_sellable == 1 && isset(Auth::guard('customer')->user()->coupons)) {
             $userBoughtCoupon = Auth::guard('customer')->user()->coupons->where('coupon_id', $coupon->id)->first();
             if (!$userBoughtCoupon) {
                 return null;

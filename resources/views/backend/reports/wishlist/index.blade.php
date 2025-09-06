@@ -8,10 +8,12 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Wishlist Report</h1>
+                    <h1 class="h3 mb-0">
+                        <b>Wishlist Report</b>
+                    </h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
@@ -28,10 +30,18 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 mb-3">
-                    <h4>Total Products in Wishlist: {{ $totalProductsInWishlist }}</h4>
+                    <h4 class="h6">
+                        Total Products in Wishlist: <strong>{{ $totalProductsInWishlist }}</strong>
+                    </h4>
 
                     @if($mostWishlistProduct)
-                        <h4>Most Wishlist Product: {{ $product->name }} ({{ $mostWishlistProduct->wishlist_count }} times)</h4>
+                        <h4 class="h6">
+                            Most Wishlist Product:
+                            <a href="{{ route('slug.handle', $product->slug) }}" style="color: #000; text-decoration: underline;" target="_blank">
+                                <strong>{{ $product->name }}</strong> 
+                            </a>
+                            ({{ $mostWishlistProduct->wishlist_count }} times)
+                        </h4>
                     @endif
                 </div>
                 <div class="col-md-12 table-responsive">

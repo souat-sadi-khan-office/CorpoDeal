@@ -21,23 +21,22 @@
                     <h1 class="h3 mb-0">Create new Product</h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.product.index') }}">
+                            <a style="color: #000;" href="{{ route('admin.product.index') }}">
                                 Product Management
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Create new product</li>
+                        <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
                     </ol>
                 </div>
                 <div class="col-sm-6 text-end">
-                
                     @if (Auth::guard('admin')->user()->hasPermissionTo('product.view'))
-                        <a href="{{ route('admin.product.index') }}" class="btn btn-soft-danger istiyak bw-2">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.product.index') }}" class="btn btn-soft-danger btn-sm bw-2">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     @endif
@@ -48,8 +47,6 @@
 @endsection
 
 @section('content')
-
-    <!-- content_form -->
     <form action="{{ route('admin.product.store')}}" method="POST" class="content_form" enctype="multipart/form-data">
         @csrf
         <div class="row">
@@ -68,7 +65,7 @@
                                     <!-- component_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="component_type">Component Type</label>
-                                        <select name="component_type" id="component_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="component_type" id="component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="core">Core Components</option>
                                             <option value="peri">Peripherals & Others</option>
@@ -79,7 +76,7 @@
                                 <div class="row core-component-area" style="display: none;">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="core_component_type">Componnt Type</label>
-                                        <select name="core_component_type" id="core_component_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="core_component_type" id="core_component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="processor">Processor</option>
                                             <option value="cpu_cooler">CPU Cooler</option>
@@ -96,7 +93,7 @@
                                 <div class="row peri-component-area" style="display: none;">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="peri_component_type">Componnt Type</label>
-                                        <select name="peri_component_type" id="peri_component_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="peri_component_type" id="peri_component_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="monitor">Monitor</option>
                                             <option value="casing_fan">Casing Fan</option>
@@ -114,7 +111,7 @@
                                     <!-- cpu_brand -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="cpu_brand">CPU Brand</label>
-                                        <select name="cpu_brand" id="cpu_brand" class="form-control select" data-placeholder="Select one">
+                                        <select name="cpu_brand" id="cpu_brand" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="intel">Intel</option>
                                             <option value="amd">AMD</option>
@@ -124,7 +121,7 @@
                                     <!-- cpu_generation -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="cpu_generation">CPU Generation</label>
-                                        <select name="cpu_generation" id="cpu_generation" class="form-control select" data-placeholder="Select one">
+                                        <select name="cpu_generation" id="cpu_generation" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="7">7th Gen</option>
                                             <option value="8">8th Gen</option>
@@ -135,15 +132,15 @@
                                             <option value="13">13th Gen</option>
                                             <option value="14">14th Gen</option>
                                             <option value="15">15th Gen</option>
-                                            <option value="5000">5000 Serices Processor</option>
-                                            <option value="7000">7000 Serices Processor</option>
+                                            <option value="5000">5000 Series Processor</option>
+                                            <option value="7000">7000 Series Processor</option>
                                         </select>
                                     </div>
 
                                     <!-- socket_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="socket_type">Socket Type</label>
-                                        <select name="socket_type" id="socket_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="socket_type" id="socket_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="LGA1200">LGA1200</option>
                                         </select>
@@ -162,7 +159,7 @@
                                     <!-- mb_supported_cpu_brand -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_supported_cpu_brand">Supported CPU Brand</label>
-                                        <select name="mb_supported_cpu_brand" id="mb_supported_cpu_brand" class="form-control select">
+                                        <select name="mb_supported_cpu_brand" id="mb_supported_cpu_brand" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="intel">Intel</option>
                                             <option value="amd">AMD</option>
@@ -172,7 +169,7 @@
                                     <!-- mb_cpu_generation -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_cpu_generation">Supported CPU Generation</label>
-                                        <select name="mb_cpu_generation" id="mb_cpu_generation" class="form-control select" data-placeholder="Select one">
+                                        <select name="mb_cpu_generation" id="mb_cpu_generation" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="7">7th Gen</option>
                                             <option value="8">8th Gen</option>
@@ -183,8 +180,8 @@
                                             <option value="13">13th Gen</option>
                                             <option value="14">14th Gen</option>
                                             <option value="15">15th Gen</option>
-                                            <option value="5000">5000 Serices Processor</option>
-                                            <option value="7000">7000 Serices Processor</option>
+                                            <option value="5000">5000 Series Processor</option>
+                                            <option value="7000">7000 Series Processor</option>
                                         </select>
                                     </div>
 
@@ -197,7 +194,7 @@
                                     <!-- mb_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_form_factor">Form Factor</label>
-                                        <select name="mb_form_factor" id="mb_form_factor" class="form-control select">
+                                        <select name="mb_form_factor" id="mb_form_factor" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="atx">ATX</option>
                                             <option value="matx">MATX</option>
@@ -209,7 +206,7 @@
                                     <!-- mb_supported_memory_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_supported_memory_type">Supported memory type</label>
-                                        <select name="mb_supported_memory_type" id="mb_supported_memory_type" class="form-control select">
+                                        <select name="mb_supported_memory_type" id="mb_supported_memory_type" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="DDR 3">DDR 3</option>
                                             <option value="DDR 4">DDR 4</option>
@@ -226,7 +223,7 @@
                                     <!-- mb_number_of_ram -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_number_of_ram">Number of RAM Channel</label>
-                                        <select name="mb_number_of_ram" id="mb_number_of_ram" class="form-control select">
+                                        <select name="mb_number_of_ram" id="mb_number_of_ram" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Single</option>
                                             <option value="2">Dual</option>
@@ -237,7 +234,7 @@
                                     <!-- mb_xmp_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_xmp_support">XMP Support?</label>
-                                        <select name="mb_xmp_support" id="mb_xmp_support" class="form-control select">
+                                        <select name="mb_xmp_support" id="mb_xmp_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -247,7 +244,7 @@
                                     <!-- mb_m2_storage_support -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="mb_m2_storage_support">M.2 Storage Support ?</label>
-                                        <select name="mb_m2_storage_support" id="mb_m2_storage_support" class="form-control select">
+                                        <select name="mb_m2_storage_support" id="mb_m2_storage_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -263,7 +260,7 @@
                                     <!-- mb_sata_storage_support -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="mb_sata_storage_support">SATA Storage Support ?</label>
-                                        <select name="mb_sata_storage_support" id="mb_sata_storage_support" class="form-control select">
+                                        <select name="mb_sata_storage_support" id="mb_sata_storage_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -279,7 +276,7 @@
                                     <!-- mb_lic_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="mb_lic_support">Liquid Cooler Support?</label>
-                                        <select name="mb_lic_support" id="mb_lic_support" class="form-control select">
+                                        <select name="mb_lic_support" id="mb_lic_support" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -288,8 +285,8 @@
 
                                     <!-- mb_pcie_slot -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="mb_pcie_slot">Graphics Card Supportd PCIe Slot</label>
-                                        <select name="mb_pcie_slot" id="mb_pcie_slot" class="form-control select" data-placeholder="Select one">
+                                        <label for="mb_pcie_slot">Graphics Card Supported PCIe Slot</label>
+                                        <select name="mb_pcie_slot" id="mb_pcie_slot" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="pcie-3">PCIe 3</option>
                                             <option value="pcie-4">PCIe 4</option>
@@ -302,7 +299,7 @@
                                     <!-- ram_memory_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="ram_memory_type">Memory Type</label>
-                                        <select name="ram_memory_type" id="ram_memory_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="ram_memory_type" id="ram_memory_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="DDR 3">DDR 3</option>
                                             <option value="DDR 4">DDR 4</option>
@@ -319,7 +316,7 @@
                                     <!-- ram_xmp_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="ram_xmp_support">XMP Supported?</label>
-                                        <select name="ram_xmp_support" id="ram_xmp_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="ram_xmp_support" id="ram_xmp_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -338,7 +335,7 @@
                                     <!-- storage_type -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_type">Storage Type</label>
-                                        <select name="storage_type" id="storage_type" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_type" id="storage_type" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="hdd">HardDisk</option>
                                             <option value="ssd">SSD</option>
@@ -348,7 +345,7 @@
                                     <!-- storage_m2_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_m2_support">M.2 Supported?</label>
-                                        <select name="storage_m2_support" id="storage_m2_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_m2_support" id="storage_m2_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -358,7 +355,7 @@
                                     <!-- storage_sata_support -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="storage_sata_support">SATA Supported?</label>
-                                        <select name="storage_sata_support" id="storage_sata_support" class="form-control select" data-placeholder="Select one">
+                                        <select name="storage_sata_support" id="storage_sata_support" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -379,8 +376,8 @@
                                 <div class="row core-component-item-area" id="gCard_area" style="display: none;">
                                     <!-- gc_supported_pcie_slot -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="gc_supported_pcie_slot">Supportd PCIe Slot</label>
-                                        <select name="gc_supported_pcie_slot" id="gc_supported_pcie_slot" class="form-control select" data-placeholder="Select one">
+                                        <label for="gc_supported_pcie_slot">Supported PCIe Slot</label>
+                                        <select name="gc_supported_pcie_slot" id="gc_supported_pcie_slot" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="pcie-2">PCIe 2</option>
                                             <option value="pcie-3">PCIe 3</option>
@@ -391,8 +388,8 @@
                                     </div>
                                     <!-- gc_supported_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="gc_supported_form_factor">Supportd Form Factor</label>
-                                        <select name="gc_supported_form_factor" id="gc_supported_form_factor" class="form-control select" data-placeholder="Select one">
+                                        <label for="gc_supported_form_factor">Supported Form Factor</label>
+                                        <select name="gc_supported_form_factor" id="gc_supported_form_factor" class="form-control select" data-placeholder="Select one" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="atx">ATX</option>
                                             <option value="matx">MATX</option>
@@ -421,7 +418,7 @@
                                     <!-- casing_form_factor -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_form_factor">Form Factor</label>
-                                        <select name="casing_form_factor" id="casing_form_factor" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_form_factor" id="casing_form_factor" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="atx">ATX</option>
                                             <option value="matx">MATX</option>
@@ -433,7 +430,7 @@
                                     <!-- casing_psu_installed -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_psu_installed">PSU Installed</label>
-                                        <select name="casing_psu_installed" id="casing_psu_installed" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_psu_installed" id="casing_psu_installed" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -443,7 +440,7 @@
                                     <!-- casing_fan_installed -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="casing_fan_installed">Fan Installed</label>
-                                        <select name="casing_fan_installed" id="casing_fan_installed" class="form-control select" data-placeholder="Select One">
+                                        <select name="casing_fan_installed" id="casing_fan_installed" class="form-control select" data-placeholder="Select One" data-minimum-results-for-search="Infinity">
                                             <option value="">Select one</option>
                                             <option value="1">Yes</option>
                                             <option value="0">No</option>
@@ -480,13 +477,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Information</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Product Information</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="add_to_pc_build">Add this product as PC Builder item?</label>
-                                        <select name="add_to_pc_build" id="add_to_pc_build" class="form-control">
+                                        <select name="add_to_pc_build" id="add_to_pc_build" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="1">Yes</option>
                                             <option value="0" selected>No</option>
                                         </select>
@@ -494,8 +493,8 @@
 
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="product_type">Product Type <span class="text-danger">*</span></label>
-                                        <select name="product_type" id="product_type" class="form-control">
-                                            <option value="digital">Digital</option>
+                                        <select name="product_type" id="product_type" class="form-control select" data-minimum-results-for-search="Infinity">
+                                            <option disabled value="digital">Digital</option>
                                             <option value="physical" selected>Physical</option>
                                         </select>
                                     </div>
@@ -527,14 +526,9 @@
                                         <select name="brand_id" id="brand_id" class="form-control"></select>
                                     </div>
 
-                                    <div class="col-md-12 form-group mb-3" style="display:none;" id="brand_type_area">
-                                        <label for="brand_type_id">Brand type</label>
-                                        <select name="brand_type_id" id="brand_type_id" class="form-control"></select>
-                                    </div>
-
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="unit">Unit</label>
-                                        <select name="unit" id="unit" class="form-control select" >
+                                        <select name="unit" id="unit" class="form-control select" data-minimum-results-for-search="Infinity" >
                                             <option selected value="piece">Piece</option>
                                             <option value="kg">KG</option>
                                         </select>
@@ -557,22 +551,24 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Images</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Product Images</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="images">Gallery Images (540 X 600)</label>
+                                        <label for="images">Gallery Images (1:1)</label>
                                         <input type="file" name="images[]" id="images" class="form-control" multiple data-max-file-size="2M" >
-                                        <small class="text-muted">These images are visible in product details page gallery. Use 600x600 sizes images.</small>
+                                        <small class="text-muted">These images are visible in product details page gallery. Use 1:1 sizes images.</small>
                                     </div>
 
                                     <div id="imagePreview" class="col-md-12.mb-3"></div>
 
                                     <div class="col-md-12 form-group">
-                                        <label for="thumb_image">Thumbnail Image (540 X 600)</label>
+                                        <label for="thumb_image">Thumbnail Image (1:1)</label>
                                         <input type="file" name="thumb_image" id="thumb_image" class="form-control dropify" data-max-file-size="2M" >
-                                        <small class="text-muted">This image is visible in all product box. Use 300x300 sizes image. Keep some blank space around main object of your image as we had to crop some edge in different devices to make it responsive.</small>
+                                        <small class="text-muted">This image is visible in all product box. Use 500X500px sizes image. Keep some blank space around main object of your image as we had to crop some edge in different devices to make it responsive.</small>
                                     </div>
                                 </div>
                             </div>
@@ -583,7 +579,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Videos</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Product Videos</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -607,7 +605,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Description</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Product Description</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -621,7 +621,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">SEO Meta Tags</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>SEO Meta Tags</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -658,13 +660,15 @@
                     <div style="display: none;" class="col-md-12 mb-4 laptop-finder-module">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Laptop Finder</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Laptop Finder</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-4">
                                         <label for="laptop_budget">Laptop Budget</label>
-                                        <select name="laptop_budget" data-placeholder="Select Laptop Budget" id="laptop_budget" class="form-control select">
+                                        <select name="laptop_budget" data-placeholder="Select Laptop Budget" id="laptop_budget" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select Laptop Budget</option>
                                             @foreach ($laptopBudgets as $laptopBudget)
                                                 <option value="{{ $laptopBudget['id'] }}">Up To {{ $laptopBudget['name'] }}</option>
@@ -673,7 +677,7 @@
                                     </div>
                                     <div class="col-md-12 form-group mb-4">
                                         <label for="laptop_purpose">Laptop purpose </label>
-                                        <select name="laptop_purpose[]" data-placeholder="Select Laptop purpose " id="laptop_purpose" class="form-control select" multiple>
+                                        <select name="laptop_purpose[]" data-placeholder="Select Laptop purpose " id="laptop_purpose" class="form-control select" multiple data-minimum-results-for-search="Infinity">
                                             <option value="">Select Laptop purpose </option>
                                             @foreach ($laptopPurposes as $laptopPurpose)
                                                 <option value="{{ $laptopPurpose['id'] }}">{{ $laptopPurpose['name'] }}</option>
@@ -682,7 +686,7 @@
                                     </div>
                                     <div class="col-md-12 form-group mb-4">
                                         <label for="laptop_screen_size">Laptop screen size </label>
-                                        <select name="laptop_screen_size" data-placeholder="Select Laptop screen size " id="laptop_screen_size" class="form-control select">
+                                        <select name="laptop_screen_size" data-placeholder="Select Laptop screen size " id="laptop_screen_size" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select Laptop screen size </option>
                                             @foreach ($laptopScreenSizes as $laptopScreenSize)
                                                 <option value="{{ $laptopScreenSize['id'] }}">{{ $laptopScreenSize['name'] }}</option>
@@ -691,7 +695,7 @@
                                     </div>
                                     <div class="col-md-12 form-group mb-4">
                                         <label for="laptop_portability">Laptop Portability </label>
-                                        <select name="laptop_portability" data-placeholder="Select Laptop Portability " id="laptop_portability" class="form-control select">
+                                        <select name="laptop_portability" data-placeholder="Select Laptop Portability " id="laptop_portability" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="">Select Laptop Portability </option>
                                             @foreach ($laptopPortables as $laptopPortable)
                                                 <option value="{{ $laptopPortable['id'] }}">{{ $laptopPortable['name'] }}</option>
@@ -700,7 +704,7 @@
                                     </div>
                                     <div class="col-md-12 form-group mb-4">
                                         <label for="laptop_features">Laptop Features </label>
-                                        <select name="laptop_features[]" data-placeholder="Select Laptop Features " id="laptop_features" class="form-control select" multiple>
+                                        <select name="laptop_features[]" data-placeholder="Select Laptop Features " id="laptop_features" class="form-control select" multiple data-minimum-results-for-search="Infinity">
                                             <option value="">Select Laptop Features </option>
                                             @foreach ($laptopFeatures as $laptopFeature)
                                                 <option value="{{ $laptopFeature['id'] }}">{{ $laptopFeature['name'] }}</option>
@@ -718,7 +722,7 @@
                 <div class="row">
 
                     <!-- Product Specification -->
-                    <div class="col-mb-12 mb-4">
+                    <!-- <div class="col-mb-12 mb-4">
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="h5 mb-0">Product Specification</h2>
@@ -726,19 +730,20 @@
                             </div>
                             <div class="card-body">
                                 <div class="col-md-12">
-                                    {{-- <div class="specification_key row"></div> --}}
+                                    <div class="specification_key row"></div>
                                     <button id="add-another" type="button" class="btn btn-primary mt-2" style="display:none;">Add Another
                                         Specification</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Product Costing & Pricing -->
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Product Cost & Pricing </h2>
+                                <h2 class="h6 mb-0"><b>Product Cost & Pricing</b> </h2>
+                                <small style="font-size: 12px;" class="text-muted">Product quantity must be same on the product stock adding table.</small>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -749,16 +754,15 @@
                                     </div>
 
                                     <!-- unit_price -->
-                                    <div class="col-md-12 form-group mb-3">
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="unit_price">Unit Price <span class="text-danger">*</span></label>
                                         <input type="text" name="unit_price" id="unit_price" class="form-control number" value="0" required >
                                     </div>
 
-                                    <!-- quanitiy -->
-                                    <div class="col-md-12 form-group mb-3">
+                                    <!-- Quantity -->
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                         <input type="text" name="quantity" id="quantity" class="form-control number" value="0" required>
-                                        <small class="text-muted">Product quanity must be same on the product stock adding table.</small>
                                     </div>
 
                                     {{-- <!-- sku -->
@@ -770,7 +774,7 @@
                                     <!-- total_price -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="total_price">Total Price <span class="text-danger">*</span></label>
-                                        <input type="text" name="total_price" id="total_price" class="form-control" value="0" required>
+                                        <input type="text" name="total_price" id="total_price" class="form-control" value="0" required readonly disabled>
                                         <small class="text-muted">Total Price = Unit Price X Quantity</small>
                                     </div>
 
@@ -778,19 +782,19 @@
                                     <div class="col-md-6 form-goup mb-3">
                                         <label for="purchase_unit_price">Unit Purchase Price </label>
                                         <input type="text" id="purchase_unit_price" name="purchase_unit_price" class="form-control number" value="0" >
-                                        <small class="text-muted">This is the product purchase price from sellter.</small>
+                                        <small style="font-size: 10px;" class="text-muted">Product Purchase Price from Seller.</small>
                                     </div>
 
                                     <!-- purchase_total_price -->
-                                    <div class="col-md-6 form-goup mb-3">
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="purchase_total_price">Total Purchase Price </label>
-                                        <input type="text" id="purchase_total_price" class="form-control number" value="0" >
+                                        <input type="text" id="purchase_total_price" class="form-control number" disabled value="0" >
                                     </div>
 
                                     <!-- currency_id -->
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="currency_id">Currency</label>
-                                        <select name="currency_id" id="currency_id" disabled class="form-control">
+                                        <select name="currency_id" id="currency_id" data-minimum-results-for-search="Infinity" disabled class="form-control">
                                             @foreach ($currencies as $currency)
                                                 <option {{ get_settings('system_default_currency') == $currency->id ? 'selected' : '' }} value="{{ $currency->id }}">{{ $currency->name }}</option>
                                             @endforeach
@@ -803,10 +807,10 @@
                                         <input type="file" name="file" id="file" class="form-control">
                                     </div>
 
-                                    <!-- is_selleable -->
+                                    <!-- is_sellable -->
                                     <div class="col-md-12 form-group mb-3">
-                                        <label for="is_selleable">Is sellable</label>
-                                        <select name="is_sellable" id="is_sellable" class="form-contom select">
+                                        <label for="is_sellable">Is sellable</label>
+                                        <select name="is_sellable" id="is_sellable" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option selected value="1">Yes</option>
                                             <option value="0">No</option>
                                         </select>
@@ -817,7 +821,7 @@
                     </div>
 
                     <!-- Product Stocks -->
-                    <div class="col-md-12 mb-4">
+                    {{-- <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="h5 mb-0">Product Stocks </h2>
@@ -903,26 +907,28 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Discount -->
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Discount</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Discount</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_discounted">Discount Available</label>
-                                        <select name="is_discounted" id="is_discounted" class="form-control">
+                                        <select name="is_discounted" id="is_discounted" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="0">No</option>
                                             <option value="1">Yes</option>
                                         </select>
                                     </div>
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="discount_type">Discount Type </label>
-                                        <select name="discount_type" id="discount_type" class="form-control" disabled>
+                                        <select name="discount_type" id="discount_type" class="form-control select" data-minimum-results-for-search="Infinity" disabled>
                                             <option value="amount">Amount</option>
                                             <option value="percentage">Percent</option>
                                         </select>
@@ -949,19 +955,21 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Status</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Status</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
-                                        <select name="status" id="status" class="form-control select">
+                                        <select name="status" id="status" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option selected value="1">Active</option>
                                             <option value="0">Inactive</option>
                                         </select>
                                     </div>
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="stage">Stage </label>
-                                        <select name="stage" id="stage" class="form-control select">
+                                        <select name="stage" id="stage" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option selected value="normal">Normal</option>
                                             <option value="pre-order">Pre Order</option>
                                             <option value="upcoming">Upcoming</option>
@@ -976,13 +984,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Feature Product</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Feature Product</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_featured">Feature Product</label>
-                                        <select name="is_featured" id="is_featured" class="form-control">
+                                        <select name="is_featured" id="is_featured" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="0">No</option>
                                             <option value="1">Yes</option>
                                         </select>
@@ -996,13 +1006,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Return Policy</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Return Policy</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
                                         <label for="is_returnable">Is Returnable</label>
-                                        <select name="is_returnable" id="is_returnable" class="form-control">
+                                        <select name="is_returnable" id="is_returnable" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="0">No</option>
                                             <option value="1">Yes</option>
                                         </select>
@@ -1024,7 +1036,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Low Stock Quantity Warning</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Low Stock Quantity Warning</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -1041,13 +1055,22 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Cash on Delivery</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Product Type & Cash on Delivery</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group mb-3">
+                                        <label for="delivery_type">Delivery Type</label>
+                                        <select name="delivery_type" id="delivery_type" class="form-control select" data-minimum-results-for-search="Infinity">
+                                            <option value="available">Available</option>
+                                            <option value="overseas">Shipped from Overseas</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 form-group mb-3">
                                         <label for="cash_on_delivery">Cash on Delivery</label>
-                                        <select name="cash_on_delivery" id="case_on_deliver" class="form-control">
+                                        <select name="cash_on_delivery" id="case_on_deliver" class="form-control select" data-minimum-results-for-search="Infinity">
                                             <option value="1">Available</option>
                                             <option value="0">Not available</option>
                                         </select>
@@ -1061,13 +1084,15 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Estimate Shipping Time</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Estimate Shipping Time</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <label for="est_shipping_time">Estimate Shipping Time</label>
                                     <div class="col-md-12 input-group mb-3">
-                                        <input type="number" min="0" class="form-control" name="est_shipping_time" id="est_shipping_time">
+                                        <input type="number" min="0" class="form-control" name="est_shipping_time" id="est_shipping_time" value="7">
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="basic-addon2">Days</span>
                                         </div>
@@ -1081,7 +1106,9 @@
                     <div class="col-md-12 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="h5 mb-0">Vat & TAX</h2>
+                                <h2 class="h6 mb-0">
+                                    <b>Vat & TAX</b>
+                                </h2>
                             </div>
                             <div class="card-body">
                                 @foreach ($taxes as $tax)
@@ -1093,7 +1120,7 @@
                                         </div>
                                         <div class="col-md-6 form-group mb-3">
                                             <label for="tax_type_{{ $tax->id }}">Type</label>
-                                            <select name="tax_types[]" id="tax_type_{{ $tax->id }}" class="form-control">
+                                            <select name="tax_types[]" id="tax_type_{{ $tax->id }}" class="form-control select" data-minimum-results-for-search="Infinity">
                                                 <option value="flat">Flat</option>
                                                 <option value="percent">Percent</option>
                                             </select>

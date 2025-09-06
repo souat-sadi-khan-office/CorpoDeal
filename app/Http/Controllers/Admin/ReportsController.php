@@ -75,15 +75,17 @@ class ReportsController extends Controller
             return $this->reportRepository->wishlistDataTable();
         }
 
-        $totalProductsInWishlist = Wishlist::distinct('product_id')->count('product_id');
+        $product = null;
+        $totalProductsInWishlist = Wishlist::count('product_id');
 
         $mostWishlistProduct = Wishlist::select('product_id', DB::raw('count(*) as wishlist_count'))
             ->groupBy('product_id')
             ->orderByDesc('wishlist_count')
             ->first();
 
-        $product = Product::find($mostWishlistProduct->product_id); 
-
+        if($mostWishlistProduct) {
+            $product = Product::find($mostWishlistProduct->product_id); 
+        }
 
         return view('backend.reports.wishlist.index', compact('totalProductsInWishlist', 'mostWishlistProduct', 'product'));
     }

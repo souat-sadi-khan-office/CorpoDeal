@@ -16,7 +16,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.banner.index') }}">Brand Management</a>
+                            <a style="color: #000;" href="{{ route('admin.banner.index') }}">Brand Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Update Brand Information</li>
                     </ol>
@@ -24,7 +24,7 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.brand.index') }}" class="btn btn-soft-danger">
+                        <a href="{{ route('admin.brand.index') }}" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-backspace"></i>
                             Back
                         </a>
@@ -36,7 +36,7 @@
 @endsection
 @section('content')
     <div class="row">
-        <div class="col-md-7 mx-auto">
+        <div class="col-md-12">
             <form action="{{ route('admin.brand.update', $model->id) }}" enctype="multipart/form-data" class="content_form" method="POST">
                 @method('PATCH')
                 <div class="card">
@@ -60,7 +60,7 @@
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="status">Status <span class="text-danger">*</span></label>
-                                <select name="status" id="status" class="form-control select" required>
+                                <select name="status" id="status" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option {{ $model->status == 1 ? 'selected' : ''}} value="1">Active</option>
                                     <option {{ $model->status == 0 ? 'selected' : ''}} value="0">Inactive</option>
                                 </select>
@@ -68,7 +68,7 @@
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="is_featured">Featured <span class="text-danger">*</span></label>
-                                <select name="is_featured" id="is_featured" class="form-control select" required>
+                                <select name="is_featured" id="is_featured" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option {{ $model->is_featured == 1 ? 'selected' : '' }} value="1">Yes</option>
                                     <option {{ $model->is_featured == 0 ? 'selected' : '' }} value="0">No</option>
                                 </select>
@@ -102,16 +102,16 @@
                             </div>
                     
                             <div class="col-md-12 form-group">
-                                <button type="submit" class="btn btn-soft-success"  id="submit">
+                                <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                                     <i class="bi bi-send"></i>
                                     Update
                                 </button>
-                                <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
                                 </button>
                                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view'))
-                                    <a href="{{ route('admin.brand.index') }}" class="btn btn-soft-danger">
+                                    <a href="{{ route('admin.brand.index') }}" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-backspace"></i>
                                         Back
                                     </a>

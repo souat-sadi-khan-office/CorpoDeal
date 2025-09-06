@@ -24,7 +24,7 @@
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view')) --}}
                     <div class="col-sm-3 text-end">
-                        <a href="{{ route('admin.category-banner.index') }}" class="btn btn-soft-danger">
+                        <a href="{{ route('admin.category-banner.index') }}" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-backspace"></i>
                             Back
                         </a>
@@ -44,9 +44,10 @@
                         <div class="row">
                             <div class="col-md-12 form-group mb-3">
                                 <label for="category_id">Category <span class="text-danger">*</span></label>
-                                <select name="category_id" id="category_id" class="form-control">
+                                <select name="category_id" id="category_id" class="form-control" required data-parsley-errors-container="#category_id_error">
                                     <option value="{{ $model->category_id }}">{{ $model->category->name }}</option>
                                 </select>
+                                <span id="category_id_error"></span>
                             </div>
 
                             <div class="col-md-12 mb-3 form-group">
@@ -57,12 +58,12 @@
                             <div class="col-md-12 mb-3 form-group">
                                 <label for="picture">Picture </label>
                                 <input type="file" accept=".jpg, .png, .webp"  name="picture" id="picture" class="form-control dropify" data-default-file="{{ asset($model->picture) }}">
-                                <span class="text-danger">Left sidebar Banner size is <b>375 X 450</b> pixel. Right sidebar Banner size is <b>1200 X 450</b> pixel. Please use <b>.WEBP</b> format picture for better performance.</span>
+                                <small class="text-muted">Left sidebar Banner size is <b>375 X 450</b> pixel. Right sidebar Banner size is <b>1200 X 450</b> pixel. Please use <b>.WEBP</b> format picture for better performance.</small>
                             </div>
 
-                            <div class="col-md-12 mb-3 form-group">
+                            <div class="col-md-6 mb-3 form-group">
                                 <label for="position">Position <span class="text-danger">*</span></label>
-                                <select name="position" id="position" class="form-control select" required>
+                                <select name="position" id="position" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option {{ $model->position == 'after_breadcrumb_section' ? 'selected' : '' }} value="after_breadcrumb_section">After BreadCrumb Section</option>
                                     <option {{ $model->position == 'after_title_and_description' ? 'selected' : '' }} value="after_title_and_description">After Title & Description</option>
                                     <option {{ $model->position == 'on_left_sidebar_start' ? 'selected' : '' }} value="on_left_sidebar_start">On Left Sidebar Start</option>
@@ -78,9 +79,9 @@
                                 </select>
                             </div>
                             
-                            <div class="col-md-12 mb-3 form-group">
+                            <div class="col-md-6 mb-3 form-group">
                                 <label for="status">Status <span class="text-danger">*</span></label>
-                                <select name="status" id="status" class="form-control select" required>
+                                <select name="status" id="status" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option {{ $model->status == 1 ? 'selected' : ''}} value="1">Active</option>
                                     <option {{ $model->status == 0 ? 'selected' : ''}} value="0">Inactive</option>
                                 </select>

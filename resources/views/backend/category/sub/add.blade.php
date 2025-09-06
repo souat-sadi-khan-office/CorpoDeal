@@ -65,12 +65,13 @@
                                         Parent Category
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <select name="parent_id" data-placeholder="-- Select Parent Category --" id="subCategory" class="form-control select" required>
-                                        <option value="">-- Select Parent Category --</option>
+                                    <select name="parent_id" data-placeholder="Select Parent Category" id="subCategory" class="form-control select" required data-parsley-errors-container="#parent_id_error">
+                                        <option value="">Select Parent Category</option>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
+                                    <span id="parent_id_error"></span>
                                 </div>
                             </div>
 

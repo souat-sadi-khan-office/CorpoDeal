@@ -20,9 +20,9 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('banner.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.banner.create') }}" class="btn btn-soft-success">
-                            <i class="bi bi-plus"></i>
-                            Create New
+                        <a href="{{ route('admin.banner.create') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-plus" style="margin-right: 5px;"></i>
+                            Add New Banner
                         </a>
                     </div>
                 @endif
@@ -42,8 +42,10 @@
                                 <th>ID</th>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Banner Type</th>
+                                <th>Platform</th>
+                                <th>Type</th>
                                 <th>Status</th>
+                                <th>Position</th>
                                 <th>Created By</th>
                                 <th>Actions</th>
                             </tr>
@@ -72,21 +74,42 @@
                     {
                         data: 'id',
                         name: 'id',
-                        order: true,
                         visible: false
                     },
                     {data: 'image', name: 'image'},
                     {data: 'name', name: 'name'},
+                    {data: 'platform', name: 'platform'},
                     {data: 'banner_type', name: 'banner_type'},
                     {data: 'status', name: 'status'},
+                    {data: 'position', name: 'position'},
                     {data: 'created_by', name: 'created_by'},
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                 ],
-                order: [0, 'DESC']
+                order: [4, 'ASC']
             });
 
             _statusUpdate();
 
+        });
+
+        $(document).on('click', '.move-banner', function () {
+            const button = $(this);
+            const bannerId = button.data('id');
+            const direction = button.data('direction');
+
+            $.ajax({
+                url: `/admin/banner/${direction}/${bannerId}`,
+                type: 'GET',
+                success: function (res) {
+                    toastr.success(`Banner moved ${direction === 'up' ? 'up' : 'down'} successfully.`);
+                    setTimeout(() => {
+                        location.reload(); // Reload to reflect changes
+                    }, 1000);
+                },
+                error: function () {
+                    toastr.error('Something went wrong!');
+                }
+            });
         });
     </script>
 @endpush

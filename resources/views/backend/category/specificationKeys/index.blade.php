@@ -14,15 +14,15 @@
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Category Specification Keys</li>
+                        <li class="breadcrumb-item active" aria-current="page">Category Specification Groups/Keys</li>
                     </ol>
                 </div>
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('specification-key.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="javascript:;" data-url="{{ route('admin.category.specification.key.create') }}" id="content_management" class="btn btn-soft-success">
+                        <a href="javascript:;" data-url="{{ route('admin.category.specification.key.create') }}" id="content_management" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New
                         </a>
                     </div>
                 @endif
@@ -39,11 +39,11 @@
                     <table class="table table-bordered table-striped table-hover" id="data-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th style="width: 100px" class="text-center">Image</th>
-                                <th>Parent</th>
-                                <th class="text-center">Keys Count</th>
-                                <th style="width: 100px" class="text-center">Actions</th>
+                                <th width="10%">Image</th>
+                                <th>Category</th>
+                                <!-- <th>Parent</th> -->
+                                <th class="text-center">Groups/Keys Count</th>
+                                <th width="25%" class="text-center">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -56,11 +56,10 @@
 @push('styleforIconPicker')
     <link href="{{ asset('backend/assets/css/bootstrapicons-iconpicker.css') }}" rel="stylesheet">
     <style>
-        tr td:nth-child(2) {
+        tr td:nth-child(3) {
             text-align: center;
         }
     </style>
-    <!-- Option 1: Include in HTML -->
 @endpush
 
 @push('script')
@@ -75,18 +74,20 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('admin.category.specification.key.index') }}",
-                columns: [{
+                columns: [
+                    {
+                        data: 'photo',
+                        name: 'photo',
+                        order: false,
+                    },
+                    {
                         data: 'name',
                         name: 'name'
                     },
-                    {
-                        data: 'photo',
-                        name: 'photo'
-                    },
-                    {
-                        data: 'parent_id',
-                        name: 'parent_id'
-                    },
+                    // {
+                    //     data: 'parent_id',
+                    //     name: 'parent_id'
+                    // },
                     {
                         data: 'specification_keys_count',
                         name: 'specification_keys_count'

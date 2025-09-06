@@ -27,7 +27,7 @@ class ZoneRepository implements ZoneRepositoryInterface
                 return $model->id;
             })
             ->editColumn('cost', function($model) {
-                return '$'. number_format(covert_to_defalut_currency($model->cost), 2);
+                return 'BDT '. number_format(covert_to_defalut_currency($model->cost), 2);
             })
             ->editColumn('status', function ($model) {
                 $checked = $model->status == 1 ? 'checked' : '';

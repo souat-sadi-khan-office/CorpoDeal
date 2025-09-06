@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Repositories\Interface\SupplierRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\StockRequest;
 use App\Http\Controllers\Controller;
@@ -18,19 +19,24 @@ class ProductStockController extends Controller
     private $zoneRepository;
     private $countryRepository;
     private $cityRepository;
+    private $supplierRepository;
 
     public function __construct(
         ProductStockRepositoryInterface $stockRepository,
         CurrencyRepositoryInterface $currencyRepository,
         ZoneRepositoryInterface $zoneRepository,
         CountryRepositoryInterface $countryRepository,
-        CityRepositoryInterface $cityRepository
+        CityRepositoryInterface $cityRepository,
+        SupplierRepositoryInterface $supplierRepository,
+
     ) {
         $this->stockRepository = $stockRepository;
         $this->currencyRepository = $currencyRepository;
         $this->zoneRepository = $zoneRepository;
         $this->countryRepository = $countryRepository;
         $this->cityRepository = $cityRepository;
+        $this->supplierRepository = $supplierRepository;
+
     }
 
     /**
@@ -67,8 +73,10 @@ class ProductStockController extends Controller
         $zones = $this->zoneRepository->getAllActiveZones();
         $countries = $this->countryRepository->getAllActiveCountry();
         $cities = $this->cityRepository->getAllActiveCity();
+        $suppliers = $this->supplierRepository->index()->where('status', 1);
 
-        return view('backend.stock.create', compact('currencies','zones', 'countries', 'cities', 'product_id'));
+
+        return view('backend.stock.create', compact('currencies','zones', 'countries', 'cities','suppliers', 'product_id'));
     }
 
     /**
@@ -78,13 +86,13 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.create') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);
         }
-        
-        return $this->stockRepository->createStock($request->all());        
+
+        return $this->stockRepository->createStock($request->all());
     }
 
     /**
@@ -108,7 +116,7 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.delete') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);
@@ -124,7 +132,7 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.create') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);

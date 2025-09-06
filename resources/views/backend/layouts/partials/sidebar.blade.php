@@ -32,7 +32,8 @@
                         </a>
                     </li>
                 @endif
-            <!-- Order -->
+            
+                <!-- Order -->
                 @if(Auth::guard('admin')->user()->hasPermissionTo('all-order.view') || Auth::guard('admin')->user()->hasPermissionTo('pending-order.view') || Auth::guard('admin')->user()->hasPermissionTo('packaging-order.view') || Auth::guard('admin')->user()->hasPermissionTo('shipping-order.view') || Auth::guard('admin')->user()->hasPermissionTo('confirm-order.view') || Auth::guard('admin')->user()->hasPermissionTo('delivered-order.view') || Auth::guard('admin')->user()->hasPermissionTo('returned-order.view') || Auth::guard('admin')->user()->hasPermissionTo('failed-order.view') || Auth::guard('admin')->user()->hasPermissionTo('refund-requested-order.view'))
                     <li class="nav-item {{ Request::is('admin/orders*') ? 'menu-open' : '' }}">
                         <a href="javascript:;" class="nav-link">
@@ -52,6 +53,14 @@
                                     </a>
                                 </li>
                             @endif
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.order.index', ['status' => 'new_order']) }}"
+                                    class="nav-link {{ Request::is('admin/orders') && Request::get('status') == 'new_order' ? ' active' : '' }}">
+                                    <i class="nav-icon bi bi-cloud-plus"></i>
+                                    <p>New Orders</p>
+                                </a>
+                            </li>
 
                             @if(Auth::guard('admin')->user()->hasPermissionTo('pending-order.view'))
                                 <li class="nav-item">
@@ -132,6 +141,15 @@
                                     </a>
                                 </li>
                             @endif
+
+                            @if(Auth::guard('admin')->user()->hasPermissionTo('refund-requested-order.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.order.index', ['status' => 'cancelled']) }}" class="nav-link {{ Request::is('admin/orders') && Request::get('cancelled') != null ? ' active' : '' }}">
+                                        <i class="nav-icon bi bi-x-diamond-fill"></i>
+                                        <p>Cancelled Orders</p>
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endcan
@@ -209,7 +227,7 @@
                         <a href="javascript:;" class="nav-link">
                             <i class="nav-icon bi bi-gear-wide-connected"></i>
                             <p>
-                                Specification Keys
+                                Specifications
                                 <i class="nav-arrow bi bi-chevron-right"></i>
                             </p>
                         </a>
@@ -219,7 +237,7 @@
                                     <a href="{{ route('admin.category.specification.key.public') }}" class="nav-link {{ Request::is('admin/categories/specification/keys/public') ? ' active' : '' }}">
                                         <i class="nav-icon bi bi-command"></i>
                                         <p>
-                                            Public Keys
+                                            Public Groups/Keys
                                         </p>
                                     </a>
                                 </li>
@@ -230,7 +248,7 @@
                                     <a href="{{ route('admin.category.specification.key.index') }}" class="nav-link {{ Request::is('admin/categories/specification/keys') ? ' active' : '' }}">
                                         <i class="nav-icon bi bi-plus-circle"></i>
                                         <p>
-                                            Keys
+                                            Groups/Keys
                                         </p>
                                     </a>
                                 </li>
@@ -260,7 +278,16 @@
                         </ul>
                     </li>
                 @endcan
-
+                @if(Auth::guard('admin')->user()->hasPermissionTo('supplier.view'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.supplier.index') }}" class="nav-link {{ Request::is('admin/suppliers*') ? ' active' : '' }}">
+                            <i class="nav-icon bi bi-bookmarks-fill"></i>
+                            <p>
+                                Suppliers
+                            </p>
+                        </a>
+                    </li>
+                @endif
                 <!-- Product -->
                 @if(Auth::guard('admin')->user()->hasPermissionTo('product.view') || Auth::guard('admin')->user()->hasPermissionTo('product.specification'))
                     <li class="nav-item {{ Request::is('admin/product*')? 'menu-open' : '' }}">
@@ -311,6 +338,15 @@
                         class="nav-link {{ Request::is('admin/stock') || Request::is('admin/stock/*') ? ' active' : '' }}">
                             <i class="nav-icon bi bi-archive"></i>
                             <p>Stock</p>
+                        </a>
+                    </li>
+                @endcan
+                @if(Auth::guard('admin')->user()->hasPermissionTo('product.serial-view'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.product.serials') }}"
+                           class="nav-link {{ Request::is('admin/product-serials') ? ' active' : '' }}">
+                            <i class="nav-icon bi bi-sort-numeric-up-alt"></i>
+                            <p>Product Serials</p>
                         </a>
                     </li>
                 @endcan
@@ -419,6 +455,15 @@
                         </a>
                     </li>
                 @endcan
+                @if(Auth::guard('admin')->user()->hasPermissionTo('payments.view'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.payment.index') }}"
+                           class="nav-link {{ Request::is('admin/ssl-payments') ? ' active' : '' }}">
+                            <i class="nav-icon bi bi-currency-exchange"></i>
+                            <p>Ssl Payments</p>
+                        </a>
+                    </li>
+                @endcan
 
 
                 <!-- Customer -->
@@ -466,7 +511,7 @@
                 @endcan
 
                 <!-- Brands -->
-                @if(Auth::guard('admin')->user()->hasPermissionTo('brand.view') || Auth::guard('admin')->user()->hasPermissionTo('brand-type.view'))
+                {{-- @if(Auth::guard('admin')->user()->hasPermissionTo('brand.view') || Auth::guard('admin')->user()->hasPermissionTo('brand-type.view'))
                     <li
                         class="nav-item {{ Request::is('admin/brand*') || Request::is('admin/brand-type') ? 'menu-open' : '' }}">
                         <a href="javascript:;" class="nav-link">
@@ -497,6 +542,16 @@
                                 </li>
                             @endcan
                         </ul>
+                    </li>
+                @endcan --}}
+
+                @if(Auth::guard('admin')->user()->hasPermissionTo('brand.view'))
+                    <li class="nav-item">
+                        <a href="{{ route('admin.brand.index') }}"
+                        class="nav-link {{ Request::is('admin/brand') || Request::is('admin/brand/*') ? ' active' : '' }}">
+                            <i class="nav-icon bi bi-unity"></i>
+                            <p>Brand</p>
+                        </a>
                     </li>
                 @endcan
 
@@ -707,6 +762,12 @@
                                             <a href="{{ route('admin.settings.seo', 'all_categories') }}" class="nav-link {{ Request::is('admin/settings/seo/all_categories') ? ' active' : '' }}">
                                                 <i class="bi bi-balloon nav-icon"></i>
                                                 <p>All Categories Page</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('admin.settings.seo', 'all_products') }}" class="nav-link {{ Request::is('admin/settings/seo/all_products') ? ' active' : '' }}">
+                                                <i class="bi bi-balloon nav-icon"></i>
+                                                <p>All Products Page</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
@@ -992,13 +1053,13 @@
                         @endif
 
                         @if(Auth::guard('admin')->user()->hasPermissionTo('shipping-configuration.carrier'))
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a href="{{ route('admin.carrier.index') }}"
                                 class="nav-link {{ Request::is('admin/carrier*') ? ' active' : '' }}">
                                     <i class="nav-icon bi bi-rocket"></i>
                                     <p>Carrier</p>
                                 </a>
-                            </li>
+                            </li> -->
                         @endif
                     </ul>
                 </li>

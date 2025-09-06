@@ -71,6 +71,7 @@ class InstallmentPlanController extends Controller
         if ($request->ajax()) {
             return $this->installment->balanceRequestsDatatable($data);
         }
+        
         return view('backend.balance-request.index');
     }
 
@@ -101,5 +102,11 @@ class InstallmentPlanController extends Controller
     public function negativeBalanceStore(Request $request)
     {
         return $this->installment->negativeBalanceStore($request);
+    }
+
+    public function installmentPlans()
+    {
+        $plans = $this->installment->plansIndex(null)->where('status', 1);
+        return response()->json($plans);
     }
 }

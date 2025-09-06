@@ -2,6 +2,11 @@
 @section('title', 'Category Management')
 @push('style')
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+    </style>
 @endpush
 @section('page_name')
     <div class="app-content-header">
@@ -21,9 +26,9 @@
                 @if (Auth::guard('admin')->user()->hasPermissionTo('category.create'))
                     <div class="col-sm-6 text-end">
                         <a href="{{ route('admin.category.add') }}"
-                            class="btn btn-success istiyak bw-2">
+                            class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New Category
                         </a>
                     </div>
                 @endif
@@ -44,10 +49,10 @@
                                 <th width="8%">Image</th>
                                 <th>Name</th>
                                 <th class="text-center">Icon</th>
-                                <th>Created_by</th>
+                                <th>Creator</th>
                                 <th width="7%">Status</th>
-                                <th width="7%">Featured?</th>
-                                <th width="20%">Actions</th>
+                                <th width="7%">Featured</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                     </table>
@@ -68,7 +73,6 @@
             font-size: 25px;
         }
     </style>
-    <!-- Option 1: Include in HTML -->
 @endpush
 
 @push('script')

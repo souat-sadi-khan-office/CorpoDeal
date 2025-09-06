@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Repositories\InstallmentPlanRepository;
 use App\Repositories\Interface\InstallmentPlanInterface;
 use App\Repositories\Interface\ReportsRepositoryInterface;
+use App\Repositories\Interface\SupplierRepositoryInterface;
 use App\Repositories\ReportsRepository;
+use App\Repositories\SupplierRepository;
 use App\Repositories\TaxRepository;
 use App\Repositories\AuthRepository;
 use App\Repositories\CartRepository;
@@ -107,6 +109,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PcBuilderRepositoryInterface::class, PcBuilderRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(ProductSpecificationRepositoryInterface::class, ProductSpecificationRepository::class);
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);

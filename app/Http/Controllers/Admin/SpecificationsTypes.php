@@ -139,8 +139,10 @@ class SpecificationsTypes extends SpecificationsController
 
     public function show(Request $request,$id)
     {
-        $models=SpecificationKeyType::where('specification_key_id',$id)->with('admin')->orderBy('position')->get();
-        return view('backend.category.specificationKeys.types.typesModal',compact('models'));
+        $key = SpecificationKey::select('id', 'name')->where('id', $id)->first();
+        $models = SpecificationKeyType::where('specification_key_id',$id)->with('admin')->orderBy('position')->get();
+
+        return view('backend.category.specificationKeys.types.typesModal',compact('models', 'key'));
     }
 
     public function updatestatus($id)

@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="{{ asset('backend/assets/css/dropify.min.css') }}">
 @endpush
 @section('content')
-    <div class="row mt-5">
-        <div class="card">
-            <div class="card-body">
-                <p>"Please review all values carefully before proceeding. <span class="text-danger">Note: This action will directly modify the project's .env (Environment) file.</span>"</p>
-                <div id="countdown" class="alert alert-warning"></div>
-
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <p>"Please review all values carefully before proceeding. <span class="text-danger">Note: This action will directly modify the project's .env (Environment) file.</span>"</p>
+                    <div id="countdown" class="alert alert-warning"></div>
+                </div>
             </div>
         </div>
 
@@ -52,17 +53,17 @@
                                     <option value="true" {{ env('PAYPAL_SANDBOX_MODE') == true ? 'selected' : '' }}>Active
                                     </option>
                                     <option value="false" {{ env('PAYPAL_SANDBOX_MODE') == false ? 'selected' : '' }}>
-                                        Deactive
+                                        Inactive
                                     </option>
                                 </select>
                             </div>
 
                             <div class="col-md-12 form-group text-end">
-                                <button type="submit" id="submit2" class="btn btn-soft-success">
+                                <button type="submit" id="submit2" class="btn btn-sm btn-dark">
                                     <i class="bi bi-send"></i>
                                     Update
                                 </button>
-                                <button class="btn btn-soft-warning" style="display: none;" id="submitting2" type="button"
+                                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting2" type="button"
                                     disabled>
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Loading...
@@ -102,7 +103,7 @@
                                     <option value="true" {{ env('SSLCOMMERZ_SANDBOX') == true ? 'selected' : '' }}>Active
                                     </option>
                                     <option value="false" {{ env('SSLCOMMERZ_SANDBOX') == false ? 'selected' : '' }}>
-                                        Deactive
+                                        Inactive
                                     </option>
                                 </select>
                             </div>
@@ -116,15 +117,15 @@
                                         Active</option>
                                     <option value="false"
                                         {{ env('SSLCOMMERZ_ALLOW_LOCALHOST') == false ? 'selected' : '' }}>
-                                        Deactive</option>
+                                        Inactive</option>
                                 </select>
                             </div>
                             <div class="col-md-12 form-group text-end">
-                                <button type="submit" id="submit" class="btn btn-soft-success">
+                                <button type="submit" id="submit" class="btn btn-sm btn-dark">
                                     <i class="bi bi-send"></i>
                                     Update
                                 </button>
-                                <button class="btn btn-soft-warning" style="display: none;" id="submitting"
+                                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting"
                                     type="button" disabled>
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>

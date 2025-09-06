@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Page;
 use App\Models\Brand;
 use App\Models\Offer;
@@ -9,6 +10,7 @@ use App\Models\Product;
 use App\Models\Menu;
 use App\Models\Category;
 use App\Models\ProductDetail;
+use App\Models\ProductSerial;
 use App\Models\FlashDeal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -70,7 +72,7 @@ class HelperController extends Controller
         return response()->json($results);
     }
 
-    public function fetcher($slug, $index = 0)
+    public function fetcher($slug, Request $request, $index = 0)
     {
         $models = ['Product', 'Category', 'Brand', 'Page', 'Offer', 'FlashDeal'];
 
@@ -88,7 +90,7 @@ class HelperController extends Controller
 
                 $this->sentToVisitedList($product);
 
-                $breadcrumb = $this->getCategoryBreadcrumb($product['category']);
+                $breadcrumb = $this->getCategoryBreadcrumb($product['category']->id);
 
                 $brand_id = null;
                 if($product['brand_id']) {
@@ -111,23 +113,43 @@ class HelperController extends Controller
 
                 return view('frontend.product-details', compact('product', 'visited_product_list', 'same_brand_products', 'same_category_products', 'related_products', 'breadcrumb', 'keySpec', 'spec'));
             } else {
-                return $this->fetcher($slug, $index + 1);
+                return $this->fetcher($slug, $request, $index + 1);
             }
         } elseif ($model == 'Category' && Category::where('slug', $slug)->where('status', 1)->exists()) {
             $model = $this->categoryRepository->getCategoryBySlug($slug);
-            if ($model) {
-                $Ids =$this->getAllDescendantIds($model);
 
+            if ($model) {
+                $Ids = $this->getAllDescendantIds($model);
                 $categoryIdArray = $model->getAllCategoryIds();
 
-                $allProductCount = Product::whereIn('category_id', $categoryIdArray)->where('status', 1)->count();
-                $products = $this->productRepository->index($slug, $Ids);
-                $productCount = $products->count();
-                $breadcrumb = $this->getCategoryBreadcrumb($model);
-                return view('frontend.listing', compact('model', 'allProductCount', 'productCount', 'products', 'categoryIdArray', 'breadcrumb'));
+                $filterParams = collect($request->except(['page']))->filter();
+                if ($filterParams->isNotEmpty()) {
+                    $request->merge(['category_ids' => $categoryIdArray]);
+                    $products = $this->productRepository->index($request, $Ids);
+                    $productCount = $products->count();
+                } else {
+                    $products = $this->productRepository->index($slug, $Ids);
+                    $productCount = $products->count();
+                }
+
+                $allProductCount = Product::whereIn('category_id', $categoryIdArray)
+                    ->where('status', 1)
+                    ->count();
+
+                $breadcrumb = $this->getCategoryBreadcrumb($model->id);
+
+                return view('frontend.listing', compact(
+                    'model',
+                    'allProductCount',
+                    'productCount',
+                    'products',
+                    'categoryIdArray',
+                    'breadcrumb'
+                ));
             } else {
-                return $this->fetcher($slug, $index + 1);
+                return $this->fetcher($slug, $request, $index + 1);
             }
+
         } elseif ($model == 'Brand' && Brand::where('slug', $slug)->where('status', 1)->exists()) {
             $model = $this->brandRepository->getBrandBySlug($slug);
             if ($model) {
@@ -138,9 +160,16 @@ class HelperController extends Controller
                 $allProductCount = Product::where('brand_id', $model->id)->where('status', 1)->count();
                 $productCount = $products->count();
 
-                return view('frontend.brand-listing', compact('model', 'allProductCount', 'productCount', 'products'));
+                $categories = Category::select('id', 'name', 'slug')->whereIn('id', function($query) use ($model) {
+                    $query->select('category_id')
+                        ->from('products')
+                        ->where('brand_id', $model->id)
+                        ->distinct();
+                })->get();
+
+                return view('frontend.brand-listing', compact('model', 'allProductCount', 'productCount', 'products', 'categories'));
             } else {
-                return $this->fetcher($slug, $index + 1);
+                return $this->fetcher($slug, $request, $index + 1);
             }
         } elseif ($model == 'Page' && Page::where('slug', $slug)->where('status', 1)->exists()) {
             $model = Page::where('status', 1)->where('slug', $slug)->first();
@@ -148,7 +177,7 @@ class HelperController extends Controller
 
                 return view('frontend.page', compact('model'));
             } else {
-                return $this->fetcher($slug, $index + 1);
+                return $this->fetcher($slug, $request, $index + 1);
             }
         } elseif ($model == 'FlashDeal' && FlashDeal::where('slug', $slug)->where('status', 1)->exists()) {
             $model = FlashDeal::where('status', 1)->where('slug', $slug)->first();
@@ -184,10 +213,10 @@ class HelperController extends Controller
 
                 return view('frontend.flash-deals-details', compact('model', 'days', 'isCrossedDeadline', 'hours', 'minutes', 'products', 'seconds'));
             } else {
-                return $this->fetcher($slug, $index + 1);
+                return $this->fetcher($slug, $request, $index + 1);
             }
         } else {
-            return $this->fetcher($slug, $index + 1);
+            return $this->fetcher($slug, $request, $index + 1);
         }
 
         // // Check for data in the current model
@@ -248,6 +277,9 @@ class HelperController extends Controller
 
             if(isset($request->brand_id) && $request->brand_id != '') {
                 $allIds = $request->brand_id;
+                $products = $this->productRepository->index($request, null);
+            } elseif (!$category) {
+                $request->merge(['all_products' => true]);
                 $products = $this->productRepository->index($request, null);
             } else {
                 $allIds = $this->getAllDescendantIds($category);
@@ -319,27 +351,36 @@ class HelperController extends Controller
                 'discount_type'
             ]);
 
+        $isDiscounted = $product->discount_type && $product->discount > 0;
         $discountedPrice = $product->unit_price;
-        if ($product->is_discounted && $product->discount > 0) {
+
+        if (Carbon::parse($product->discount_end_date)->lt(today())) {
+            $isDiscounted = false;
+        }
+
+        if ($isDiscounted) {
             $discountAmount = $product->discount_type == 'amount'
                 ? $product->discount
                 : ($product->unit_price * ($product->discount / 100));
 
-            $discountedPrice -= $discountAmount;
+            $discountedPrice = $product->unit_price - $discountAmount;
         }
+
         $averageRatingPercentage = $product->averageRating !== null ? ($product->averageRating / 5) * 100 : 0;
         $productDetails = [
             'id' => $product->id,
             'category' => $product->category,
             'brand_id' => $product->brand_id,
-            'brand_name' => $product->brand->name,
-            'brand_slug' => $product->brand->slug,
+            'brand_name' => $product->brand ?  $product->brand->name : '',
+            'brand_slug' => $product->brand ? $product->brand->slug : '',
             'name' => $product->name,
             'thumb_image' => $product->thumb_image,
             'sku' => $product->sku,
             'slug' => $product->slug,
             'points' => $product->details->points ?? 0,
             'description' => $product->details->description ?? '',
+            'delivery_type' => $product->details->delivery_type ?? 'Available',
+            'est_shipping_time' => $product->details->est_shipping_days ?? 0,
             'site_title' => $product->details->site_title ?? '',
             'meta_title' => $product->details->meta_title ?? '',
             'meta_keyword' => $product->details->meta_keyword ?? '',
@@ -352,7 +393,7 @@ class HelperController extends Controller
             'ratings_count' => $product->ratings_count,
             'average_rating' => number_format($product->averageRating, 2),
             'average_rating_percantage' => $averageRatingPercentage,
-            'discount' => $product->is_discounted ? $product->discount : 0,
+            'discount' => $isDiscounted,
             'discount_type' => $product->discount_type,
             'discounted_price' => $discountedPrice,
             'current_stock' => $product->details->current_stock ?? 0,
@@ -374,6 +415,16 @@ class HelperController extends Controller
         if ($stockResponse['status']) {
             $stockStatus = 'in_stock';
         }
+        
+        $sku = null;
+        if(isset($stockResponse['stock_purchase_id'])) {
+            $productSerial = ProductSerial::where('stock_purchase_id', $stockResponse['stock_purchase_id'])->where('serial', '!=','')->orderBy('serial', 'ASC')->first();
+            if($productSerial) {
+                $sku = $productSerial->serial;
+            }
+        }
+
+        $productDetails['sku'] = $sku;
 
         if( isset($stockResponse['in_city']) && $stockResponse['in_city'] == true) {
             $inCity = true;
@@ -432,16 +483,23 @@ class HelperController extends Controller
         return $productDetails;
     }
 
-    public function getCategoryBreadcrumb($category)
+    public function getCategoryBreadcrumb($categoryId)
     {
         $breadcrumb = [];
-        while ($category) {
+
+        while ($categoryId) {
+            $category = Category::find($categoryId);
+            if (!$category) {
+                break;
+            }
+
             $breadcrumb[] = $category;
-            $category = $category->parent;
+            $categoryId = $category->parent_id;
         }
 
         return array_reverse($breadcrumb);
     }
+
 
 
     public function cacheClear()

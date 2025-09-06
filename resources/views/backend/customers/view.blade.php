@@ -13,7 +13,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.customer.index') }}">
+                            <a style="color: #000;" href="{{ route('admin.customer.index') }}">
                                 Customer Management
                             </a>
                         </li>
@@ -23,13 +23,15 @@
 
                 <div class="col-sm-6 text-end">
                     <div class="dropdown">
-                        <a style="padding: 2px 8px;font-size:12px;" href="{{ route('admin.customer.index') }}" class="btn btn-outline-danger">
+                        <a href="{{ route('admin.customer.index') }}" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-arrow-left-short"></i>
                             Back
                         </a>
+
                         @if ($model)
-                            <button style="padding: 2px 8px;font-size:12px;" class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton_one" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-pen"></i>
+                            <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" id="dropdownMenuButton_one" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-pen"></i> 
+                                Action
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton_one">
                                 {{-- <a href="{{ route('admin.customer.view', ['id' => $model->id, 'action' => '']) }}" class="dropdown-item">
@@ -110,7 +112,7 @@
         </div>
     @else
         <div class="row">
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
@@ -153,9 +155,9 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
                         @php

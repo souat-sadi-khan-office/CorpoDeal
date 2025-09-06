@@ -20,10 +20,13 @@ class UserRepository implements UserRepositoryInterface
         return $user;
     }
 
-    public function getUserWishList()
+    public function getUserWishList($userId = null)
     {
-        $userId = Auth::guard('customer')->id();
-        return WishList::where('user_id', $userId)->orderBy('id', 'DESC')->get();
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
+        
+        return WishList::with('user', 'product')->where('user_id', $userId)->orderBy('id', 'DESC')->get();
     }
 
     public function getCustomerDetails()
@@ -45,12 +48,15 @@ class UserRepository implements UserRepositoryInterface
         return response()->json(['status' => true, 'load' => true, 'message' => 'Item is removed from your wishlist']);
     }
 
-    public function updateProfile($request)
+    public function updateProfile($request, $userId = null)
     {
-        $userId = Auth::guard('customer')->id();
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'currency_id' => 'required',
+            'currency_id' => 'nullable',
             'email' => [
                 'required',
                 'email',
@@ -67,7 +73,7 @@ class UserRepository implements UserRepositoryInterface
         $user = User::findOrFail($userId);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->currency_id = $request->currency_id;
+        $user->currency_id = $request->currency_id ?? 1;
 
         if ($request->avatar) {
             $user->avatar = Images::upload('users', $request->avatar);
@@ -80,16 +86,23 @@ class UserRepository implements UserRepositoryInterface
         return response()->json(['status' => true, 'load' => true, 'message' => 'Profile updated successfully.']);
     }
 
-    public function updatePassword($request)
+    public function updatePassword($request, $userId = null)
     {
-        $userId = Auth::guard('customer')->id();
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
+
         $validator = Validator::make($request->all(), [
             'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'status' => false,
+                'validator' => true,
+                'message' => $validator->errors(),
+            ]);
         }
 
         $user = User::find($userId);

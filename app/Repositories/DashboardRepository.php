@@ -154,7 +154,7 @@ class DashboardRepository
                 ? round(($totalQuantityAcrossAllOrders / $stockStats->total_stock) * 100, 4)
                 : 0,
             'total_stock_purchase' => $purchaseStats->total_stock_purchase,
-            'total_stock_purchase_amount' => $symbol . covert_to_defalut_currency($purchaseStats->total_stock_purchase_amount),
+            'total_stock_purchase_amount' => $symbol . round(covert_to_defalut_currency($purchaseStats->total_stock_purchase_amount), 3),
             'total_orders' => $orderStats->total_orders,
             'total_order_qty' => $totalQuantityAcrossAllOrders,
             'total_order_amount' =>  $symbol . round(covert_to_defalut_currency($orderStats->total_order_amount), 3),

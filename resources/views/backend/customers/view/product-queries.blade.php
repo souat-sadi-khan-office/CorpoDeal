@@ -2,13 +2,13 @@
     <div class="col-md-12 table-responsive">
         <div class="row">
             <div class="col-md-12">
-                <h4 class="h6 mb-3">
+                <h4 class="h6 mb-0">
                     <b>User Product Queries Information</b>
                 </h4>
             </div>
         </div>
         
-        <table class="table table-bordered" id="user-address-table">
+        <table class="table mt-3 table-bordered" id="user-address-table">
             <thead>
                 <th width="5%">#</th>
                 <th>Date</th>
@@ -25,7 +25,7 @@
                             <td>{{ get_system_date($question->updated_at) }} {{ get_system_time($question->updated_at) }}</td>
                             <td>
                                 @if ($question->product)
-                                    <a href="{{ route('slug.handle', $question->product->slug) }}">
+                                    <a style="color: #000;" href="{{ route('slug.handle', $question->product->slug) }}">
                                         <div class="row">
                                             <div class="col-auto">
                                                 {!! App\CPU\Images::show($question->product->thumb_image) !!}
@@ -41,11 +41,11 @@
                                 {{ $question->message }}
                             </td>
                             <td>
-                                <a href="javascript:;" id="content_management" data-url="{{ route('admin.customer.question.answer', $question->id) }}" class="btn btn-sm btn-outline-secondary" style="padding: 3px 8px;font-size:12px;">
+                                <a href="javascript:;" id="content_management" data-url="{{ route('admin.customer.question.answer', $question->id) }}" class="btn btn-sm btn-outline-dark">
                                     Reply
                                 </a>
                             
-                                <a href="javascript:;" id="delete_item" data-id="{{ $question->id }}" data-url="{{ route('admin.customer.question.destroy', $question->id) }}" class="btn btn-sm btn-outline-secondary" style="padding: 3px 8px;font-size:12px;">
+                                <a href="javascript:;" id="delete_item" data-id="{{ $question->id }}" data-url="{{ route('admin.customer.question.destroy', $question->id) }}" class="btn btn-sm btn-outline-dark">
                                     Remove
                                 </a>
                             </td>

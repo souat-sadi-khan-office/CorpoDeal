@@ -3,8 +3,10 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Admin\ChartController;
 use App\Http\Controllers\Admin\InstallmentPlanController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PushEmailController;
 use App\Http\Controllers\Admin\ReportsController;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +47,9 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\CategoryBannerController;
+use App\Http\Controllers\Admin\OrderLogController;
 use App\Http\Controllers\Admin\HomePageCategoryController;
+use App\Http\Controllers\Admin\APITokenController;
 use App\Http\Controllers\CustomerReviewController;
 use App\Http\Controllers\Frontend\HomePageController;
 use App\Http\Controllers\SearchController;
@@ -60,6 +64,10 @@ Route::post('login/post', [LoginController::class, 'login'])->name('login.post')
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['isAdmin', 'web'])->group(function () {
+
+    Route::post('editor/upload', [ConfigurationSettingController::class, 'upload'])->name('editor.upload');
+
+    Route::resource('api-token', APITokenController::class);
 
     Route::get('my-profile',  [AdminController::class, 'profile'])->name('profile');
     Route::patch('update-profile',  [AdminController::class, 'profileUpdate'])->name('update.profile');
@@ -76,6 +84,7 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
     Route::get('contact-message/view/{id}', [AdminController::class, 'viewContactMessage'])->name('message.view');
     Route::post('contact-message/status/{id}', [AdminController::class, 'updateMessageStatus'])->name('message.status');
     Route::delete('contact-message/delete/{id}', [AdminController::class, 'deleteContactMessage'])->name('message.destroy');
+    Route::get('ssl-payments', [PaymentController::class, 'index'])->name('payment.index');
 
     Route::group(['prefix' => 'categories', 'as' => 'category.'], function () {
         Route::get('add', [CategoryController::class, 'addform'])->name('add');
@@ -123,13 +132,28 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
                     Route::patch('update/{id}', [SpecificationAttributes::class, 'updateAttributes'])->name('update');
                     Route::get('show/{id}', [SpecificationAttributes::class, 'show'])->name('show');
                     Route::get('single/{id}', [SpecificationAttributes::class, 'single'])->name('single');
-                    Route::post('update/{id}', [SpecificationAttributes::class, 'update'])->name('update');
+                    // Route::post('update/{id}', [SpecificationAttributes::class, 'update'])->name('update');
                     Route::post('status/{id}', [SpecificationAttributes::class, 'updatestatus'])->name('status');
                     Route::any('delete/{id}', [SpecificationAttributes::class, 'delete'])->name('delete');
                 });
             });
         });
     });
+    Route::group(['prefix' => 'suppliers', 'as' => 'supplier.'], function () {
+        Route::get('add', [SupplierController::class, 'addform'])->name('add');
+        Route::any('store', [SupplierController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [SupplierController::class, 'edit'])->name('edit');
+        Route::any('update/{id}', [SupplierController::class, 'update'])->name('update');
+        Route::get('/', [SupplierController::class, 'index'])->name('index');
+        Route::get('product-serial/form/{id}', [SupplierController::class, 'serialForm'])->name('product.serial-form');
+        Route::get('product-serial/csv/{id}', [SupplierController::class, 'serialCsvForm'])->name('product.serial-form-csv');
+        Route::post('product-serial/update/{id}', [SupplierController::class, 'serialUpdate'])->name('product.serial-update');
+        Route::post('product-serial/update-csv/{id}', [SupplierController::class, 'serialCsvUpdate'])->name('product.serial-update-csv');
+        Route::post('product-serials', [SupplierController::class, 'serials'])->name('product.serials');
+ });
+    Route::post('supplier/status/{id}', [SupplierController::class, 'updatestatus'])->name('supplier.status');
+    Route::get('product-serials', [SupplierController::class, 'serials'])->name('product.serials');
+
     Route::post('category/is/featured/{id}', [CategoryController::class, 'updateisFeatured'])->name('category.is_featured');
     Route::post('category/status/{id}', [CategoryController::class, 'updatestatus'])->name('category.status');
     Route::any('/slug-check', [HelperController::class, 'checkSlug'])->name('slug.check');
@@ -148,20 +172,27 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
     Route::post('product/featured/{id}', [ProductController::class, 'updateFeatured'])->name('product.featured');
     Route::resource('product', ProductController::class);
     Route::group(['prefix' => 'products', 'as' => 'product.'], function () {
-        Route::get('create', [ProductController::class, 'create'])->name('create');
+        // Route::get('create', [ProductController::class, 'create'])->name('create');
         Route::get('specification/{id}', [ProductController::class, 'specificationControl'])->name('manage.specification');
         Route::post('spec/store', [ProductController::class, 'storeSpec'])->name('spec.store');
-        Route::any('store', [ProductController::class, 'store'])->name('store');
+        // Route::any('store', [ProductController::class, 'store'])->name('store');
         Route::group(['prefix' => 'specifications', 'as' => 'specification.'], function () {
             Route::get('/', [ProductController::class, 'specification'])->name('index');
             Route::post('add/{productId}', [ProductController::class, 'specificationsAdd'])->name('add');
             Route::get('edit', [ProductController::class, 'specificationproducts'])->name('edit');
             Route::get('edit/{id}', [ProductController::class, 'specificationproductModal'])->name('edit.modal');
+            Route::delete('edit/{id}', [ProductController::class, 'specificationproductModalEmpty'])->name('edit.empty');
             Route::get('edit/page/{id}', [ProductController::class, 'specificationProductPage'])->name('edit.page');
             Route::post('keyfeature/{id}', [ProductController::class, 'keyfeature'])->name('keyfeature');
             Route::any('delete/{id}', [ProductController::class, 'delete'])->name('delete');
         });
     });
+    
+    Route::post('product/{productId}/specification/key-move-up/{keyId}', [ProductController::class, 'keyMoveUp'])->name('product.specification.keyMoveUp');
+    Route::post('product/{productId}/specification/key-move-down/{keyId}', [ProductController::class, 'keyMoveDown'])->name('product.specification.keyMoveDown');
+
+    Route::post('/product/{productId}/specification/{id}/move-up', [ProductController::class, 'moveUp'])->name('product.specification.moveUp');
+    Route::post('/product/{productId}/specification/{id}/move-down', [ProductController::class, 'moveDown'])->name('product.specification.moveDown');
 
     // Import
     Route::get('import/category', [ImportController::class, 'category'])->name('import.category');
@@ -177,7 +208,7 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
 
     Route::get('/image-upload', [ImageController::class, 'index'])->name('image.index');
     Route::post('/image-upload', [ImageController::class, 'upload'])->name('image.upload');
-    Route::delete('/image-delete/{filename}', [ImageController::class, 'delete'])->name('image.delete');
+    Route::post('/image/create-folder', [ImageController::class, 'createFolder'])->name('image.create-folder');
 
     // Order
     Route::group(['prefix' => 'orders', 'as' => 'order.'], function () {
@@ -185,8 +216,12 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
         Route::get('details/{id}', [OrderController::class, 'details'])->name('details');
         Route::post('/{orderId}/update-status', [OrderController::class, 'updateStatus'])->name('update.status');
         Route::get('invoice/{id}', [OrderController::class, 'invoice'])->name('invoice');
-
     });
+    Route::post('/order/update-with-note/{order}', [OrderController::class, 'updateOrderWithNote'])->name('order.update.with.note');
+
+    // Order Log
+    Route::get('order-log/create/{id}', [OrderLogController::class, 'create'])->name('order-log.create');
+    Route::post('order-log/store', [OrderLogController::class, 'store'])->name('order-log.store');
 
     //Installments
     Route::group(['prefix' => 'installments', 'as' => 'installment.'], function () {
@@ -286,6 +321,8 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
 
     // Banner
     Route::post('banner/status/{id}', [BannerController::class, 'updateStatus'])->name('banner.status');
+    Route::get('banner/up/{id}', [BannerController::class, 'moveUp'])->name('banner.up');
+    Route::get('banner/down/{id}', [BannerController::class, 'moveDown'])->name('banner.down');
     Route::resource('banner', BannerController::class);
 
     // Coupon
@@ -404,6 +441,7 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsAdminRead'])->name('notification.read-all');
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsAdminRead'])->name('notification.read');
 });
+
 
 // Add this to your web.php for testing purposes
 Route::get('/livewire-components', function () {

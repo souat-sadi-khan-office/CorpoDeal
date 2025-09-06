@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Models\SpecificationKey;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Repositories\Interface\ProductSpecificationRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -109,6 +110,7 @@ class SpecificationsController extends Controller
         $categories = $categories->filter(function ($category) {
             return $category->specification_keys_count > 0; // Check the count
         });
+
         $view = $this->productSpecificationRepository->indexview($categories);
         if ($request->ajax()) {
             return $view;
@@ -150,9 +152,11 @@ class SpecificationsController extends Controller
 
     public function show(Request $request,$id)
     {
-        $models=SpecificationKey::where('category_id',$id)->with('admin')->orderBy('position')->get();
+        $category = Category::select('id', 'name')->where('id', $id)->first();
 
-        return view('backend.category.specificationKeys.keysModal',compact('models'));
+        $models = SpecificationKey::where('category_id', $id)->with('admin')->orderBy('position')->get();
+
+        return view('backend.category.specificationKeys.keysModal',compact('models', 'category'));
     }
 
     public function updatestatus($id)

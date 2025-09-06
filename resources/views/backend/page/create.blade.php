@@ -5,15 +5,17 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Create new Page</h1>
+                    <h1 class="h4 mb-0">
+                        <b>Create new Page</b>
+                    </h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.page.index') }}">Page Management</a>
+                            <a style="color: #000;" href="{{ route('admin.page.index') }}">Page Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Create new Page</li>
                     </ol>
@@ -21,8 +23,8 @@
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view')) --}}
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.page.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.page.index') }}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     </div>
@@ -35,14 +37,14 @@
     <link rel="stylesheet" href="{{ asset('backend/assets/css/dropify.min.css') }}">
 @endpush
 @section('content')
-    <div class="row">
-        <div class="col-md-7 mx-auto">
-            <form action="{{ route('admin.page.store') }}" enctype="multipart/form-data" class="content_form" method="post">
+    <form action="{{ route('admin.page.store') }}" enctype="multipart/form-data" class="content_form" method="post">
+        <div class="row">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
 
-                            <div class="col-md-12 form-group mb-3">
+                            {{-- <div class="col-md-12 form-group mb-3">
                                 <label for="parent_id">Parent Page </label>
                                 <select name="parent_id" id="parent_id" class="form-control select" data-placeholder="Parent Page" data-parsley-errors-container="#parent_id_error">
                                     <option value="">Parent Page</option>
@@ -51,11 +53,11 @@
                                     @endforeach
                                 </select>
                                 <span id="parent_id_error"></span>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-12 mb-3 form-group">
                                 <label for="name">Name <span class="text-danger">*</span></label>
-                                <input type="text" placeholder="Enter Page Name" name="name" id="name" class="form-control" required>
+                                <input type="text" name="name" id="name" class="form-control" required>
                             </div>
 
                             <div class="col-md-12 mb-3 form-group">
@@ -111,31 +113,30 @@
                                 <input type="file" accept=".jpg, .png, .webp"  name="meta_image" id="meta_image" class="form-control dropify">
                             </div>
                     
-                            <div class="col-md-12 form-group">
-                                {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('stuff.create')) --}}
-                                    <button type="submit" class="btn btn-soft-success"  id="submit">
-                                        <i class="bi bi-send"></i>
-                                        Create
-                                    </button>
-                                    <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        Loading...
-                                    </button>
-                                {{-- @endif --}}
-                                {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('stuff.view')) --}}
-                                    <a href="{{ route('admin.page.index') }}" class="btn btn-soft-danger">
-                                        <i class="bi bi-backspace"></i>
-                                        Back
-                                    </a>
-                                {{-- @endif --}}
-                            </div>
-                    
                         </div>
                     </div>
+                    <div class="card-footer">
+                        {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('stuff.create')) --}}
+                            <button type="submit" class="btn btn-sm btn-dark"  id="submit">
+                                <i class="bi bi-send"></i>
+                                Create
+                            </button>
+                            <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        {{-- @endif --}}
+                        {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('stuff.view')) --}}
+                            <a href="{{ route('admin.page.index') }}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-backspace"></i>
+                                Back
+                            </a>
+                        {{-- @endif --}}
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 @endsection
 @push('script')
     <script src="{{ asset('backend/assets/js/dropify.min.js') }}"></script>

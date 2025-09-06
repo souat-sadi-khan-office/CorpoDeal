@@ -14,6 +14,7 @@ class ProductStock extends Model
 
     protected $fillable = [
         'product_id',
+        'supplier_id',
         'zone_id',
         'country_id',
         'city_id',

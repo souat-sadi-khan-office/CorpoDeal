@@ -30,6 +30,22 @@ class Category extends Model
         'is_featured',
     ];
 
+    public function getAllProductsCount()
+    {
+        $count = $this->products()->where('status', 1)->count();
+
+        foreach ($this->children as $child) {
+            $count += $child->getAllProductsCount();
+        }
+
+        return $count;
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id');
+    }
+
     public function hasParentCategory($categoryId)
     {
         if ($this->id == $categoryId) {

@@ -47,7 +47,6 @@ class ActivityLogController extends Controller
 
         $activitylogs = $data->latest()->get();
 
-
         if ($request->ajax()) {
 
             return DataTables::of($data)
@@ -62,10 +61,29 @@ class ActivityLogController extends Controller
                     return add_line_breaks($log->activity, 8);
                 })
                 ->editColumn('created_at', function ($log) {
-                    return $log->created_at->format('Y-m-d H:i:s');
+                    return date('d F, Y ', strtotime($log->created_at)) . '<br>'. date('h:i A', strtotime($log->created_at));
                 })
                 ->editColumn('status', function ($log) {
-                    return ucwords($log->action);
+
+                    switch($log->action) {
+                        case 'create':
+                            $action = '<span class="badge bg-success">Create</span>';
+                            break;
+                        case 'update':
+                            $action = '<span class="badge bg-info">Update</span>';
+                            break;
+                        case 'delete':
+                            $action = '<span class="badge bg-danger">Delete</span>';
+                            break;
+                        case 'view':
+                            $action = '<span class="badge bg-primary">View</span>';
+                            break;
+                        default:
+                            $action = '<span class="badge bg-secondary">Default</span>';
+                            break;
+                    }
+
+                    return $action;
                 })
                 ->rawColumns(['user', 'type', 'activity', 'created_at', 'status']) // Specify columns with raw HTML
                 ->make(true);

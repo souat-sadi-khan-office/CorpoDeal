@@ -31,84 +31,96 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <form id="product_search_form" action="{{ url()->current() }}" method="GET" class="row">
-                    <div class="col-md-6 mb-3 form-group">
-                        <div class="row">
-                            <div class="col-6 form-group">
-                                <label for="date_range_from">From:</label>
-                                <input type="date" id="date_range_from" value="{{ request()->from }}" name="from" class="form-control">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="product_search_form" action="{{ url()->current() }}" method="GET" class="row">
+                            <div class="col-md-6 mb-3 form-group">
+                                <div class="row">
+                                    <div class="col-6 form-group">
+                                        <label for="date_range_from">From:</label>
+                                        <input type="date" id="date_range_from" value="{{ request()->from }}" name="from" class="form-control">
+                                    </div>
+                                    <div class="col-6 form-group">
+                                        <label for="date_range_to">To:</label>
+                                        <input type="date" id="date_range_to" value="{{ request()->to }}" name="to" class="form-control">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-6 form-group">
-                                <label for="date_range_to">To:</label>
-                                <input type="date" id="date_range_to" value="{{ request()->to }}" name="to" class="form-control">
+                            <div class="col-md-3 mb-3 form-group">
+                                <label for="between">Search by Date</label>
+                                <select name="between" id="between" class="form-control">
+                                    <option value="">All Time</option>
+                                    <option value="last_day" {{ request()->between === 'last_day' ? 'selected' : '' }}>Last Day</option>
+                                    <option value="last_week" {{ request()->between === 'last_week' ? 'selected' : '' }}>Last Week</option>
+                                    <option value="last_month" {{ request()->between === 'last_month' ? 'selected' : '' }}>Last Month</option>
+                                    <option value="last_year" {{ request()->between === 'last_year' ? 'selected' : '' }}>Last Year</option>
+                                </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3 form-group">
-                        <label for="between">Search by Date</label>
-                        <select name="between" id="between" class="form-control">
-                            <option value="">All Time</option>
-                            <option value="last_day" {{ request()->between === 'last_day' ? 'selected' : '' }}>Last Day</option>
-                            <option value="last_week" {{ request()->between === 'last_week' ? 'selected' : '' }}>Last Week</option>
-                            <option value="last_month" {{ request()->between === 'last_month' ? 'selected' : '' }}>Last Month</option>
-                            <option value="last_year" {{ request()->between === 'last_year' ? 'selected' : '' }}>Last Year</option>
-                        </select>
-                    </div>
-{{--                    <div class="col-md-2 mb-3 form-group">--}}
-{{--                        <label for="paginate">Per Page</label>--}}
-{{--                        <input type="number" min="1" max="1000" name="paginate" id="paginate" value="{{ request()->paginate ?? 15 }}" class="form-control">--}}
-{{--                    </div>--}}
-                    <div class="col-md-3 mb-3 form-group">
-                        <label for="action">Search by Action</label>
-                        <select name="action" id="action" class="form-control">
-                            <option value="">All</option>
-                            <option value="create" {{ request()->action === 'create' ? 'selected' : '' }}>Create</option>
-                            <option value="update" {{ request()->action === 'update' ? 'selected' : '' }}>Update</option>
-                            <option value="view" {{ request()->action === 'view' ? 'selected' : '' }}>View</option>
-                            <option value="delete" {{ request()->action === 'delete' ? 'selected' : '' }}>Delete</option>
-                            <option value="default" {{ request()->action === 'default' ? 'selected' : '' }}>Default</option>
-                        </select>
-                    </div>
+                            <!-- <div class="col-md-2 mb-3 form-group">
+                            <label for="paginate">Per Page</label>
+                            <input type="number" min="1" max="1000" name="paginate" id="paginate" value="{{ request()->paginate ?? 15 }}" class="form-control">
+                            </div> -->
+                            <div class="col-md-3 mb-3 form-group">
+                                <label for="action">Search by Action</label>
+                                <select name="action" id="action" class="form-control">
+                                    <option value="">All</option>
+                                    <option value="create" {{ request()->action === 'create' ? 'selected' : '' }}>Create</option>
+                                    <option value="update" {{ request()->action === 'update' ? 'selected' : '' }}>Update</option>
+                                    <option value="view" {{ request()->action === 'view' ? 'selected' : '' }}>View</option>
+                                    <option value="delete" {{ request()->action === 'delete' ? 'selected' : '' }}>Delete</option>
+                                    <option value="default" {{ request()->action === 'default' ? 'selected' : '' }}>Default</option>
+                                </select>
+                            </div>
 
-                    <div class="col-md-8 mb-3 form-group">
-                        <label for="activity_type">Activity Type</label>
-                        <select name="activity_type" id="activity_type" class="form-control select">
-                            <option value="">--Select--</option>
-                            @foreach($types as $key => $type)
-                                <option value="{{ $type }}" {{ request()->activity_type === $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
-                            @endforeach
-                        </select>
+                            <div class="col-md-8 mb-3 form-group">
+                                <label for="activity_type">Activity Type</label>
+                                <select name="activity_type" id="activity_type" data-placeholder="Select Any" class="form-control select">
+                                    <option value="">Select Any</option>
+                                    @foreach($types as $key => $type)
+                                        <option value="{{ $type }}" {{ request()->activity_type === $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <!-- <div class="col-md-5 mb-3 form-group">
+                            <label for="search">Search by User/Admin/Activity</label>
+                            <input type="text" name="find" id="search" value="{{ request()->find }}" class="form-control p-2 mt-1">
+                            </div> -->
+                            <div class="col-md-4 my-auto mx-auto form-group text-center">
+                                <button type="submit" class="btn btn-sm btn-dark">
+                                    <i class="bi bi-search" style="margin-right: 5px;"></i>
+                                    Filter
+                                </button>
+                                <button type="button" id="reset_button" class="btn btn-sm btn-outline-dark">
+                                    <i class="bi bi-x" style="margin-right: 5px;"></i>
+                                    Reset
+                                </button>
+                            </div>
+                        </form>
                     </div>
-{{--                    <div class="col-md-5 mb-3 form-group">--}}
-{{--                        <label for="search">Search by User/Admin/Activity</label>--}}
-{{--                        <input type="text" name="find" id="search" value="{{ request()->find }}" class="form-control p-2 mt-1">--}}
-{{--                    </div>--}}
-                    <div class="col-md-4 my-auto mx-auto form-group text-center">
-                        <button type="submit" class="btn btn-primary">Filter</button>
-                        <button type="button" id="reset_button" class="btn btn-secondary">Reset</button>
-                    </div>
-                </form>
+                </div>
             </div>
 
             <div class="col-md-12 table-responsive">
-                <table id="activity_log_table" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>User</th>
-                        <th>Activity Type</th>
-                        <th>Activity</th>
-                        <th>Created At</th>
-                        <th>Action</th>
+                <div class="card">
+                    <div class="card-body">
+                        <table id="activity_log_table" class="table table-bordered table-striped">
+                            <thead>
+                                <th>#</th>
+                                <th>User</th>
+                                <th>Date/Time</th>
+                                <th>Action</th>
+                                <th>Activity Type</th>
+                                <th>Activity</th>
+                                
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
 
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-
-{{--                <div id="pagination-container">--}}
-{{--                    @include('frontend.components.paginate', ['products' => $activitylogs,'page'=>request()->page])--}}
-{{--                </div>--}}
+                {{-- <div id="pagination-container">
+                    @include('frontend.components.paginate', ['products' => $activitylogs,'page'=>request()->page])
+                </div> --}}
             </div>
         </div>
     </div>
@@ -124,6 +136,7 @@
                 processing: true,
                 serverSide: true,
                 orderable:false,
+                searching: false,
                 ajax: {
                     url: '{{ route('admin.activity.log') }}',
                     type: 'GET',
@@ -141,15 +154,15 @@
                     }
                 },
                 columnDefs: [
-                    { targets: '_all', orderable: false }
+                    { targets: '_all', orderable: false, searchable: false  }
                 ],
                 columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false },
-                    { data: 'user', name: 'user' },
-                    { data: 'type', name: 'type' },
-                    { data: 'activity', name: 'activity' },
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, visible: false },
+                    { data: 'user', name: 'user',searchable: false },
                     { data: 'created_at', name: 'created_at' },
                     { data: 'status', name: 'status' },
+                    { data: 'type', name: 'type' },
+                    { data: 'activity', name: 'activity' },
                 ],order: [[0, 'desc']]
 
             });

@@ -46,6 +46,7 @@ class CartRepository implements CartRepositoryInterface
             // If no cart ID in session, create a new cart and store its ID in session
             $cart = Cart::create([
                 'user_id' => $user_id,
+                'ip'   => request()->ip(),
                 'total_quantity' => 0,
                 'currency_id' => Session::get('currency_id') ?? 1,
             ]);
@@ -58,6 +59,7 @@ class CartRepository implements CartRepositoryInterface
             if(!$cart) {
                 $cart = Cart::create([
                     'user_id' => $user_id,
+                    'ip'   => request()->ip(),
                     'total_quantity' => 0,
                     'currency_id' => Session::get('currency_id') ?? 1,
                 ]);
@@ -291,6 +293,7 @@ class CartRepository implements CartRepositoryInterface
             // If no cart ID in session, create a new cart and store its ID in session
             $cart = Cart::create([
                 'user_id' => $user_id,
+                'ip'   => request()->ip(),
                 'total_quantity' => 0,
                 'currency_id' => $currency_id,
             ]);
@@ -304,6 +307,7 @@ class CartRepository implements CartRepositoryInterface
             if(!$cart) {
                 $cart = Cart::create([
                     'user_id' => $user_id,
+                    'ip'   => request()->ip(),
                     'total_quantity' => 0,
                     'currency_id' => $currency_id,
                 ]);

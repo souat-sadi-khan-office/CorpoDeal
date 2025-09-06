@@ -1,6 +1,6 @@
 <div class="dropdown">
-    <a class="btn btn-outline-primary btn-sm dropdown-toggle" href="javascript:;" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-        Action
+    <a class="btn btn-sm btn-outline-dark btn-sm dropdown-toggle" href="javascript:;" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-three-dots-vertical"></i>
     </a>
 
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">

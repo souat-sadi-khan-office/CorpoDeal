@@ -17,6 +17,8 @@ class OrderDetail extends Model
         'billing_address',
         'phone',
         'email',
+        'payment_slip',
+        'slip_number',
         'refunded_product_ids',
         'refunded_details',
         'tier_info'

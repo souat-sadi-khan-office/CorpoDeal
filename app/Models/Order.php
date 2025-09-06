@@ -23,6 +23,7 @@ class Order extends Model
         'status',
         'is_delivered',
         'is_cod',
+        'is_manual_pay',
         'is_negative_balance_order',
         'is_admin_order',
         'admin_id',
@@ -35,6 +36,7 @@ class Order extends Model
     {
         return $this->hasOne(OrderStatusHistory::class, 'order_id');
     }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -57,5 +59,10 @@ class Order extends Model
     public function details()
     {
         return $this->hasOne(OrderDetail::class, 'order_id');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(OrderLog::class)->orderBy('id', 'DESC');
     }
 }

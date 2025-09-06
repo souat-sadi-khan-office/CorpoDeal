@@ -7,8 +7,8 @@
                 </h4>
             </div>
             <div class="col-md-3 text-end">
-                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.edit', $model->id) }}" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-pencil-square"></i>
+                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.edit', $model->id) }}" class="btn btn-sm btn-outline-dark">
+                    <i class="bi bi-pencil-square"></i> Update Information
                 </a>
             </div>
         </div>

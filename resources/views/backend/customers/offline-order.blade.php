@@ -18,11 +18,9 @@
                     </ol>
                 </div>
                 <div class="col-sm-6 text-end form-group">
-                    <a id="content_management" href="javascript:;"
-                       data-url="{{ route('admin.customer.create') }}?from=offline-sale"
-                       class="btn btn-soft-success istiyak bw-2">
+                    <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.create') }}?from=offline-sale" class="btn btn-sm btn-outline-dark">
                         <i class="bi bi-plus"></i>
-                        Create Customer
+                        New Customer
                     </a>
                 </div>
             </div>
@@ -44,7 +42,8 @@
                 <div class="row">
                     <div class="col-md-8 form-group mb-3">
                         <label for="user_id">Customer</label>
-                        <select name="user_id" id="customer_id" class="form-control" required></select>
+                        <select name="user_id" id="customer_id" class="form-control" data-parsley-errors-container="#customer_id_error" required></select>
+                        <span id="customer_id_error"></span>
                     </div>
                     <div class="col-md-4 form-group mb-3">
                         <label for="customer_company">Customer Company</label>
@@ -54,8 +53,10 @@
                     <div class="col-md-12 mb-3 form-group">
                         <label for="product_id">Products </label>
                         <select id="product_id" class="form-control"></select>
-                        <small class="text-muted">For selecting multiple product at a time, use your keyboard
-                            <b>Control</b> key and click on the products that you want to add. </small>
+                        <small class="text-muted">
+                            For selecting multiple product at a time, use your keyboard
+                            <b>Control</b> key and click on the products that you want to add. 
+                        </small>
                     </div>
                 </div>
             </div>
@@ -78,8 +79,7 @@
                                     <th>Current Stock</th>
                                     <th>Remove</th>
                                 </thead>
-                                <tbody id="product_data">
-                                </tbody>
+                                <tbody id="product_data"></tbody>
                             </table>
                         </div>
                     </div>
@@ -99,27 +99,26 @@
                                 <tr>
                                     <td>Sub Total</td>
                                     <td class="text-right">
-                                        <div id="total_sub_total">0</div>
+                                        <div id="total_sub_total">৳ 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Shipping</td>
                                     <td class="text-right">
-                                        <div id="total_shipping">0</div>
+                                        <div id="total_shipping">৳ 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Discount</td>
                                     <td class="text-right">
-                                        <div id="total_discount">0</div>
+                                        <div id="total_discount">৳ 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Total</th>
                                     <th class="text-right">
-                                        <div id="total_amount">0</div>
-                                        <input type="hidden" name="total_amount_value" id="total_amount_value"
-                                               value="0">
+                                        <div id="total_amount">৳ 0.00</div>
+                                        <input type="hidden" name="total_amount_value" id="total_amount_value" value="0">
                                     </th>
                                 </tr>
                             </table>
@@ -127,8 +126,7 @@
 
                         <div class="col-md-4 form-group mt-3">
                             <label for="shipping_charge">Shipping Charge Flat</label>
-                            <input type="text" name="shipping_charge" id="shipping_charge" class="form-control number"
-                                   value="0">
+                            <input type="text" name="shipping_charge" id="shipping_charge" class="form-control number" value="0">
                         </div>
 
                         <div class="col-md-4 form-group mt-3">
@@ -138,29 +136,27 @@
 
                         <div class="col-md-4 mt-3 form-group">
                             <label for="payment_option">Payment Type</label>
-                            <select name="payment_option" id="payment_option" class="form-control">
+                            <select name="payment_option" id="payment_option" class="form-control" data-minimum-results-for-search="Infinity">
                                 <option value="offline_payment">Offline Payment</option>
                                 <option selected value="cod">Confirm with COD</option>
                                 <option value="cash">Confirm with Cash</option>
                             </select>
                         </div>
-                        <div class="col-md-12 mt-3 form-group">
+                        <div class="col-md-6 mt-3 form-group">
                             <label for="shipping">Shipping Address</label>
-                            <input type="text" name="shipping" id="shipping" class="form-control"
-                                   placeholder="Address,Area,City-zip,Country" required>
-
+                            <textarea name="shipping" id="shipping" cols="30" rows="3" class="form-control" required placeholder="Address, Area, City, zip, Country"></textarea>
                         </div>
-                        <div class="col-md-12 mt-3 form-group">
+
+                        <div class="col-md-6 mt-3 form-group">
                             <label for="billing">Billing Address</label>
-                            <p>Leave Empty if Shipping and Billing Address are Same</p>
-                            <input type="text" name="billing" id="billing" class="form-control"
-                                   placeholder="Address,Area,City-zip,Country">
-
+                            <textarea name="billing" id="billing" cols="30" rows="3" class="form-control" placeholder="Address, Area, City, zip, Country"></textarea>
+                            <small class="text-muted">Leave Empty if Shipping and Billing Address are Same</small>
                         </div>
+                        
                         <div class="col-md-6 d-grid gap-2 mx-auto mt-3">
                             <button class="btn btn-outline-success btn-block" type="submit" id="submit">
                                 <i class="bi bi-send"></i>
-                                Create
+                                Create Order
                             </button>
                             <button class="btn btn-outline-warning btn-block" style="display: none;" id="submitting"
                                     type="button" disabled>
@@ -248,7 +244,7 @@
                                     <input type="hidden" id="product_price_` + product.id + `" name="product[` + product.id + `][unit_price]" value="` + product.unit_price + `">
                                 </td>
                                 <td>
-                                    <input type="number" data-id="` + product.id + `" name="product[` + product.id + `][quantity]" value="1" id="quantity_` + product.id + `" max="` + product.stock + `" min="1" class="quantity form-control number">
+                                    <input type="text" data-id="` + product.id + `" name="product[` + product.id + `][quantity]" value="1" id="quantity_` + product.id + `" max="` + product.stock + `" min="1" class="quantity form-control number">
                                 </td>
                                 <td>
                                     <span class="product_sub_total_price_` + product.id + `">

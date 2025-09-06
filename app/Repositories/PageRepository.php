@@ -25,7 +25,7 @@ class PageRepository implements PageRepositoryInterface
                 return $model->parent_id != null ? $model->parent->title : 'Parent Page';
             })
             ->editColumn('url', function ($model) {
-                return '<a href="'. URL::to($model->slug) .'" target="_blank">'. URL::to($model->slug) .'</a>';
+                return '<a style="color: #000;" href="'. URL::to($model->slug) .'" target="_blank"> Visit '. $model->title .' Page</a>';
             })
             ->editColumn('status', function ($model) {
                 $checked = $model->status == 1 ? 'checked' : '';

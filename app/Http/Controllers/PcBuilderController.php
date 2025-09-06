@@ -20,7 +20,6 @@ class PcBuilderController extends Controller
         $this->product = $product;
         $this->cartRepository = $cartRepository;
     }
-
     
     public function index()
     {
@@ -302,6 +301,10 @@ class PcBuilderController extends Controller
                 return view('frontend.pc-builder-items', compact('products', 'categoryIdArray', 'item'));
             break;
             case 'gc':
+                if(!Session::has('pc_builder_item_motherboard')) {
+                    return redirect()->route('pc-builder')->with('warning', 'Select motherboard first.');
+                }
+
                 $request->merge([
                     'mb_form_factor' => Session::get('pc_builder_item_motherboard')['condition']['mb_form_factor'],
                     'gc_supported_pcie_slot' => Session::get('pc_builder_item_motherboard')['condition']['mb_pcie_slot'],

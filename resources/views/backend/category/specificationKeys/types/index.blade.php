@@ -20,12 +20,31 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('specification-types.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="javascript:;" data-url="{{ route('admin.category.specification.type.create') }}" id="content_management" class="btn btn-soft-success">
+                        <a href="javascript:;" data-url="{{ route('admin.category.specification.type.create') }}" id="content_management" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New Type
                         </a>
                     </div>
                 @endif
+
+                <div class="col-md-12 mt-2">
+                    <div class="alert alert-info shadow-sm border-0 rounded-3 d-flex align-items-start" role="alert">
+                        <div class="me-2">
+                            <i class="bi bi-info-circle-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <strong>Note:</strong> This section displays <strong>All Category Groups/Keys</strong>.
+                            
+                            To view groups/keys for a specific category:
+                            <ol class="mb-0 ps-3">
+                                <li>Go to the <a style="color:#000;" href="{{ route('admin.category.specification.key.index') }}" class="fw-bold text-decoration-none">Groups/Keys</a> page.</li>
+                                <li>Copy the desired category name.</li>
+                                <li>Paste it into the search field above to filter results.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -39,11 +58,11 @@
                     <table class="table table-bordered table-striped table-hover" id="data-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th style="width: 15%;">Created By</th>
-                                <th style="width: 20%;">Category Name</th>
+                                <th>Group/Key Name</th>
+                                <th style="width: 15%;">Creator</th>
+                                <!-- <th style="width: 20%;">Category Name</th> -->
                                 <th style="width: 13%;">Types Count</th>
-                                <th style="width: 15%;">Actions</th>
+                                <th style="width: 15%;text-align:center;">Actions</th>
                             </tr>
                         </thead>
                     </table>
@@ -55,7 +74,6 @@
 @endsection
 @push('styleforIconPicker')
     <link href="{{ asset('backend/assets/css/bootstrapicons-iconpicker.css') }}" rel="stylesheet">
-    <!-- Option 1: Include in HTML -->
 @endpush
 
 @push('script')
@@ -70,7 +88,8 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('admin.category.specification.type.index') }}",
-                columns: [{
+                columns: [
+                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -78,10 +97,10 @@
                         data: 'created_by',
                         name: 'created_by'
                     },
-                    {
-                        data: 'category_name',
-                        name: 'category_name'
-                    },
+                    // {
+                    //     data: 'category_name',
+                    //     name: 'category_name'
+                    // },
                     {
                         data: 'types_count',
                         name: 'types_count'
@@ -111,7 +130,7 @@
                     $('#FILTER').append(`
                 <div class="form-group" id="filter-name-group">
                     <label for="filter_name">Filter Name <span class="text-danger">*</span></label>
-                    <input type="text" name="filter_name" id="filter_name" class="form-control mt-3 py-2" required>
+                    <input type="text" name="filter_name" id="filter_name" class="form-control" required>
                 </div>
             `);
                 } else {
