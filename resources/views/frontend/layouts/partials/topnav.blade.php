@@ -7,27 +7,29 @@
                     $darkLogo = get_settings('system_logo_dark');
                 @endphp
 
-                {{-- Check if the white logo file is an SVG --}}
-                @if($whiteLogo && pathinfo($whiteLogo, PATHINFO_EXTENSION) === 'svg')
-                    {{-- Inline SVG --}}
-                    <div class="logo_light" style="width: 100px; height: 60px;">
-                        {!! file_get_contents(public_path($whiteLogo)) !!}
-                    </div>
-                @else
-                    <img class="logo_light" src="{{ $whiteLogo ? asset($whiteLogo) : asset('pictures/default-logo-white.png') }}" alt="System white logo" title="System white logo">
-                @endif
-
-                {{-- Check if the dark logo file is an SVG --}}
-                @if($darkLogo && pathinfo($darkLogo, PATHINFO_EXTENSION) === 'svg')
-                    <div class="logo_dark" style="width: 150px; height: 60px;">
-                        {!! file_get_contents(public_path($darkLogo)) !!}
-                    </div>
-                @else
-                    <img class="logo_dark" src="{{ $darkLogo ? asset($darkLogo) : asset('pictures/default-logo-dark.png') }}" alt="System dark logo" title="System dark logo">
-                @endif
+                <img class="logo_light" src="{{ $whiteLogo ? asset($whiteLogo) : asset('pictures/default-logo-white.png') }}" alt="System white logo" title="System white logo">
+                <img class="logo_dark" src="{{ $darkLogo ? asset($darkLogo) : asset('pictures/default-logo-dark.png') }}" alt="System dark logo" title="System dark logo">
             </a>
 
-            <div class="order-md-2" style="width: 65px;"></div>
+            <ul class="navbar-nav attr-nav align-items-center order-md-1">
+                <li id="wishList">
+                    <div class="q-actions">
+                        <div style="cursor: pointer;" id="country_name_selector" data-bs-toggle="modal" data-bs-target="#locationModal" class="ac">
+                            <a title="Wishlist Page" class="ic" href="javascript:;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </a>
+                            <div class="ac-content">
+                                <h5>Deliver To: </h5>
+                                <p>
+                                    <img style="width: 25px; border-radius: 10px;" src="{{ session()->get('country_flag') }}" alt="{{ session()->get('user_country') }}">
+                                    {{ session()->get('user_country') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
             <div class="product_search_form order-md-2">
                 <form action="{{ route('search') }}" method="GET">
                     <div style="display: flex; align-items: center;">
@@ -81,22 +83,8 @@
                     </div>
                 </div>
             </div>
+            
             <ul class="navbar-nav attr-nav align-items-center order-md-5">
-                <li id="wishList">
-                    <div class="q-actions">
-                        <div style="cursor: pointer;" id="country_name_selector" data-bs-toggle="modal" data-bs-target="#locationModal" class="ac">
-                            <a title="Wishlist Page" class="ic" href="javascript:;">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </a>
-                            <div class="ac-content">
-                                <h5>Location</h5>
-                                <p>
-                                    {{ session()->get('user_city') }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
                 <li id="wishList">
                     <div class="q-actions">
                         <div class="ac">
@@ -147,10 +135,13 @@
                 </li>
             </ul>
             <div id="contactPhone" class="contact_phone order-md-last">
-                <a href="tel:{{ get_settings('system_footer_contact_phone') }}">
+                {{-- <a href="tel:{{ get_settings('system_footer_contact_phone') }}">
                     <i class="linearicons-phone-wave"></i>
                     <span>{{ get_settings('system_footer_contact_phone') }}</span>
-                </a>
+                </a> --}}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#footerModal">
+  Open Footer Modal
+</button>
             </div>
         </div>
     </div>
