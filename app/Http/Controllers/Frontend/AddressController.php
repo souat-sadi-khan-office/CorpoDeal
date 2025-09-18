@@ -47,9 +47,9 @@ class AddressController extends Controller
      */
     public function create()
     {
-        // $zones = $this->zone->getAllActiveZones();
-        $cities = $this->city->findCitiesByCountryId(6);
-        return view('frontend.customer.address.create', compact('cities'));
+        $zones = $this->zone->getAllActiveZones();
+        // $cities = $this->city->findCitiesByCountryId(6);
+        return view('frontend.customer.address.create', compact('zones'));
     }
 
     public function getCountriesByZone(Request $request)
@@ -76,7 +76,8 @@ class AddressController extends Controller
         $data = $request->validate([
             'zone_id'        => 'required',
             'country_id'     => 'required',
-            'city_id'        => 'required',
+            // 'city_id'        => 'required',
+            'city'           => 'required',
             'area'           => 'required',
             'address'        => 'required',
             'postcode'       => 'required',
@@ -113,9 +114,9 @@ class AddressController extends Controller
 
         $zones = $this->zone->getAllActiveZones();
         $countries = $this->country->findCountriesByZoneId($model->zone_id);
-        $cities = $this->city->findCitiesByCountryId($model->country_id);
+        // $cities = $this->city->findCitiesByCountryId($model->country_id);
 
-        return view('frontend.customer.address.edit', compact('model', 'zones', 'countries', 'cities'));
+        return view('frontend.customer.address.edit', compact('model', 'zones', 'countries'));
     }
 
     /**
@@ -126,7 +127,8 @@ class AddressController extends Controller
         $data = $request->validate([
             'zone_id'        => 'required',
             'country_id'     => 'required',
-            'city_id'        => 'required',
+            // 'city_id'        => 'required',
+            'city'           => 'required',
             'area'           => 'required',
             'address'        => 'required',
             'postcode'       => 'required',

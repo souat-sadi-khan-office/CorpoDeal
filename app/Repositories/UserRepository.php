@@ -146,8 +146,12 @@ class UserRepository implements UserRepositoryInterface
                     $fullAddressParts[] = $address->area . '-' . $address->postcode;
                 }
             
-                if ($address->city && $address->city->name) {
-                    $fullAddressParts[] = $address->city->name;
+                // if ($address->city && $address->city->name) {
+                //     $fullAddressParts[] = $address->city->name;
+                // }
+
+                if ($address->city) {
+                    $fullAddressParts[] = $address->city;
                 }
                 
                 if ($address->country && $address->country->name) {

@@ -179,10 +179,10 @@
 
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="billing_area">State</label>
-                                    <input class="form-control" id="billing_area" type="text" name="billing_area" value="{{ $defaultAddress && $defaultAddress->city ? $defaultAddress->city->name : '' }}">
+                                    <input class="form-control" id="billing_area" type="text" name="billing_area" value="{{ $defaultAddress && $defaultAddress->city ? $defaultAddress->city : '' }}">
                                 </div>
 
-                                <div class="col-md-12 form-group mb-3">
+                                {{-- <div class="col-md-12 form-group mb-3">
                                     <div class="custom_select">
                                         <label for="billing_city">City</label>
                                         <select class="form-control" name="billing_city">
@@ -196,8 +196,13 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
+                                <div class="col-md-12 form-group mb-3">
+                                    <label for="billing_city">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="billing_city" name="billing_city" required placeholder="City">
+                                </div>
+                                
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="billing_address">Address <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="billing_address" name="billing_address" required placeholder="Address" value="{{ $defaultAddress ? $defaultAddress->address : '' }}">

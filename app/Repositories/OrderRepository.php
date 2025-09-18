@@ -1105,7 +1105,8 @@ class OrderRepository implements OrderRepositoryInterface
                 'customer_email' => 'required|email',
                 'customer_phone' => 'required',
                 'customer_company' => 'required',
-                'billing_city' => 'required|exists:cities,id',
+                'billing_city' => 'required',
+                // 'billing_city' => 'required|exists:cities,id',
                 'billing_area' => 'required',
                 'billing_address' => 'required',
                 'billing_address2' => 'required',
@@ -1200,10 +1201,12 @@ class OrderRepository implements OrderRepositoryInterface
 
         $address .= ', ' . $request["{$type}_area"];
 
-        $cityName = City::find($request["{$type}_city"])->name ?? '';
-        if ($cityName) {
-            $address .= ', ' . $cityName;
-        }
+        // $cityName = City::find($request["{$type}_city"])->name ?? '';
+        // if ($cityName) {
+        //     $address .= ', ' . $cityName;
+        // }
+
+        $address .= ', '. $request["{$type}_city"];
 
         $countryName = isset($request['country_name']) ? $request['country_name'] : '';
         if ($countryName) {

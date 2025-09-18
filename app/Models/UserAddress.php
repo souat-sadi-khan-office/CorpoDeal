@@ -15,6 +15,7 @@ class UserAddress extends Model
         'zone_id',
         'country_id',
         'city_id',
+        'city',
         'area',
         'address',
         'postcode',

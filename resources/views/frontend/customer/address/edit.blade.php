@@ -99,9 +99,9 @@
                                         </div>
 
                                         <!-- zone -->
-                                        <input type="hidden" name="zone_id" value="{{ $model->zone_id }}">
-                                        <input type="hidden" name="country_id" value="{{ $model->country_id }}">
-                                        {{-- <div class="col-md-6 form-group mb-3">
+                                        {{-- <input type="hidden" name="zone_id" value="{{ $model->zone_id }}"> --}}
+                                        {{-- <input type="hidden" name="country_id" value="{{ $model->country_id }}"> --}}
+                                        <div class="col-md-6 form-group mb-3">
                                             <label for="zone_id">Zone/Contenent <span class="text-danger">*</span></label>
                                             <select name="zone_id" id="zone_id" class="form-control select" data-parsley-errors-container="#zone_id_error" required data-placeholder="Select Zone">
                                                 <option value="">Select Zone</option>
@@ -110,10 +110,10 @@
                                                 @endforeach
                                             </select>
                                             <span id="zone_id_error"></span>
-                                        </div> --}}
+                                        </div>
 
                                         <!-- country_id -->
-                                        {{-- <div class="col-md-6 form-group mb-3">
+                                        <div class="col-md-6 form-group mb-3">
                                             <label for="country_id">Country <span class="text-danger">*</span></label>
                                             <select name="country_id" id="country_id" class="form-control select" data-parsley-errors-container="#country_id_error" required data-placeholder="Select Country">
                                                 <option value="">Select Country</option>
@@ -122,10 +122,10 @@
                                                 @endforeach
                                             </select>
                                             <span id="country_id_error"></span>
-                                        </div> --}}
+                                        </div>
 
                                         <!-- city_id -->
-                                        <div class="col-md-6 form-group mb-3">
+                                        {{-- <div class="col-md-6 form-group mb-3">
                                             <label for="city_id">City <span class="text-danger">*</span></label>
                                             <select name="city_id" id="city_id" class="form-control select" data-parsley-errors-container="#city_id_error" required data-placeholder="Select City">
                                                 <option value="">Select City</option>
@@ -134,6 +134,10 @@
                                                 @endforeach
                                             </select>
                                             <span id="city_id_error"></span>
+                                        </div> --}}
+                                        <div class="col-md-6 form-group mb-3">
+                                            <label for="city">City <span class="text-danger">*</span></label>
+                                            <input type="text" name="city" id="city" class="form-control" required placeholder="City" value="{{ $model->city }}">
                                         </div>
 
                                         <!-- area -->
