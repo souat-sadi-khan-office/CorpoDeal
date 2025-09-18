@@ -27,7 +27,7 @@ class UserAddressApiController extends Controller
      *    "user_id": 5,
      *    "zone_id": 2,
      *    "country_id": 10,
-     *    "city_id": 25,
+     *    "city": "Dhaka",
      *    "area": "Uttara",
      *    "address": "House 12, Road 5",
      *    "postcode": "1230",
@@ -99,7 +99,8 @@ class UserAddressApiController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'city_id' => 'required|integer|exists:cities,id',
+            // 'city_id' => 'required|integer|exists:cities,id',
+            'city' => 'required|string|max:255',
             'area' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
             'postcode' => 'required|string|max:20',
@@ -122,7 +123,8 @@ class UserAddressApiController extends Controller
         $address->user_id = auth('api')->user()->id;
         $address->zone_id = 2;
         $address->country_id = 6;
-        $address->city_id = $request->city_id;
+        // $address->city_id = $request->city_id;
+        $address->city = $request->city;
         $address->area = $request->area;
         $address->address = $request->address;
         $address->postcode = $request->postcode;
@@ -242,7 +244,8 @@ class UserAddressApiController extends Controller
         $address = UserAddress::where('user_id', auth('api')->id())->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'city_id' => 'required|integer|exists:cities,id',
+            // 'city_id' => 'required|integer|exists:cities,id',
+            'city' => 'required|string|max:255',
             'area' => 'nullable|string|max:255',
             'address' => 'required|string|max:255',
             'postcode' => 'required|string|max:20',
@@ -261,7 +264,8 @@ class UserAddressApiController extends Controller
             UserAddress::where('user_id', auth('api')->id())->update(['is_default' => false]);
         }
 
-        $address->city_id = $request->city_id;
+        // $address->city_id = $request->city_id;
+        $address->city = $request->city;
         $address->area = $request->area;
         $address->address = $request->address;
         $address->postcode = $request->postcode;

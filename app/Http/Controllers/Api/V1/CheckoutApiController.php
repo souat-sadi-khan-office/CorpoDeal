@@ -438,10 +438,12 @@ class CheckoutApiController extends Controller
 
         $address .= ', ' . $request["{$type}_area"];
 
-        $cityName = City::find($request["{$type}_city"])->name ?? '';
-        if ($cityName) {
-            $address .= ', ' . $cityName;
-        }
+        // $cityName = City::find($request["{$type}_city"])->name ?? '';
+        // if ($cityName) {
+        //     $address .= ', ' . $cityName;
+        // }
+
+        $address .= ', '. $request["{$type}_city"];
 
         $countryName = isset($request['country_name']) ? $request['country_name'] : '';
         if ($countryName) {
