@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app', ['title' => get_settings('all_brand_site_title')])
 @section('meta')
-<meta property="og:image:width" content="200">
+    <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
     
@@ -54,54 +54,64 @@
     </div>
 @endpush
 @section('content')
-<style>
-    .categories_box a {
-        min-height: 0px;
-    }
-</style>
-<div class="main_content bg_gray py-5">
+    <style>
+        .card-grid-style-2 .image-box {
+            height: 120px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 6px;
+            padding: 10px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
 
-    <div class="custom-container">
-        @foreach ($brands as $brand)
-            <section class="section" style="padding: 10px 0px;">
-                <div class="">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="cat_overlap radius_all_5">
-                                <div class="row align-items-center">
-                                    <div class="{{ count($brand->types->where('status', 1)) > 0 ? 'col-lg-3 col-md-4' : 'col-md-12' }}">
-                                        <div class="text-center text-md-start">
-                                            <img src="{{ asset($brand->logo) }}" alt="{{ $brand->name }}" title="{{ $brand->name }} Logo" width="150">
-                                            {{-- <h6 class="mt-3">{{ $brand->name }}</h6> --}}
-                                            <br>
-                                            <a href="{{ route('slug.handle', $brand->slug) }}" class="mt-3 btn btn-line-fill btn-sm">View All Products</a>
-                                        </div>
-                                    </div>
-                                    @if ($brandTypes = $brand->types->where('status', 1))
-                                        <div class="col-lg-9 col-md-8">
-                                            <div class="cat_slider mt-4 mt-md-0 carousel_slider owl-carousel owl-theme nav_style5" data-loop="false" data-dots="false" data-nav="false" data-margin="30" data-responsive='{"0":{"items": "1"}, "380":{"items": "2"}, "991":{"items": "3"}, "1199":{"items": "4"}}'>
-                                                @foreach ($brandTypes as $brandType)
-                                                    <div class="item">
-                                                        <div class="categories_box">
-                                                            <a href="{{ route('slug.handle', $brand->slug) }}">
-                                                                {!! $brandType->icon !!}
-                                                                <span>{{ $brandType->name }}</span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
+        /* Logo Image Styling */
+        .card-grid-style-2 .image-box img {
+            max-height: 80px;
+            max-width: 100%;
+            object-fit: contain; /* Keeps proportions */
+            filter: grayscale(40%); /* Slightly muted for a clean look */
+            transition: all 0.3s ease;
+        }
+
+        /* Hover Effect */
+        .card-grid-style-2:hover .image-box {
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+
+        .card-grid-style-2:hover .image-box img {
+            filter: grayscale(0%); /* Full color on hover */
+            transform: scale(1.05);
+        }
+
+
+    </style>
+
+    <div class="main_content bg_gray py-5">
+        <section class="section mb-2" style="padding: 10px 0px;">
+            <div class="custom-container">
+                <div class="row">
+                    @foreach ($brands as $key => $brand)
+                        <div class="col-md-2 col-sm-12 col-12">
+                            <div class="card-grid-style-2 card-grid-style-2-small hover-up">
+                                <div class="image-box">
+                                    <a href="{{ route('slug.handle', $brand->slug) }}">
+                                        <img src="{{ asset($brand->logo) }}" alt="{{ $brand->name }}">
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
-            </section>
-        @endforeach
+            </div>
+        </section>
     </div>
-
 </div>
 @endsection
 @push('scripts')
@@ -110,13 +120,64 @@
     <script src="{{ asset('frontend/assets/js/pages/login.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const icons = document.querySelectorAll(".nav-link i");
-            icons.forEach(icon => {
+            let treeViews = document.querySelectorAll(".treeview");
+
+            treeViews.forEach(function (treeview) {
+                let toggleBtn = treeview.querySelector(".toggle");
+                let submenu = treeview.querySelector("ul");
+
+                treeview.addEventListener("mouseenter", function () {
+                    if (submenu) {
+                        submenu.style.display = "block";
+                        submenu.style.transition = "none"; // Remove animation
+                    }
+                    if (toggleBtn) {
+                        toggleBtn.textContent = toggleBtn.textContent.replace("⮮", "⮬");
+                        if (toggleBtn.classList.contains("trigger")) {
+                            treeview.parentElement.parentElement.classList.add("dropdown-selector");
+                        }
+                    }
+                });
+
+                treeview.addEventListener("mouseleave", function () {
+                    if (submenu) {
+                        submenu.style.display = "none";
+                        submenu.style.transition = "none"; // Remove animation
+                    }
+                    if (toggleBtn) {
+                        toggleBtn.textContent = toggleBtn.textContent.replace("⮬", "⮮");
+                        if (toggleBtn.classList.contains("trigger")) {
+                            treeview.parentElement.parentElement.classList.remove("dropdown-selector");
+                        }
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $('.toggle').click(function () {
+                $(this).siblings('ul').slideToggle();
+
+                var currentText = $(this).text();
+                var newText = currentText.startsWith('⮬ ') 
+                    ? '⮮ ' + currentText.slice(2) 
+                    : '⮬ ' + currentText.slice(2);
+                $(this).text(newText);
+
+                if($(this).hasClass('trigger')) {
+                    $(this).parent().parent().parent().toggleClass('dropdown-selector');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const catIcons = document.querySelectorAll(".category-icon i");
+            catIcons.forEach(icon => {
                 const randomClass = `random-color-${Math.floor(Math.random() * 15) + 1}`;
                 icon.classList.add(randomClass);
             });
-            const iconsMenu = document.querySelectorAll(".categories_box i");
-            iconsMenu.forEach(icon => {
+            const catButtonIcons = document.querySelectorAll(".categories_box a i");
+            catButtonIcons.forEach(icon => {
                 const randomClass = `random-color-${Math.floor(Math.random() * 15) + 1}`;
                 icon.classList.add(randomClass);
             });

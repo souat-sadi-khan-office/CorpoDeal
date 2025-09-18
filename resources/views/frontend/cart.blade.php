@@ -4,26 +4,26 @@
 <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
-    
+
     <meta name="title" content="{{ get_settings('cart_meta_title') }}">
     <meta name="author" content="{{ get_settings('system_name') }} : {{ route('home') }} : {{ get_settings('system_footer_contact_email') }}">
-    <meta name="description" content="{{ get_settings('cart_meta_description') }}">	
+    <meta name="description" content="{{ get_settings('cart_meta_description') }}">
 
     <!-- For Open Graph -->
-    <meta property="og:url" content="{{ url()->current() }}">	
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ get_settings('cart_meta_title') }}">	
-    <meta property="og:description" content="{{ get_settings('cart_meta_description') }}.">	
-    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">	
+    <meta property="og:title" content="{{ get_settings('cart_meta_title') }}">
+    <meta property="og:description" content="{{ get_settings('cart_meta_description') }}.">
+    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
 
     <!-- For Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" /> 
+    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" />
     <meta name="twitter:title" content="{{ get_settings('cart_meta_title') }}" />
-    <meta name="twitter:description" content="{{ get_settings('cart_meta_description') }}" />	
-    <meta name="twitter:site" content="{{ route('home') }}" />		
+    <meta name="twitter:description" content="{{ get_settings('cart_meta_description') }}" />
+    <meta name="twitter:site" content="{{ route('home') }}" />
     <meta name="twitter:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
-    
+
     {!! get_settings('cart_meta_article_tag') !!}
 @endsection
 
@@ -122,23 +122,24 @@
                                     <tr>
                                         <td colspan="6" class="cart-buttons-area px-0">
                                             <div class="row g-0">
+                                                <div class="col-md-6 text-center">
+                                                    <a href="{{ route('home') }}" class="btn btn-sm btn-fill-out">
+                                                        Continue Shopping
+                                                    </a>
+                                                </div>
                                                 <div class="col-md-6 mb-md-0 text-center">
                                                     @if (Auth::guard('customer')->check())
                                                         <a href="{{ route('order.checkout') }}" class="btn btn-sm btn-fill-out">
                                                             Checkout
                                                         </a>
-                                                    @else   
+                                                    @else
                                                         <a href="{{ route('login', 'back=checkout') }}" class="btn btn-sm btn-fill-out">
                                                             Checkout
                                                         </a>
                                                     @endif
                                                 </div>
 
-                                                <div class="col-md-6 text-center">
-                                                    <a href="{{ route('home') }}" class="btn btn-sm btn-fill-out">
-                                                        Continue Shipping
-                                                    </a>
-                                                </div>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -196,7 +197,7 @@
 
                     // $('.quantity-loader-' + response.id).hide();
                     // $('.quantity-' + response.id).show();
-            
+
                     $('.plus-'+id).removeAttr('disabled');
                     $('.plus-'+id).html('+');
 

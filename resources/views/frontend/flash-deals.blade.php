@@ -48,58 +48,53 @@
     </div>
 @endpush
 @section('content')
+
 <div class="main_content bg_gray">
 
-    <div class="section">
+    <div class="section" style="padding: 20px 0px;">
         <div class="custom-container">
             <div class="row">
                 @if (count($deals) > 0)
                     @foreach ($deals as $deal)
-                        <div class="col-md-4">
-                            <div class="blog_post blog_style1 box_shadow1">
-                                <div class="blog_content bg-white">
-                                    <div class="blog_img">
-                                        <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}">
+                        <div class="col-md-6">
+                            <div class="blog_post blog_style1 box_shadow1 p-3 rounded bg-white h-100">
+                                <div class="row g-3 align-items-center">
+                                    <!-- Left Side Image -->
+                                    <div class="col-md-5">
+                                        <div class="blog_img overflow-hidden rounded">
+                                            <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}" class="img-fluid w-100 h-auto object-fit-cover">
+                                        </div>
                                     </div>
-                                    <div class="blog_text mt-3 text-center">
-                                        <ul class="list_none d-flex blog_meta">
-                                            <li class="mx-auto">
-                                                <div class="countdown_time countdown_style4 mb-4"
+
+                                    <!-- Right Side Content -->
+                                    <div class="col-md-7">
+                                        <div class="blog_text text-start">
+
+                                            <!-- Title & Content -->
+                                            <h5 class="blog_title mb-1">{{ $deal->title }}</h5>
+                                            <p class="mb-2 text-muted small">{!! nl2br($deal->short_content) !!}</p>
+
+                                            <!-- Countdown -->
+                                            <div class="countdown_time countdown_style4 mb-3"
                                                      data-time="{{ date('Y-m-d H:i:s',strtotime("{$deal->starting_time} + {$deal->deadline_time} {$deal->deadline_type}"))}}">
-                                                    <div class="countdown_box">
-                                                        <div class="countdown-wrap">
-                                                            <span class="countdown days">00</span>
-                                                            <span class="cd_text">Days</span>
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    @foreach(['days' => 'Days', 'hours' => 'Hours', 'minutes' => 'Minutes', 'seconds' => 'Seconds'] as $unit => $label)
+                                                        <div class="countdown_box text-center">
+                                                            <div class="countdown-wrap px-2">
+                                                                <span class="countdown {{ $unit }}">00</span>
+                                                                <div class="cd_text small text-muted">{{ $label }}</div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="countdown_box">
-                                                        <div class="countdown-wrap">
-                                                            <span class="countdown hours">00</span>
-                                                            <span class="cd_text">Hours</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="countdown_box">
-                                                        <div class="countdown-wrap">
-                                                            <span class="countdown minutes">00</span>
-                                                            <span class="cd_text">Minutes</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="countdown_box">
-                                                        <div class="countdown-wrap">
-                                                            <span class="countdown seconds">00</span>
-                                                            <span class="cd_text">Seconds</span>
-                                                        </div>
-                                                    </div>
+                                                    @endforeach
                                                 </div>
-                                            </li>
-                                        </ul>
-                                        <h5 class="blog_title mb-0">
-                                            {{ $deal->title }}
-                                        </h5>
-                                        <p>{!! nl2br($deal->short_content) !!}</p>
-                                        <a  title="Visit {{ $deal->title }} Page" href="{{ route('slug.handle', $deal->slug) }}" class="btn btn-sm btn-fill-out rounded view py-2">
-                                            View Details
-                                        </a>
+                                            </div>
+
+                                            <!-- CTA -->
+                                            <a href="{{ route('slug.handle', $deal->slug) }}"
+                                            class="btn btn-sm btn-fill-out rounded view py-2 px-3">
+                                                View Details
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -117,7 +112,7 @@
     <link rel="stylesheet" href="{{asset("backend/assets/css/custom-animate.css")}}">
     <style>
         .countdown{
-            font-size: 24px!important;
+            /* font-size: 24px!important; */
             color: var(--primary-color)!important;
         }
         .cd_text{
@@ -125,9 +120,53 @@
         }
         .countdown_style4 .countdown_box .countdown-wrap {
             display: flex;
-            padding: 15px!important;
+            padding: 10px !important;
             flex-wrap: wrap;
             justify-content: center;
+        }
+
+        .countdown_time .countdown_box {
+            background: #f7f7f7;
+            border-radius: 6px;
+            padding: 6px 10px;
+            width: 60px;
+            text-align: center;
+        }
+
+        .countdown_time .countdown {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+        }
+
+        .countdown_time .cd_text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .blog_post .blog_img img {
+            border-radius: 6px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .blog_post .blog_img:hover img {
+            transform: scale(1.05);
+        }
+        @media (max-width: 767.98px) {
+            .blog_post .row {
+                flex-direction: column;
+            }
+
+            .blog_post .col-md-5,
+            .blog_post .col-md-7 {
+                max-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .countdown_time .countdown_box {
+                min-width: 50px;
+            }
         }
 
     </style>

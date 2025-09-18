@@ -111,7 +111,7 @@
                                             <label for="customer_phone">Phone <span class="text-danger">*</span></label>
                                             <input type="text" name="customer_phone" id="customer_phone" class="form-control" required placeholder="Phone">
                                         </div> --}}
-                                        <div id="password_area" class="col-md-12 form-group mb-3">
+                                        <div class="col-md-12 form-group mb-3">
                                             <label for="password">Password</label>
                                             <div class="input-group">
                                                 <input data-parsley-errors-container="#password_error" type="password" name="password" id="password" class="form-control" required>

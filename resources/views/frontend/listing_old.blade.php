@@ -1,7 +1,56 @@
+@php
+    $breadCrumbCounter = 1;
+    $schemaBreadcrumbs = [
+        [
+            '@type' => 'ListItem',
+            'position' => $breadCrumbCounter,
+            'name' => 'Home',
+            'item' => route('home')
+        ]
+    ];
+
+    foreach ($breadcrumb as $category) { 
+        $schemaBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => ++$breadCrumbCounter,
+            'name' => $category->name,
+            'item' => route('slug.handle', ['slug' => $category->slug])
+        ];
+    }
+
+    $schemaBreadcrumbsJson = json_encode($schemaBreadcrumbs);
+
+    $productSchemaArray = [];
+    foreach ($products as $key => $product) {
+        $productSchemaArray[] = [
+            '@type'     => 'ListItem',
+            'position'  => ++$key,
+            'url'       =>  route('slug.handle', $product['slug']),
+            'item'      => [
+                '@type' => 'Product',
+                'name'  => $product['name'],
+                'image' => asset($product['thumb_image']),
+                'description' => "Dell laptop with Intel i5, 8GB RAM, and SSD storage.",
+                'sku'   => $product['sku'],
+                "offers" => [
+                    "@type"=> "Offer",
+                    "priceCurrency" => "BDT",
+                    "price" => number_format(convert_price($product['unit_price']), 2, '.', ''),
+                    "availability" => "https://schema.org/InStock",
+                    "url" => route('slug.handle', $product['slug']),
+                    "itemCondition" => "https://schema.org/NewCondition"
+                ]
+            ]
+        ];
+    }
+
+    $schemaProductsJson = json_encode($productSchemaArray);
+
+@endphp
 @extends('frontend.layouts.app', ['title' => $model->site_title ])
 
-@push('page_meta_information')
-
+@section('meta')
+    
     <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
@@ -18,16 +67,37 @@
     <meta property="og:description" content="{{ $model->meta_description }}">
     <meta property="og:image" content="{{ asset($model->photo) }}">
 
-    <!-- For Twitter -->
+    <!-- For Twitter --> 
     <meta name="twitter:card" content="Product" />
     <meta name="twitter:creator" content="{{ get_settings('system_name') }}" />
     <meta name="twitter:title" content="{{ $model->meta_title }}" />
     <meta name="twitter:description" content="{{ $model->meta_description }}" />
     <meta name="twitter:site" content="{{ route('home') }}" />
     <meta name="twitter:image" content="{{ asset($model->photo) }}">
-    {!! $model->meta_article_tags !!}
-
-@endpush
+    
+    <!-- For Schema --> 
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "{{ $model->name }}",
+            "description": "{{ $model->meta_description }}",
+            "url": "{{ url()->current() }}",
+            "breadcrumb": {
+                "@type": "BreadcrumbList",
+                "itemListElement": {!! $schemaBreadcrumbsJson !!}
+            },
+            "mainEntity": {
+                "@type": "ItemList",
+                "name": "{{ $model->name }} Products",
+                "itemListOrder": "http://schema.org/ItemListOrderAscending",
+                "numberOfItems": {{ count($products) }},
+                "itemListElement": {!! $schemaProductsJson !!}
+            }
+        }
+    </script>
+    {{-- {!! $model->meta_article_tag !!} --}}
+@endsection
 
 @push('breadcrumb')
     <div class="breadcrumb_section page-title-mini">
@@ -40,10 +110,58 @@
                                 <i class="linearicons-home"></i>
                             </a>
                         </li>
+                        @foreach ($breadcrumb as $category)
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('slug.handle', ['slug' => $category->slug]) }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                        @endforeach
                         <li class="breadcrumb-item active">
                             {{ $model->name }}
                         </li>
                     </ol>
+                </div>
+
+                <div class="col-md-12 listing-headers">
+                    @if ($model->header)
+                        <h1>{{ $model->header }}</h1>
+                    @endif
+                    @if ($model->short_description)
+                        <p>{!! $model->short_description !!}</p>
+                    @endif
+                </div>
+
+                {{-- <div class="sub-categories col-md-12">
+                    @if ($model->children)
+                        @foreach ($model->children as $sub_category)
+                            <a class="btn btn-dark btn-sm" href="{{ $sub_category->slug }}">
+                                {{ $sub_category->name }}
+                            </a>
+                        @endforeach
+                    @endif
+                </div> --}}
+
+                <div class="mt-10">
+                    @if ($model->children)
+                        <ul class="list-9-col">
+                            @foreach ($model->children as $sub_category)
+                                <li>
+                                    <div class="pt-2 box-category hover-up">
+                                        <div class="text-info">
+                                            <a class="font-sm color-gray-900 font-bold" href="{{ $sub_category->slug }}">
+                                                {{ $sub_category->name }}
+                                            </a>
+                                            <p class="mb-0 font-xs color-gray-500">
+                                                {{ $sub_category->getAllProductsCount() }} products
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+
                 </div>
             </div>
         </div>
@@ -53,10 +171,19 @@
 
 @endpush
 @section('content')
-    <div class="section bg_gray">
+    <div class="section bg_gray pt-2">
         <div class="custom-container">
             <div class="row">
                 <div class="col-md-12 mb-3 align-item-center">
+
+                    @if ($after_breadcrumb_section_banners = $model->banners()->where('position', 'after_breadcrumb_section')->get())
+                        @foreach ($after_breadcrumb_section_banners as $after_breadcrumb_section_banner)
+                            <div class="mb-3 position-relative">
+                                <img  src="{{ asset($after_breadcrumb_section_banner->picture) }}" alt="{{ $after_breadcrumb_section_banner->name }}" class="img-fluid rounded">
+                            </div>
+                        @endforeach
+                    @endif
+
                     <div class="card bg-light border-0">
                         <div class="card-body p-0">
                             <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -80,6 +207,14 @@
             </div>
             <div class="row">
 
+                @if ($after_title_and_description_banners = $model->banners()->where('position', 'after_title_and_description')->get())
+                    @foreach ($after_title_and_description_banners as $after_title_and_description_banner)
+                        <div class="mb-3 position-relative">
+                            <img  src="{{ asset($after_title_and_description_banner->picture) }}" alt="{{ $after_title_and_description_banner->name }}" class="img-fluid rounded">
+                        </div>
+                    @endforeach
+                @endif
+
                 <!-- Filtering Options -->
                 <aside class="col-lg-3 col-md-4 mb-6 mb-md-0">
                     <div class="offcanvas offcanvas-start offcanvas-collapse w-md-50" tabindex="-1" id="offcanvasCategory" aria-labelledby="offcanvasCategoryLabel">
@@ -89,6 +224,14 @@
                         </div>
                         <div class="offcanvas-body listing-canvas pt-lg-0">
                             <div class="accordion" id="categoryFilterOptions">
+
+                                @if ($on_left_sidebar_start_banners = $model->banners()->where('position', 'on_left_sidebar_start')->get())
+                                    @foreach ($on_left_sidebar_start_banners as $on_left_sidebar_start_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($on_left_sidebar_start_banner->picture) }}" alt="{{ $on_left_sidebar_start_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
 
                                 <div class="widget mb-3">
                                     <div class="accordion-item">
@@ -112,6 +255,15 @@
 
                                     </div>
                                 </div>
+
+                                @if ($after_left_sidebar_price_range_banners = $model->banners()->where('position', 'after_left_sidebar_price_range')->get())
+                                    @foreach ($after_left_sidebar_price_range_banners as $after_left_sidebar_price_range_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($after_left_sidebar_price_range_banner->picture) }}" alt="{{ $after_left_sidebar_price_range_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
+
 
                                 <!-- Availability -->
                                 <div class="widget mb-3">
@@ -154,22 +306,34 @@
                                     </div>
                                 </div>
 
-                                <!-- Categories -->
+                                @if ($after_left_sidebar_stock_banners = $model->banners()->where('position', 'after_left_sidebar_stock')->get())
+                                    @foreach ($after_left_sidebar_stock_banners as $after_left_sidebar_stock_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($after_left_sidebar_stock_banner->picture) }}" alt="{{ $after_left_sidebar_stock_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
+
+
+                                <!-- Brand -->
                                 <div class="widget mb-3">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#brand-filter" aria-expanded="false" aria-controls="brand-filter">
-                                                Category
+                                                Brand
                                             </button>
                                         </h2>
                                         <div id="brand-filter" class="accordion-collapse collapse show" aria-labelledby="flash-brand">
                                             <div class="accordion-body scrollbar">
                                                 <ul class="list_brand">
-                                                    @foreach ($categories as $category)
+                                                    @php
+                                                        $brands = App\Models\Brand::select('id','name', 'slug')->where('status', 1)->orderBy('name', 'ASC')->get();
+                                                    @endphp
+                                                    @foreach ($brands as $brand)
                                                         <li>
                                                             <div class="custome-checkbox">
-                                                                <input class="form-check-input" type="checkbox" name="categories" id="category-{{ $category->id }}" value="{{ $category->id }}">
-                                                                <label class="form-check-label" for="category-{{ $category->id }}"><span>{{ $category->name }}</span></label>
+                                                                <input class="form-check-input" type="checkbox" name="brand" id="brand-{{ $brand->id }}" value="{{ $brand->id }}">
+                                                                <label class="form-check-label" for="brand-{{ $brand->id }}"><span>{{ $brand->name }}</span></label>
                                                             </div>
                                                         </li>
                                                     @endforeach
@@ -179,30 +343,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Types -->
-                                {{-- <div class="widget mb-3">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#brand-filter" aria-expanded="false" aria-controls="brand-filter">
-                                                Types
-                                            </button>
-                                        </h2>
-                                        <div id="brand-filter" class="accordion-collapse collapse show" aria-labelledby="flash-brand">
-                                            <div class="accordion-body scrollbar">
-                                                <ul class="list_brand">
-                                                    @foreach ($model->types as $types)
-                                                        <li>
-                                                            <div class="custome-checkbox">
-                                                                <input class="form-check-input" type="checkbox" name="brand_types" id="brand-{{ $types->id }}" value="{{ $types->id }}">
-                                                                <label class="form-check-label" for="brand-{{ $types->id }}"><span>{{ $types->name }}</span></label>
-                                                            </div>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
+                                @if ($after_left_sidebar_brand_banners = $model->banners()->where('position', 'after_left_sidebar_brand')->get())
+                                    @foreach ($after_left_sidebar_brand_banners as $after_left_sidebar_brand_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($after_left_sidebar_brand_banner->picture) }}" alt="{{ $after_left_sidebar_brand_banner->name }}" class="img-fluid rounded">
                                         </div>
-                                    </div>
-                                </div> --}}
+                                    @endforeach
+                                @endif
 
                                 <!-- Rating -->
                                 <div class="widget mb-3">
@@ -280,17 +427,86 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @if ($after_left_sidebar_rating_banners = $model->banners()->where('position', 'after_left_sidebar_rating')->get())
+                                    @foreach ($after_left_sidebar_rating_banners as $after_left_sidebar_rating_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($after_left_sidebar_rating_banner->picture) }}" alt="{{ $after_left_sidebar_rating_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                @if ($keys = \App\Models\SpecificationKey::where('status', 1)->whereIn('category_id', $categoryIdArray)->get())
+                                    @foreach($keys as $key)
+                                        @if ($types = $key->types->where('status', 1)->where('show_on_filter', 1))
+                                            @foreach ($types as $type)
+                                                <div class="widget mb-3">
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ Str::slug($type->name) }}-filter" aria-expanded="false" aria-controls="{{ Str::slug($type->name) }}-filter">
+                                                                {{ $type->filter_name }}
+                                                            </button>
+                                                        </h2>
+                                                        <div id="{{ Str::slug($type->name) }}-filter" class="accordion-collapse collapse show" aria-labelledby="flash-{{ Str::slug($type->name) }}">
+                                                            <div class="accordion-body scrollbar">
+                                                                <ul class="list_brand">
+                                                                    @if ($attributes = $type->attributes->where('status', 1))
+                                                                        @foreach ($attributes as $attr)
+                                                                            <li>
+                                                                                <div class="custome-checkbox">
+                                                                                    <input class="form-check-input" type="checkbox" name="specification" id="specification-{{ $attr->id }}" value="{{ $attr->id }}">
+                                                                                    <label class="form-check-label" for="specification-{{ $attr->id }}"><span>{{ $attr->name }}</span></label>
+                                                                                </div>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+
+                                        @endif
+                                    @endforeach
+                                @endif
+
+                                @if ($after_left_sidebar_specification_key_banners = $model->banners()->where('position', 'after_left_sidebar_specification_key')->get())
+                                    @foreach ($after_left_sidebar_specification_key_banners as $after_left_sidebar_specification_key_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($after_left_sidebar_specification_key_banner->picture) }}" alt="{{ $after_left_sidebar_specification_key_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                @if ($on_left_sidebar_footer_banners = $model->banners()->where('position', 'on_left_sidebar_footer')->get())
+                                    @foreach ($on_left_sidebar_footer_banners as $on_left_sidebar_footer_banner)
+                                        <div class="mb-3 position-relative">
+                                            <img style="max-height: 450px;" src="{{ asset($on_left_sidebar_footer_banner->picture) }}" alt="{{ $on_left_sidebar_footer_banner->name }}" class="img-fluid rounded">
+                                        </div>
+                                    @endforeach
+                                @endif
+
                             </div>
                         </div>
                     </div>
                 </aside>
 
                 <section class="col-lg-9">
+                    @if ($on_right_sidebar_top_banners = $model->banners()->where('position', 'on_right_sidebar_top')->get())
+                        @foreach ($on_right_sidebar_top_banners as $on_right_sidebar_top_banner)
+                            <div class="mb-3 position-relative">
+                                <img style="max-height: 450px;" src="{{ asset($on_right_sidebar_top_banner->picture) }}" alt="{{ $on_right_sidebar_top_banner->name }}" class="img-fluid rounded">
+                            </div>
+                        @endforeach
+                    @endif
+
                     <div class="row align-items-center mb-4 pb-1">
                         <div class="d-lg-flex justify-content-between align-items-center">
                             <div class="mb-3 mb-lg-0">
                                 <p class="mb-0">
-                                    Showing <span class="text-dark">{{ $productCount }}</span> <b></b> out of <span class="text-dark">{{ $allProductCount }}</span>  Products
+                                    {{-- Showing <span class="text-dark">{{ $productCount }}</span> <b></b> out of <span class="text-dark">{{ $allProductCount }}</span>  Products --}}
+                                    Showing <span class="text-dark">{{ $model->name }}</span> Products
                                 </p>
                             </div>
 
@@ -345,45 +561,17 @@
 @endphp
 @push('scripts')
     <script>
-        $(document).ready(function () {
-            var params = new URLSearchParams(window.location.search);
+        function updateActiveSort() {
+            var currentSort = $('#sort-by').val();  // Get the current selected sort value
+            $('.nav-link').removeClass('active');  // Remove active class from all links
 
-            // Availability filters restore
-            if (params.get('in_stock') == 1) {
-                $('#in_stock_availability').prop('checked', true);
-            }
-            if (params.get('out_of_stock') == 1) {
-                $('#out_of_stock_availability').prop('checked', true);
-            }
-            if (params.get('pre_order') == 1) {
-                $('#pre_order_availability').prop('checked', true);
-            }
-            if (params.get('up_coming') == 1) {
-                $('#up_coming_availability').prop('checked', true);
-            }
+            // Add active class to the correct sort option
+            $('.nav-link[data-sort="' + currentSort + '"]').addClass('active');
+        }
 
-            // Sort restore
-            if (params.get('sort')) {
-                $('#sort-by').val(params.get('sort'));
-            }
+        $(document).ready(function() {
 
-            // Show restore
-            if (params.get('show')) {
-                $('.number-of-data-show select').val(params.get('show'));
-            }
-
-            // Brand restore
-            var categories = params.getAll('categories[]');
-            categories.forEach(function (b) {
-                $('input[name^="categories"][value="' + b + '"]').prop('checked', true);
-            });
-
-            // Rating restore
-            var ratings = params.getAll('rating[]');
-            ratings.forEach(function (r) {
-                $('.rating-checkbox[value="' + r + '"]').prop('checked', true);
-            });
-            
+            //Price Range Filter
             var $priceFilter = $('#price_filter');
             var minPrice = parseInt($priceFilter.data('min-value'));
             var maxPrice = parseInt($priceFilter.data('max-value'));
@@ -400,103 +588,137 @@
                     updatePriceRange(ui.values[0], ui.values[1]);
                 }
             });
-
+            var debounceTimeout;
             function updatePriceRange(minValue, maxValue) {
-                var priceSign = $priceFilter.data('price-sign');
+                var priceSign = $priceFilter.data('price-sign');  // Get the currency symbol
+
                 $priceDisplay.text(priceSign + minValue + " - " + priceSign + maxValue);
+
                 $priceFirst.val(minValue);
                 $priceSecond.val(maxValue);
-                applyFilters();
+                clearTimeout(debounceTimeout);
+
+                debounceTimeout = setTimeout(function () {
+                    filterProducts();
+                }, 1500);
             }
 
-            $('.form-check, .custom_select select, #sort-by, .rating-checkbox, input[name^="categories"], input[name^="specification"]')
-                .on('change', applyFilters);
-
-            $(document).on('click', '.sort-option', function () {
-                var sortBy = $(this).data('sort');
-                $('#sort-by').val(sortBy);
-                $('.nav-link').removeClass('active');
-                $(this).addClass('active');
-                applyFilters();
+            // Trigger filterProducts on checkbox or select changes (including brand/specification changes)
+            $('.form-check, .custom_select select').on('change', function() {
+                filterProducts();
             });
 
-            function applyFilters() {
-                var params = new URLSearchParams(window.location.search);
+            $(document).on('change', '#sort-by', function() {
+                filterProducts();
+            });
 
-                // Availability filters
-                if ($('#in_stock_availability').is(':checked')) {
-                    params.set('in_stock', 1);
-                } else {
-                    params.delete('in_stock');
-                }
+            // Brand filter
+            $('input[name^="brand"]').on('change', function () {
+                filterProducts();
+            });
 
-                if ($('#out_of_stock_availability').is(':checked')) {
-                    params.set('out_of_stock', 1);
-                } else {
-                    params.delete('out_of_stock');
-                }
+            //Rating Filter
+            $('.rating-checkbox').on('change', function () {
+                filterProducts();
 
-                if ($('#pre_order_availability').is(':checked')) {
-                    params.set('pre_order', 1);
-                } else {
-                    params.delete('pre_order');
-                }
+            });
 
-                if ($('#up_coming_availability').is(':checked')) {
-                    params.set('up_coming', 1);
-                } else {
-                    params.delete('up_coming');
-                }
+            // Specification filter
+            $('input[name^="specification"]').on('change', function () {
+                filterProducts();
+            });
 
-                // Price filter (only if changed)
-                let minPrice = $('#price_first').val();
-                let maxPrice = $('#price_second').val();
-                if (minPrice && maxPrice) {
-                    params.set('price_min', minPrice);
-                    params.set('price_max', maxPrice);
-                } else {
-                    params.delete('price_min');
-                    params.delete('price_max');
-                }
+            // Handle sorting by clicking on nav links
+            $(document).on('click', '.sort-option', function() {
+                var sortBy = $(this).data('sort'); // Get the sorting value from data-sort attribute
+                $('#sort-by').val(sortBy);  // Update the hidden select dropdown to match the selected sort option
 
-                // Sort filter (only if selected)
-                let sort = $('#sort-by').val();
-                if (sort) {
-                    params.set('sort', sort);
-                } else {
-                    params.delete('sort');
-                }
+                // Update the active class for the sorting links
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
 
-                // Show filter (only if selected)
-                let show = $('.number-of-data-show select').val();
-                if (show) {
-                    params.set('show', show);
-                } else {
-                    params.delete('show');
-                }
+                // Trigger the filter function to apply new sort criteria
+                filterProducts();
+            });
 
-                // Brand Types filter
-                var categories = $('input[name^="categories"]:checked').map(function () {
-                    return $(this).val();
+            // Filter products function
+            function filterProducts() {
+                // Get checkbox values
+                var in_stock = $('#in_stock_availability').is(':checked');
+                var out_of_stock = $('#out_of_stock_availability').is(':checked');
+                var pre_order = $('#pre_order_availability').is(':checked');
+                var up_coming = $('#up_coming_availability').is(':checked');
+                var price_range=[
+                    $('#price_first').val(),
+                    $('#price_second').val(),
+                ];
+                // Get the selected sort value from the hidden select dropdown
+                var sortBy = $('#sort-by').val();
+                var showData = $('.number-of-data-show select').val();
+
+                var brands = [];
+                var specifications = [];
+
+
+                // Get selected brands
+                $('input[name^="brand"]:checked').each(function () {
+                    brands.push($(this).val());
+                });
+
+                // Get selected specifications
+                $('input[name^="specification"]:checked').each(function () {
+                    specifications.push($(this).val());
+                });
+
+                // Get category ID
+                var catId = $('#routeCID').val();
+                var rating=[];
+                var selectedRatings = $('.rating-checkbox:checked').map(function () {
+                    return parseInt($(this).val());
                 }).get();
-                params.delete('categories[]');
-                if (categories.length) {
-                    categories.forEach(b => params.append('categories[]', b));
+
+                if (selectedRatings.length > 0) {
+                    var minRating = Math.min.apply(null, selectedRatings);
+                    var maxRating = Math.max.apply(null, selectedRatings) + 0.99;
+
+                    maxRating = maxRating > 5 ? 5 : maxRating;
+                     rating=[
+                        minRating,
+                        maxRating,
+                    ];
                 }
 
-                // Rating filter
-                var ratings = $('.rating-checkbox:checked').map(function () {
-                    return $(this).val();
-                }).get();
-                params.delete('rating[]');
-                if (ratings.length) {
-                    ratings.forEach(r => params.append('rating[]', r));
-                }
+                // Show loading overlay
+                // $('.preloader').show();
 
-                // Redirect with only selected filters
-                window.location = window.location.pathname + '?' + params.toString();
+                // Send AJAX request
+                $.ajax({
+                    url: '{{ route('filter.products')}}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        in_stock: in_stock == true ? in_stock : null,
+                        out_of_stock: out_of_stock == true ? out_of_stock : null,
+                        pre_order: pre_order == true ? pre_order : null,
+                        up_coming: up_coming == true ? pre_order : null,
+                        category_id: catId,
+                        sortBy: sortBy,
+                        brands: brands,
+                        specifications: specifications,
+                        price_range: price_range,
+                        rating: rating,
+                        showData: showData
+                    },
+                    success: function(response) {
+                        // Hide loading overlay and update the product area
+                        $('#product-area').html(response);
+                        $('.preloader').hide();
+                    },
+                    error: function(xhr, status, error) {
+                        $('.preloader').hide();
+                    }
+                });
             }
-
         });
     </script>
 @endpush

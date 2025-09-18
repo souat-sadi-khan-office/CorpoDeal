@@ -46,7 +46,7 @@ var SimpleBar=function(){"use strict";var e=function(t,i){return e=Object.setPro
         let global_country_id = $(this).data('id');
         // let global_currency_id = $('#global_currency_id').val();
 
-        $('.location-loader').show();
+        $(this).html('<i class="fas fa-spinner fa-spin"></i>');
         $(this).attr('disabled');
         
         $.post('/currency/change', {
@@ -75,7 +75,6 @@ var SimpleBar=function(){"use strict";var e=function(t,i){return e=Object.setPro
         var $priceSpan = $productPrice.find('.price');
 
         if ($productPrice.length === 0 || $delTag.length === 0 || $priceSpan.length === 0) {
-            console.log("Element(s) not found.");
             return;
         }
 
@@ -1019,15 +1018,15 @@ var SimpleBar=function(){"use strict";var e=function(t,i){return e=Object.setPro
         });
 
         // Zoom image when click on icon
-        $('.product_img_zoom').on('click', function () {
-            var actual = $('.pr_item_gallery a').attr('data-zoom-image');
-            $('body').addClass('zoom_gallery_image');
-            $('#pr_item_gallery .item').each(function () {
-                if (actual == $(this).find('.product_gallery_item').attr('data-zoom-image')) {
-                    return galleryZoom.magnificPopup('open', $(this).index());
-                }
-            });
-        });
+        $('.product_img_zoom').on('click', function(){
+			var atual = $('#pr_item_gallery a').attr('data-zoom-image');
+			$('body').addClass('zoom_gallery_image');
+			$('#pr_item_gallery .item').each(function(){
+				if( atual == $(this).find('.product_gallery_item').attr('data-zoom-image') ) {
+					return galleryZoom.magnificPopup('open', $(this).index());
+				}
+			});
+		});
     }
 
 
@@ -1297,6 +1296,7 @@ var SimpleBar=function(){"use strict";var e=function(t,i){return e=Object.setPro
                     if (showArea == 'main-cart-area') {
                         $('.cart_count').show();
                         $('.cart_count').html(data.counter);
+                        $('.counter').html(data.counter);
                         $('.cart-content').html(data.content);
                         $('.amount').html(data.total_price);
                         if (data.counter > 0) {
@@ -1359,6 +1359,82 @@ var SimpleBar=function(){"use strict";var e=function(t,i){return e=Object.setPro
                 e.preventDefault(); // Default behavior (dropdown) বন্ধ করা
                 window.location.href = this.getAttribute('href'); // লিংকে রিডাইরেক্ট করা
             });
+        });
+    });
+
+    $(document).on('click', '.button-plus', function () {
+        const button = $(this);
+        const id = button.data('id');
+        const slug = button.data('slug');
+        const qtyInput = $('#qty_' + id);
+
+        $.ajax({
+            url: '/cart/add',
+            method: 'POST',
+            data: {
+                slug: slug,
+                quantity: 1,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: 'JSON',
+            success: function (data) {
+                if (data.status) {
+                    qtyInput.val(parseInt(qtyInput.val()) + 1);
+                    $('.amount').html(data.total_price);
+                    $('.cart_total_price').html(data.total_price);
+                    $('.cart-container .counter').html(data.total_quantity);
+                    getCartItems('main-cart-area');
+                    if (parseInt(qtyInput.val()) > 1) {
+                        $('.minus-' + id).show();
+                    }
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+    });
+
+    // Subtract from cart
+    $(document).on('click', '.button-minus', function () {
+        const button = $(this);
+        const id = button.data('id');
+        const slug = button.data('slug');
+        const qtyInput = $('#qty_' + id);
+
+        $.ajax({
+            url: '/cart/sub',
+            method: 'POST',
+            data: {
+                slug: slug,
+                quantity: 1,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: 'JSON',
+            success: function (data) {
+                if (data.status) {
+                    const newQty = parseInt(qtyInput.val()) - 1;
+                    if (newQty > 0) {
+                        qtyInput.val(newQty);
+                    } else {
+                        qtyInput.val(1);
+                    }
+
+                    $('.amount').html(data.total_price);
+                    $('.cart_total_price').html(data.total_price);
+                    $('.cart-container .counter').html(data.total_quantity);
+                    getCartItems('main-cart-area');
+
+                    if (newQty <= 1) {
+                        $('.minus-' + id).hide();
+                    }
+
+                    if (data.load) {
+                        getCartItems('main-cart-area');
+                    }
+                } else {
+                    alert(data.message);
+                }
+            }
         });
     });
 
@@ -1509,21 +1585,27 @@ $(function () {
     initializeDropdown();
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const icons = document.querySelectorAll(".nav-link i");
-    icons.forEach(icon => {
-        const randomClass = `random-color-${Math.floor(Math.random() * 15) + 1}`;
-        icon.classList.add(randomClass);
-    });
-    const iconsMenu = document.querySelectorAll(".dropdown-item i");
-    iconsMenu.forEach(icon => {
-        const randomClass = `random-color-${Math.floor(Math.random() * 15) + 1}`;
-        icon.classList.add(randomClass);
-    });
-});
-
 $('#search').jqueryInputTypeWriting({
     speed: 50,
     delay: 2000,
-    keywords: ['Asus ExpertBook B1', 'Havit TW976 True Wireless Stereo Earbuds', 'Apple MacBook Pro 16', 'AMD Ryzen 9 9900X', 'Intel Core i7 14700K', 'GIGABYTE B760M', 'MaxGreen M19 ARGB'],
+    keywords: ['Synology DiskStation DS124', 'Synology DiskStation DS423+', 'Synology DiskStation DS923+', 'Synology DiskStation DS1522+', 'Synology RackStation RS822RP+', 'Synology RackStation RS1221RP+', 'Synology RackStation RS3621xs+', 'Synology HAT3300 4TB', 'EnGenius ECW120', 'EnGenius Cloud Managed ECW230', 'Synology DiskStation DS223j'],
+});
+
+$(document).ready(function() {
+    $('.pr_desc_wrapper').each(function() {
+        var $desc = $(this).find('.pr_desc');
+        var contentHeight = $desc.find('.desc_content')[0].scrollHeight;
+        
+        if(contentHeight <= 100) {
+            $(this).find('.overlay_toggle').hide();
+        }
+    });
+
+    $('.toggle_desc').click(function() {
+        var $wrapper = $(this).closest('.pr_desc_wrapper');
+        var $desc = $wrapper.find('.pr_desc');
+
+        $desc.toggleClass('expanded');
+        $(this).text($desc.hasClass('expanded') ? 'Show Less' : 'Show More');
+    });
 });

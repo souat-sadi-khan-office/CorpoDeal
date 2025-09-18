@@ -21,61 +21,61 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.create') === false) {
-            return response()->json([
-                'status' => false,
-                'goto' => route('admin.dashboard'),
-                'message' => "You don\'t have permission"
-            ]);
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.create') === false) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'goto' => route('admin.dashboard'),
+        //         'message' => "You don\'t have permission"
+        //     ]);
+        // }
 
         return $this->supplier->store($request);
     }
 
     public function addform()
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
-            return response()->json([
-                'status' => false,
-                'goto' => route('admin.dashboard'),
-                'message' => "You don\'t have permission"
-            ]);
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'goto' => route('admin.dashboard'),
+        //         'message' => "You don\'t have permission"
+        //     ]);
+        // }
 
         return view('backend.supplier.add');
     }
 
     public function updatestatus(Request $request, $id)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
-            return response()->json([
-                'status' => false,
-                'goto' => route('admin.dashboard'),
-                'message' => "You don\'t have permission"
-            ]);
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'goto' => route('admin.dashboard'),
+        //         'message' => "You don\'t have permission"
+        //     ]);
+        // }
 
         return $this->supplier->updatestatus($request, $id);
     }
 
     public function update(Request $request, $id)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
-            return response()->json([
-                'status' => false,
-                'goto' => route('admin.dashboard'),
-                'message' => "You don\'t have permission"
-            ]);
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'goto' => route('admin.dashboard'),
+        //         'message' => "You don\'t have permission"
+        //     ]);
+        // }
 
         return $this->supplier->update($request, $id);
     }
 
     public function edit(Request $request, $id)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
-            return redirect()->route('admin.dashboard')->with('error', 'You don\'t have permission.');
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.update') === false) {
+        //     return redirect()->route('admin.dashboard')->with('error', 'You don\'t have permission.');
+        // }
 
         $supplier = $this->supplier->edit($id);
 
@@ -85,9 +85,9 @@ class SupplierController extends Controller
 
     public function index(Request $request)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('supplier.view') === false) {
-            return redirect()->route('admin.dashboard')->with('error', 'You don\'t have permission.');
-        }
+        // if (auth()->guard('admin')->user()->hasPermissionTo('supplier.view') === false) {
+        //     return redirect()->route('admin.dashboard')->with('error', 'You don\'t have permission.');
+        // }
 
         $models = $this->supplier->index();
         $view = $this->supplier->view($models);

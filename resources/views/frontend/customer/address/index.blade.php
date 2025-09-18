@@ -64,7 +64,7 @@
                                                         <div class="list-text">
                                                             {{ $model->first_name. ' '. $model->last_name. ', '. $model->address. ' '. $model->city->name. '-'. $model->postcode. ' '. $model->country->name. ' '. $model->zone->name }}
                                                             @if ($model->is_default)
-                                                                <span class="badge bg-success">Success</span>
+                                                                <span class="badge bg-success">Default</span>
                                                             @endif
                                                         </div>
                                                     </div>

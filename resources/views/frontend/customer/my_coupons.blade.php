@@ -34,7 +34,7 @@
 @endpush
 
 @section('content')
-    <div class="section bg_gray">
+    <div class="section bg_gray pt-4 mm">
         <div class="custom-container">
             <div class="row">
                 @include('frontend.customer.partials.sidebar')
@@ -112,6 +112,12 @@
                                                                 <li class="page-item disabled"><span class="page-link">»</span></li>
                                                             @endif
                                                         </ul>
+                                                    </div>
+                                                </div>
+                                            @else    
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <p>There is nothing to show.</p>
                                                     </div>
                                                 </div>
                                             @endif

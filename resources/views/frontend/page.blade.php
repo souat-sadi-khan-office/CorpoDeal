@@ -50,19 +50,30 @@
 @endpush
 @push('styles')
     <style>
-        .description ul{
-            margin-left: 20px;
-            margin-bottom: 10px;
+        .description h1 {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+
+        .description ul {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .description img {
+            width: 100%;
         }
     </style>
 @endpush
 @section('content')
-<div class="main_content bg_gray py-5">
+<div class="main_content bg_gray">
 
     <div class="custom-container">
         <div class="row">
-            <div style="text-align: justify;" class="col-md-12 description bg_white">
-                {!! $model->content !!}
+            <div class="col-md-12">
+                <div style="text-align: justify;" class="col-md-12 description bg_white">
+                    {!! $model->content !!}
+                </div>
             </div>
         </div>
     </div>

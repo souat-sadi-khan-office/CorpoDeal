@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => get_settings('order_confirmation_site_title')])
+@extends('frontend.layouts.app', ['title' => session('error')??'Order Failed'])
 @section('meta')
 <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
@@ -37,7 +37,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item active">
-                            Order Confirmation
+                            {{ session('error')??'Order Failed' }}
                         </li>
                     </ol>
                 </div>
@@ -74,20 +74,10 @@
                         <img src="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}" alt="System Logo" title="System Logo" width="120">
                     </div>
 
-                    <h4 class="mt-2 mb-3">Your order is confirmed!</h4>
+                    <h4 class="mt-2 mb-3">{{ session('error')??'Order Failed' }}</h4>
 
                     <h6 class="name">Hello <strong>{{ $details['user_name'] }}</strong>,</h6>
 
-                    @if($details['is_manual_pay'])
-                        <div class="alert alert-secondary my-2">
-                            Your order has been placed. <br>
-                            Now make the payment to the bank within the next 7 days. <br>
-                            Upload the payment slip from your profile -> Orders -> Order -> View -> Upload Slip button. <br>
-                            Once uploaded, we’ll process your order next.
-                        </div>
-                    @else
-                        <span class="fs-12 text-black-50">Your order has been confirmed and will be shipped soon.</span>
-                    @endif
 
                     <hr>
                     <div class="d-flex flex-row justify-content-between align-items-center order-details">
@@ -168,15 +158,11 @@
 
                     <span class="d-block">Expected delivery date</span>
                     <span class="font-weight-bold text-success">12 March 2020</span>
-                    <span class="d-block mt-3 text-black-50 fs-15">We will be sending a shipping confirmation email when the item is shipped!</span>
 
                     <hr>
 
                     <div class="d-flex justify-content-between align-items-center footer">
                         <div class="thanks">
-                            <span class="d-block font-weight-bold">
-                                Thanks for shopping
-                            </span>
                             <strong>{{ get_settings('system_name') }} team</strong>
                         </div>
                         <div class="d-flex flex-column justify-content-end align-items-end">

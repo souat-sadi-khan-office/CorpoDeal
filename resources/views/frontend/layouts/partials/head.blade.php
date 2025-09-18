@@ -21,7 +21,7 @@
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 
     {{-- @if (request()->routeIs('home')||request()->routeIs('quick.view')) --}}
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}">
+        {{-- <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/themify-icons.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/simple-line-icons.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/owlcarousel/css/owl.carousel.min.css') }}">
@@ -30,13 +30,14 @@
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/magnific-popup.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/jquery-ui.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick.css') }}">
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick-theme.css') }}">
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick-theme.css') }}"> --}}
     {{-- @endif --}}
     <!-- Optional CSS -->
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/master.min.css') }}">
 
     @yield('meta')
 
-    <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}"> --}}
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/responsive.css') }}">
     <script>
         const primaryColor = "{{ get_settings('primary_color')?? "#FF324D" }}";

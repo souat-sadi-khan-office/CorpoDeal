@@ -4,26 +4,26 @@
 <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
-    
+
     <meta name="title" content="{{ get_settings('checkout_meta_title') }}">
     <meta name="author" content="{{ get_settings('system_name') }} : {{ route('home') }} : {{ get_settings('system_footer_contact_email') }}">
-    <meta name="description" content="{{ get_settings('checkout_meta_description') }}">	
+    <meta name="description" content="{{ get_settings('checkout_meta_description') }}">
 
     <!-- For Open Graph -->
-    <meta property="og:url" content="{{ url()->current() }}">	
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ get_settings('checkout_meta_title') }}">	
-    <meta property="og:description" content="{{ get_settings('checkout_meta_description') }}.">	
-    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">	
+    <meta property="og:title" content="{{ get_settings('checkout_meta_title') }}">
+    <meta property="og:description" content="{{ get_settings('checkout_meta_description') }}.">
+    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
 
     <!-- For Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" /> 
+    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" />
     <meta name="twitter:title" content="{{ get_settings('checkout_meta_title') }}" />
-    <meta name="twitter:description" content="{{ get_settings('checkout_meta_description') }}" />	
-    <meta name="twitter:site" content="{{ route('home') }}" />		
+    <meta name="twitter:description" content="{{ get_settings('checkout_meta_description') }}" />
+    <meta name="twitter:site" content="{{ route('home') }}" />
     <meta name="twitter:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
-    
+
     {!! get_settings('checkout_meta_article_tag') !!}
 @endsection
 @push('breadcrumb')
@@ -35,7 +35,7 @@
                         <h1>Checkout</h1>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 text-end">
                     <ol class="breadcrumb justify-content-md-end">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                         <li class="breadcrumb-item active">Checkout</li>
@@ -52,7 +52,7 @@
             <div class="container">
                 <div class="row">
                     @if (Auth::guard('customer')->check())
-                        
+
                         <div class="col-lg-8 mx-auto">
                             <div class="toggle_info">
                                 <span id="copoun-show-area">
@@ -124,7 +124,7 @@
                                             <div class="col-md-12 mb-2 choose-address" data-id="{{ $address['id'] }}">
                                                 <label data-id="{{ $address['id'] }}" class="h-100 address-card">
                                                     <input name="plan" class="radio" type="radio" {{ $address['is_default'] == 1 ? 'checked' : '' }}>
-                                                
+
                                                     <span class="plan-details">
                                                         <span class="plan-type">{{ $address['name'] }}</span>
                                                         <span>{{ $address['address'] }}</span>
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                             @endif
-                            
+
                             <div class="form-group mb-3">
                                 @if (isset($userInfo['addresses']) && count($userInfo['addresses']) > 0)
                                     {{-- <div class="custom_select" id="addressSelect">
@@ -157,11 +157,11 @@
                                     <label for="customer_name">Full Name <span class="text-danger">*</span></label>
                                     @if ($defaultAddress)
                                         <input type="text" required class="form-control" value="{{ $defaultAddress->first_name . ' ' . $defaultAddress->last_name }}" name="customer_name" id="customer_name" placeholder="">
-                                    @else    
+                                    @else
                                         <input type="text" required class="form-control" value="{{ $userInfo['name'] }}" name="customer_name" id="customer_name" placeholder="">
                                     @endif
                                 </div>
-    
+
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="customer_email">Email Address <span class="text-danger">*</span></label>
                                     <input type="email" required class="form-control" value="{{ $userInfo['email'] }}" name="customer_email" id="customer_email"  placeholder="">
@@ -171,17 +171,17 @@
                                     <label for="customer_phone">Phone Number <span class="text-danger">*</span></label>
                                     <input type="text" required class="form-control" value="{{ @$userInfo['phones']->phone_number }}" name="customer_phone" id="customer_phone" placeholder="">
                                 </div>
-    
+
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="billing_country">Country </label>
                                     <input type="text" name="billing_country" class="form-control" value="{{ $countryName }}" readonly>
                                 </div>
-    
+
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="billing_area">State</label>
                                     <input class="form-control" id="billing_area" type="text" name="billing_area" value="{{ $defaultAddress && $defaultAddress->city ? $defaultAddress->city->name : '' }}">
                                 </div>
-    
+
                                 <div class="col-md-12 form-group mb-3">
                                     <div class="custom_select">
                                         <label for="billing_city">City</label>
@@ -190,23 +190,23 @@
                                             @foreach ($cities as $city)
                                                 @if ($defaultAddress && $defaultAddress->city_id != null)
                                                     <option {{ $defaultAddress->city_id == $city->id ? 'selected' : '' }} value="{{ $city->id }}">{{ $city->name }}</option>
-                                                @else   
+                                                @else
                                                     <option {{ Session::has('user_city') && Session::get('user_city') == $city->name ? 'selected' : '' }} value="{{ $city->id }}">{{ $city->name }}</option>
                                                 @endif
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-    
+
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="billing_address">Address <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="billing_address" name="billing_address" required placeholder="Address" value="{{ $defaultAddress ? $defaultAddress->address : '' }}">
                                 </div>
-    
+
                                 <div class="col-md-12 form-group mb-3">
                                     <input type="text" class="form-control" name="billing_address2" placeholder="Address line 2" value="{{ $defaultAddress ? $defaultAddress->address_line_2 : '' }}">
                                 </div>
-    
+
                                 <div class="ship_detail">
                                     <div class="col-md-12 form-group mb-3">
                                         <div class="chek-form">
@@ -220,34 +220,34 @@
                                     </div>
                                     <div class="row different_address">
                                         <div class="col-md-6 form-group mb-3">
-    
+
                                             <input type="text" name="country" class="form-control" value="{{$countryName}}"
                                                    disabled>
                                             <input type="hidden" name="country_name" class="form-control"
                                                    value="{{$countryName}}">
                                             <input type="hidden" name="country_id" class="form-control"
                                                    value="{{$countryID}}">
-    
+
                                         </div>
 
                                         <div class="col-md-6 form-group mb-3">
                                             <input class="form-control" type="text" name="shipping_area" placeholder="State">
                                         </div>
-    
+
                                         <div class="col-md-12 form-group mb-3">
-    
+
                                             <div class="custom_select">
                                                 <select class="form-control" name="shipping_city">
                                                     <option value="" disabled selected>Select City</option>
                                                     @foreach ($cities as $city)
                                                         <option value="{{ $city->id }}">{{ $city->name }}</option>
                                                     @endforeach
-    
+
                                                 </select>
                                             </div>
-    
+
                                         </div>
-                                        
+
                                         <div class="col-md-12 form-group mb-3">
                                             <input type="text" class="form-control" name="shipping_address"
                                                    placeholder="Address *">
@@ -276,7 +276,7 @@
                                         <thead>
                                         <tr>
                                             <th>Product</th>
-                                            <th>Total</th>
+                                            <th class="text-end">Total</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -327,7 +327,7 @@
 
                                         <tr>
                                             <th>Shipping</th>
-                                            <td class="text-danger text-right">
+                                            <td id="shipping_change_content" class="text-danger text-right">
                                                 + {{ format_price(convert_price($shipping_charge)) }}</td>
                                             <input type="hidden" id="shipping_charge_main" name="shipping_charge"
                                                    value="{{ convert_price($shipping_charge) }}">
@@ -361,11 +361,18 @@
 
                                         <tr>
                                             <th>Total</th>
-                                            <td class="product-subtotal text-right"
-                                                id="product-total">{{ format_price(convert_price(premium_user_price($total_price))) }} </td>
-                                            <input type="hidden" name="totalAmount" id="totalAmount"
-                                                   value="{{ convert_price(premium_user_price($total_price)) }}">
+                                            <td class="product-subtotal text-right" id="product-total">
+                                                {{ format_price(convert_price(premium_user_price($total_price))) }} 
+
+                                                <input type="hidden" name="totalAmount" id="totalAmount" value="{{ convert_price(premium_user_price($total_price)) }}">
+                                            </td>
                                         </tr>
+
+                                        {{-- <tr class="d-none" id="sslp">
+                                            <th>+ SSLCommerz</th>
+                                            <td class="product-ssl text-success text-right"
+                                                id="product-ssl">0 </td>
+                                        </tr> --}}
 
                                         @if($total_price!=premium_user_price($total_price) || $total_price>premium_user_price($total_price))
                                             <tr>
@@ -377,13 +384,12 @@
                                                     <small>Saved</small> {{session()->get('currency_symbol'). round(convert_price($total_price)-convert_price(premium_user_price($total_price)),2)}}
                                                 </td>
                                             </tr>
-                                            {{--                                            <tr>--}}
-                                            {{--                                                <th>Premium User Price</th>--}}
-                                            {{--                                                <td class="premium_user_price text-success"--}}
-                                            {{--                                                    id="product-premium_user_price"> <strong>{{ format_price(convert_price(premium_user_price($total_price))) }}</strong> </td>--}}
-                                            <input type="hidden" name="saved" id="saved"
-                                                   value="{{ $total_price-premium_user_price($total_price) }}">
-                                            {{--                                            </tr>--}}
+                                            {{-- <tr>
+                                                <th>Premium User Price</th>
+                                                <td class="premium_user_price text-success"
+                                                    id="product-premium_user_price"> <strong>{{ format_price(convert_price(premium_user_price($total_price))) }}</strong> </td>
+                                                <input type="hidden" name="saved" id="saved" value="{{ $total_price-premium_user_price($total_price) }}">
+                                            </tr> --}}
                                         @endif
                                         </tfoot>
                                     </table>
@@ -434,37 +440,54 @@
                                            value="{{ round(convert_price($tierTotalTax), 2) }}">
                                 @endif
 
-                                <div class="payment_method">
+                                <div style="margin-top:20px;" class="payment_method">
                                     <div class="heading_s1">
-                                        <h4>Payment</h4>
+                                        <h5>Delivery Method</h5>
                                     </div>
                                     <div class="payment_option">
-                                        {{-- <div class="custome-radio">
-                                            <input class="form-check-input" type="radio" name="payment_option"
-                                                id="exampleRadios5" value="paypal" checked>
-                                            <label class="form-check-label" for="exampleRadios5">Paypal</label>
-                                            <p data-method="paypal" class="payment-text">Pay via PayPal; you can pay with
-                                                your credit card if you don't have a PayPal account.</p>
-                                        </div> --}}
+
+                                        <div class="custome-radio">
+                                            <input class="form-check-input" type="radio" name="delivery_method" id="home_delivery" value="home_delivery" checked>
+                                            <label class="form-check-label" for="home_delivery">Home Delivery: {{ format_price(convert_price($shipping_charge)) }}</label>
+                                        </div>
+
+                                        @if (get_settings('enable_store_pickup'))
+                                            <input type="hidden" id="store_pickup_main" value="{{ convert_price(get_settings('store_pickup_fee')) }}">
+                                            <div class="custome-radio">
+                                                <input class="form-check-input" type="radio" name="delivery_method" id="store_pickup" value="store_pickup">
+                                                <label class="form-check-label" for="store_pickup">Store Pickup: {{ format_price(convert_price(get_settings('store_pickup_fee'))) }}</label>
+                                                <p data-method="store_pickup" id="store_pickup_content" style="display:none;">{!! nl2br(get_settings('store_pickup_address')) !!}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="payment_method">
+                                    <div class="heading_s1">
+                                        <h5>Payment Method</h5>
+                                    </div>
+                                    <div class="payment_option">
+
+                                        <div class="custome-radio">
+                                            <input class="form-check-input" type="radio" name="payment_option" id="cash_on_delivery" value="cash_on_delivery">
+                                            <label class="form-check-label" for="cash_on_delivery">Cash on Delivery</label>
+                                            <p data-method="cash_on_delivery" class="payment-text"> Pay when you get the order. </p>
+                                        </div>
 
                                         @if (env('SSLCOMMERZ_SANDBOX') != 'true')
                                             <div class="custome-radio">
-                                                <input class="form-check-input" type="radio" name="payment_option"
-                                                       id="exampleRadios3" value="sslcommerz">
+                                                <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios3" value="sslcommerz">
                                                 <label class="form-check-label" for="exampleRadios3">SslCommerz</label>
-                                                <p data-method="sslcommerz" class="payment-text">Pay via SslCommerz; you
-                                                    can pay with your credit card if you don't have a SslCommerz
-                                                    account.</p>
+                                                <p data-method="sslcommerz" class="payment-text">
+                                                    Payments via SSLCommerz will follow our current <a href="/payment-policy" target="_blank">Payment Policy</a>.
+                                                </p>
                                             </div>
                                         @endif
 
                                         <div class="custome-radio">
-                                            <input class="form-check-input" type="radio" name="payment_option"
-                                                   id="cash_on_delivery" value="cash_on_delivery" checked>
-                                            <label class="form-check-label" for="cash_on_delivery">Cash on
-                                                Delivery</label>
-                                            <p data-method="cash_on_delivery" class="payment-text"> You Have to Pay
-                                                Delivery Charge First. </p>
+                                            <input class="form-check-input" type="radio" name="payment_option" id="manual_pay" value="manual_pay">
+                                            <label class="form-check-label" for="manual_pay">Direct Bank Pay</label>
+                                            <p data-method="manual_pay" class="payment-text">Please proceed with the bank payment and ensure the payment transaction slip is uploaded afterward via your Order Portal. </p>
                                         </div>
 
                                         @if(negative_balance()>=convert_price($total_price))
@@ -479,13 +502,32 @@
                                                     and You Can Continue With This.</p>
                                             </div>
                                         @endif
+
+                                        <div class="col-md-12 mt-3 form-group mb-3">
+                                            <div class="chek-form">
+                                                <div class="custome-checkbox">
+                                                    <input class="form-check-input" type="checkbox" name="agree_terms" id="agree_terms" required>
+                                                    <label class="form-check-label label_info" for="agree_terms">
+                                                        <span>
+                                                            I have read and agree to the website's
+                                                            <a href="/terms-and-conditions" target="_blank" class="text-dark text-decoration-underline">Terms & Conditions</a>
+                                                            ,
+                                                            <a href="/privacy-policy" target="_blank" class="text-dark text-decoration-underline">Privacy Policy</a>
+                                                            ,
+                                                            <a href="/refund-policy" target="_blank" class="text-dark text-decoration-underline">Refund Policy</a>,
+                                                            <a href="/payment-policy" target="_blank" class="text-dark text-decoration-underline">Payment Policy</a>.
+                                                            .
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
+
                                 <input type="hidden" name="currency_code" value="{{$currencyCode}}">
-                                {{-- <button type="submit" class="btn btn-fill-out btn-block">Place Order</button> --}}
-                                <button type="button" id="place_order" class="btn btn-fill-out btn-block">
-                                    Place Order
-                                </button>
+                                <button type="submit" class="btn btn-fill-out btn-block">Place Order</button>
                             </div>
                         </div>
                     </div>
@@ -505,6 +547,39 @@
 @push('scripts')
     <script src="{{asset('backend/assets/js/sweetalert2@11.js')}}"></script>
     <script>
+
+        $(document).ready(function () {
+            let homeDeliveryCost = parseFloat($('#shipping_charge_main').val()) || 0;
+            let storePickupCost = parseFloat($('#store_pickup_main').val()) || 0;
+            let discountAmount = parseFloat($('#discount_amount_main').val()) || 0;
+            let totalAmount = parseFloat($('#totalAmount').val()) || 0;
+
+            function togglePickupContent() {
+                if ($('#store_pickup').is(':checked')) {
+                    let total = totalAmount + discountAmount - homeDeliveryCost;
+
+                    $('#store_pickup_content').slideDown();
+                    $('#shipping_change_content').html('+ ৳ ' + storePickupCost.toFixed(2));
+                    $('#product-total').html('৳ ' + total.toFixed(2));
+                    $('#totalAmount').val(total.toFixed(2));
+                } else {
+                    let total = totalAmount;
+
+                    $('#store_pickup_content').slideUp();
+                    $('#shipping_change_content').html('+ ৳ ' + homeDeliveryCost.toFixed(2));
+                    $('#product-total').html('৳ ' + total.toFixed(2));
+                    $('#totalAmount').val(total.toFixed(2));
+                }
+            }
+
+            // Initial call on page load
+            // togglePickupContent();
+
+            $('input[name="delivery_method"]').on('change', function () {
+                togglePickupContent();
+            });
+        });
+
         $(document).on('click', '#place_order', function() {
             Swal.fire({
                 icon: "info",
@@ -514,6 +589,27 @@
         });
 
         $(document).ready(function () {
+            {{--function updateSSLCharge() {--}}
+            {{--    var paymentMethod = $('input[name="payment_option"]:checked').val();--}}
+            {{--    var sslChargeRate = parseFloat("{{ get_settings('ssl_charge') }}") || 0;--}}
+
+            {{--    if (paymentMethod === 'sslcommerz') {--}}
+            {{--        var totalAmount = parseFloat($('#totalAmount').val() || $('#totalAmount').text()) || 0;--}}
+            {{--        var sslCharge = (totalAmount * sslChargeRate) / 100;--}}
+
+            {{--        $('#product-ssl').text(sslCharge.toFixed(2));--}}
+            {{--        $('#sslp').removeClass('d-none');--}}
+            {{--    } else {--}}
+            {{--        $('tr:has(#product-ssl)').addClass('d-none');--}}
+            {{--        $('#product-ssl').text('0');--}}
+            {{--    }--}}
+            {{--}--}}
+
+            {{--updateSSLCharge();--}}
+
+            {{--$(document).on('change', 'input[name="payment_option"]', function () {--}}
+            {{--    updateSSLCharge();--}}
+            {{--});--}}
             _newsletterFormValidation();
 
             $('#coupon_submitting').hide();

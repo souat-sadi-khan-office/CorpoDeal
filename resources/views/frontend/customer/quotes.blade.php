@@ -27,7 +27,7 @@
 @endpush
 
 @section('content')
-    <div class="section bg_gray">
+    <div class="section bg_gray pt-4 mm">
         <div class="custom-container">
             <div class="row">
                 @include('frontend.customer.partials.sidebar')
@@ -43,9 +43,8 @@
                                     <h1 class="h5">Quote History</h1>
                                 </div>
                                 <div class="card-body">
-                                    <ul class="list-group custom-list">
-                                        @if (isset($quotes))
-
+                                    @if (isset($quotes) && count($quotes) > 0)
+                                        <ul class="list-group custom-list">
                                             @foreach ($quotes as $quote)
                                                 <li class="list-group-item">
                                                     <div class="row">
@@ -95,13 +94,11 @@
                                                     <hr>
                                                 </li>
                                             @endforeach
-                                        @else
-                                            <p>No Quotes Found</p>
-                                        @endif
-
-                                    </ul>
-                                    @include('frontend.components.paginate', ['products' => $quotes])
-
+                                        </ul>
+                                        @include('frontend.components.paginate', ['products' => $quotes])
+                                    @else
+                                        <p>No Quotes Found</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>

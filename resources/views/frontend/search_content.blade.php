@@ -11,7 +11,7 @@
                             </div>
                             <div class="col">
                                 <div class="product-name text-truncate fs-14 mb-5px">
-                                    {{ Illuminate\Support\Str::limit($product['name'], 30) }}
+                                    {{ Illuminate\Support\Str::limit($product['name'], 25) }}
                                 </div>
                                 <div class="product_price">
                                     @if (isset($product['discount_type']))
@@ -39,7 +39,18 @@
         <ul class="list-group list-group-raw">
             @foreach ($categories as $key => $category)
                 <li class="list-group-item my-1 py-1">
-                    <a class="text-reset hov-text-primary" href="{{ route('slug.handle', $category->slug) }}">{{ $category->name }}</a>
+                    <a class="text-reset hov-text-primary" href="{{ route('slug.handle', $category->slug) }}">
+                        {{ $category->name }}
+                        @if ($category->parent_id)
+                            @php
+                                $parentCategory = App\Models\Category::select('id', 'name', 'status')->where('status', 1)->where('id', $category->parent_id)->first();
+                            @endphp
+                            @if ($parentCategory)
+                                ({{ $parentCategory->name }})
+                            @endif
+                        @endif
+                        
+                    </a>
                 </li>
             @endforeach
         </ul>

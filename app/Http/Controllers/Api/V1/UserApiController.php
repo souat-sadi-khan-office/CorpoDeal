@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ComputerBuild;
+use App\Models\Country;
+use App\Models\Currency;
 use App\Models\NegativeBalanceRequest;
 use App\Models\ProductQuestion;
 use App\Models\UserBroughtCoupon;
@@ -36,6 +38,16 @@ class UserApiController extends Controller
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
         $this->installment = $installment;
+    }
+
+    public function getCountries()
+    {
+        return Country::where('status', 1)->orderBy('name')->get();
+    }
+
+    public function getCurrency($countryId)
+    {
+        return Currency::where('country_id', $countryId)->where('status', 1)->get();
     }
 
     private function userId() 

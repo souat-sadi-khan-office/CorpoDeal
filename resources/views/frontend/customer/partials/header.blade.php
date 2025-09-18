@@ -2,7 +2,7 @@
     <div class="col-md-6">
         <div class="left">
             <span class="avatar">
-                @if (Auth::guard('customer')->user()->avatar == 'default.png')
+                {{-- @if (Auth::guard('customer')->user()->avatar == 'default.png')
                     <img src="{{ asset('pictures/user.png') }}" width="80" height="80"
                          alt="{{ Auth::guard('customer')->user()->name }} Photo">
                 @else
@@ -13,7 +13,8 @@
                         <img src="{{ asset(Auth::guard('customer')->user()->avatar) }}" width="80" height="80"
                              alt="{{ Auth::guard('customer')->user()->name }} Photo">
                     @endif
-                @endif
+                @endif --}}
+                <img src="{{ asset('pictures/user.png') }}" width="80" height="80" alt="{{ Auth::guard('customer')->user()->name }} Photo">
             </span>
             <div class="name">
                 <p>Hello,</p>
@@ -228,11 +229,15 @@
                 <span class="blurb">Star Points</span>
                 <span class="amount">{{ Auth::guard('customer')->user()->points }}</span>
             </div>
-            <div class="balance">
-                <span class="blurb">Negative Balance</span>
-                <span class="amount">{{negative_balance()}} {{session()->get('currency_code')}}</span>
-                <span style="font-size: 50%">Selected Currency</span>
-            </div>
+            
+            @if (get_settings('negative_balance_module') == 1)
+                <div class="balance">
+                    <span class="blurb">Negative Balance</span>
+                    <span class="amount">{{negative_balance()}} {{session()->get('currency_code')}}</span>
+                    <span style="font-size: 50%">Selected Currency</span>
+                </div>
+            @endif
+            
         </div>
     </div>
 </div>

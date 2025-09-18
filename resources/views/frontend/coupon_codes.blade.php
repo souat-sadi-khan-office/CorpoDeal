@@ -75,7 +75,7 @@
             @if (count($lifeTimeCoupon) > 0)
                 <div class="col-md-12 content">
                     <h1>Life Time Free Coupon</h1>
-                    <p>Inspired by Lazada - Southeast Asia's leading eCommerce platform</p>
+                    <p>Inspired by CorpoShop - Southeast Asia's leading eCommerce platform</p>
                 </div>
                 @foreach ($lifeTimeCoupon as $coupon)
                     <div class="col-md-4">
@@ -118,7 +118,7 @@
             @if (count($limitedTimeFreeCoupon) > 0)
                 <div class="col-md-12 mt-5 content">
                     <h1>Limited Time Free Coupon</h1>
-                    <p>Inspired by Lazada - Southeast Asia's leading eCommerce platform</p>
+                    <p>Inspired by CorpoShop - Southeast Asia's leading eCommerce platform</p>
                 </div>
                 @foreach ($limitedTimeFreeCoupon as $coupon)
                     <div class="col-md-4">
@@ -162,7 +162,7 @@
             @if (count($lifeTimeSellableCoupon) > 0)
                 <div class="col-md-12 mt-5 content">
                     <h1>Life Time Buyable Coupons with Star Points</h1>
-                    <p>Inspired by Lazada - Southeast Asia's leading eCommerce platform</p>
+                    <p>Inspired by CorpoShop - Southeast Asia's leading eCommerce platform</p>
                 </div>
                 @foreach ($lifeTimeSellableCoupon as $coupon)
                     <div class="col-md-4">
@@ -205,7 +205,7 @@
             @if (count($limitedTimeSellableCoupon) > 0)
                 <div class="col-md-12 mt-5 content">
                     <h1>Limited Time Buyable Coupons with Star Points</h1>
-                    <p>Inspired by Lazada - Southeast Asia's leading eCommerce platform</p>
+                    <p>Inspired by CorpoShop - Southeast Asia's leading eCommerce platform</p>
                 </div>
                 @foreach ($limitedTimeSellableCoupon as $coupon)
                     <div class="col-md-4">
@@ -245,6 +245,13 @@
                         </div>
                     </div>
                 @endforeach
+            @endif
+
+            @if (count($lifeTimeCoupon) == 0 && count($limitedTimeFreeCoupon) == 0 && count($lifeTimeSellableCoupon) == 0 && count($limitedTimeSellableCoupon) == 0)
+                <div class="col-md-12 text-center content">
+                    <h2>No Coupons for now.</h2>
+                    <p>No Coupons available at this moment. Please wait or contact with us for exciting coupons.</p>
+                </div>
             @endif
             
         </div>

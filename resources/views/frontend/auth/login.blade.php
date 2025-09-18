@@ -47,8 +47,28 @@
 </div>
 @endpush
 @push('styles')
-<link rel="stylesheet" href="{{ asset('backend/assets/css/parsley.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/assets/css/toastr.min.css') }}">
+<style>
+    .btn-outline-facebook {
+        border-color: #3b5998;
+        color: #3b5998 !important;
+    }
+
+    .btn-outline-facebook:hover {
+        background-color: #3b5998;
+        color: #fff !important;
+    }
+
+    .btn-outline-google {
+        border-color: #db4437;
+        color: #db4437 !important;
+    }
+
+    .btn-outline-google:hover {
+        background-color: #db4437;
+        color: #fff !important;
+    }
+
+</style>
 @endpush
 @section('content')
     <div class="main_content bg_gray">
@@ -111,42 +131,28 @@
                                     <span> or</span>
                                 </div>
                                 <ul class="btn-login list_none text-center">
-                                    <li>
-                                        @if(request()->has('back'))
-                                            <a style="padding: 8px 10px;" href="{{ route('login.facebook', ['back' => request('back')]) }}" class="btn btn-facebook btn-sm">
-                                                <i class="fab fa-facebook"></i>
-                                                Connect with Facebook
-                                            </a>
-                                        @elseif (request()->has('buy'))
-                                            <a style="padding: 8px 10px;" href="{{ route('login.facebook', ['back' => request('buy')]) }}" class="btn btn-facebook btn-sm">
-                                                <i class="fab fa-facebook"></i>
-                                                Connect with Facebook
-                                            </a>
-                                        @else
-                                            <a style="padding: 8px 10px;" href="{{ route('login.facebook') }}" class="btn btn-facebook btn-sm">
-                                                <i class="fab fa-facebook"></i>
-                                                Connect with Facebook
-                                            </a>
-                                        @endif
-                                    </li>
-                                    <li>
-                                        @if(request()->has('back'))
-                                            <a style="padding: 8px 10px;" href="{{ route('google.login', ['back' => request('back')]) }}" class="btn btn-google btn-sm">
-                                                <i class="fab fa-google"></i>
-                                                Connect with Google
-                                            </a>
-                                        @elseif (request()->has('buy'))
-                                            <a style="padding: 8px 10px;" href="{{ route('google.login', ['back' => request('buy')]) }}" class="btn btn-google btn-sm">
-                                                <i class="fab fa-google"></i>
-                                                Connect with Google
-                                            </a>
-                                        @else
-                                            <a style="padding: 8px 10px;" href="{{ route('google.login') }}" class="btn btn-google btn-sm">
-                                                <i class="fab fa-google"></i>
-                                                Connect with Google
-                                            </a>
-                                        @endif
-                                    </li>
+                                    {{-- <li>
+                                        @php
+                                            $facebookBack = request()->has('back') ? request('back') : (request()->has('buy') ? request('buy') : null);
+                                        @endphp
+                                        <a style="padding: 8px 10px;" 
+                                           href="{{ route('login.facebook', $facebookBack ? ['back' => $facebookBack] : []) }}" 
+                                           class="btn btn-outline-facebook btn-sm">
+                                            <i class="fab fa-facebook"></i>
+                                            <span class="d-none d-sm-inline">Connect with Facebook</span>
+                                        </a>
+                                    </li> --}}
+                                    {{-- <li>
+                                        @php
+                                            $googleBack = request()->has('back') ? request('back') : (request()->has('buy') ? request('buy') : null);
+                                        @endphp
+                                        <a style="padding: 8px 10px;" 
+                                           href="{{ route('google.login', $googleBack ? ['back' => $googleBack] : []) }}" 
+                                           class="btn btn-outline-google btn-sm">
+                                                <i class="fab fa-google fa-fw"></i>
+                                            Connect with Google
+                                        </a>
+                                    </li> --}}
                                 </ul>
                                 
                                 <div class="form-note text-center">Don't Have an Account? 

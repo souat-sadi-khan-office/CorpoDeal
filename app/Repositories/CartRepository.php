@@ -48,7 +48,7 @@ class CartRepository implements CartRepositoryInterface
                 'user_id' => $user_id,
                 'ip'   => request()->ip(),
                 'total_quantity' => 0,
-                'currency_id' => Session::get('currency_id') ?? 1,
+                'currency_id' => Session::get('currency_id') ?? 345,
             ]);
 
             // Store the cart ID in session

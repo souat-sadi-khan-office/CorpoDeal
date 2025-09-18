@@ -39,7 +39,7 @@
 @endpush
 
 @section('content')
-    <div class="section bg_gray">
+    <div class="section bg_gray pt-4 mm">
         <div class="custom-container">
             <div class="row">
                 @include('frontend.customer.partials.sidebar')
@@ -59,10 +59,10 @@
                                     <form method="POST" enctype="multipart/form-data" id="profile-form" action="{{ route('account.update.profile') }}">
                                         <div class="row">
 
-                                            <div class="col-md-12 mb-3 form-group">
+                                            {{-- <div class="col-md-12 mb-3 form-group">
                                                 <label for="avatar">Avatar </label>
                                                 <input type="file" name="avatar" id="avatar" class="form-control">
-                                            </div>
+                                            </div> --}}
 
                                             <div class="form-group col-md-12 mb-3">
                                                 <label>Name <span class="required">*</span></label>
@@ -74,14 +74,14 @@
                                                 <input required class="form-control" value="{{ $model->email }}" name="email" type="email">
                                             </div>
 
-                                            <div class="form-group col-md-12 mb-3">
+                                            {{-- <div class="form-group col-md-12 mb-3">
                                                 <label>Default Currency <span class="required">*</span></label>
                                                 <select name="currency_id" id="currency_id" class="form-control select">
                                                     @foreach ($currencies as $currency)
                                                         <option {{ $model->currency_id == $currency->id ? 'selected' : '' }} value="{{ $currency->id }}">{{ $currency->name }}</option>
                                                     @endforeach
                                                 </select>
-                                            </div>
+                                            </div> --}}
                                             
                                             <div class="col-md-12 form-group mb-3">
                                                 <button type="submit" id="submit" class="btn btn-fill-out">Save</button>

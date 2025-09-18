@@ -69,19 +69,19 @@
                                                             @endif
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-2">
+                                                    {{-- <div class="col-md-2">
                                                         @if ($model->is_verified)
                                                             <span class="badge bg-success">Varified</span>
                                                         @else
                                                             <span class="badge bg-danger">Not Varified</span>
                                                         @endif
-                                                    </div>
+                                                    </div> --}}
                                                     <div class="col-md-5 text-end">
-                                                        @if (!$model->is_verified)
+                                                        {{-- @if (!$model->is_verified)
                                                             <a href="#" class="btn btn-fill-line btn-sm">
                                                                 Verify
                                                             </a>
-                                                        @endif
+                                                        @endif --}}
                                                         
                                                         <a href="{{ route('account.phone-book.edit', $model->id) }}" class="btn btn-fill-line btn-sm">
                                                             Edit
