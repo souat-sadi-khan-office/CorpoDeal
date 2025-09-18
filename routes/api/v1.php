@@ -24,10 +24,6 @@ use App\Http\Controllers\Api\V1\UserAddressApiController;
 use App\Http\Controllers\Api\V1\UserApiController;
 
 Route::middleware(['check.api.token'])->group(function () {
-
-    Route::get('countries', [UserApiController::class, 'getCountries']);
-    Route::get('get-currency/{countryId}', [UserApiController::class, 'getCurrency']);
-
     Route::get('/banners', [BannerController::class, 'index']);
     Route::get('categories/featured', [CategoryApiController::class, 'featuredCategories']);
     Route::get('categories/all', [CategoryApiController::class, 'allCategoriesWithChildren']);
@@ -64,6 +60,7 @@ Route::middleware(['check.api.token'])->group(function () {
 
     Route::get('flash-deals/{slug}', [FlashDealApiController::class, 'getBySlug']);
     Route::get('products/{slug}', [ProductApiController::class, 'getBySlug']);
+    Route::get('products', [ProductApiController::class, 'getAllProducts']);
 
     Route::get('cities', [CityController::class, 'api']);
     Route::get('installment-plans', [InstallmentPlanController::class, 'installmentPlans'])->name('negative.balance');

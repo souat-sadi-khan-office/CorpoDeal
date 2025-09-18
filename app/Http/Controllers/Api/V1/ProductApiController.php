@@ -19,6 +19,20 @@ class ProductApiController extends Controller
         $this->productRepository = $productRepo;
     }
 
+    public function getAllProducts()
+    {
+        $products = Product::with(['category']) 
+            ->where('status', 1)
+            ->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'products' => $products,
+            ]
+        ]);
+    }
+
     public function getBySlug($slug)
     {
         $product = $this->productDetails($slug);

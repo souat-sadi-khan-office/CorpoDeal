@@ -56,24 +56,41 @@ class CompareApiController extends Controller
 
         $compareList = cache()->get($this->getCompareKey($token), []);
         if (empty($compareList)) {
-            return response()->json(['status' => true, 'products' => []]);
+            return response()->json([
+                'status' => true,
+                'compare_token' => $token,
+                'products' => [],
+                'specifications' => []
+            ]);
         }
 
-        $products = Product::with(['brand', 'ratings', 'specifications'])->whereIn('id', $compareList)->get();
+        // eager load all required relations
+        $products = Product::with([
+            'brand',
+            'ratings',
+            'specifications.specificationKey',
+            'specifications.specificationKeyType',
+            'specifications.specificationKeyTypeAttribute',
+        ])->whereIn('id', $compareList)->get();
+
         $models = [];
+        $allSpecifications = [];
 
         foreach ($products as $product) {
+            // ⭐ Ratings
             $averageRating = $product->ratings->isNotEmpty() ? $product->ratings->first()->averageRating : 0;
             $averageRatingCount = $product->ratings->count();
             $averageRatingPercentage = $averageRating ? ($averageRating / 5) * 100 : 0;
 
+            // ⭐ Feature summary
             $summery = $product->specifications->where('key_feature', 1)->map(function ($spec) {
                 return [
                     'type_name' => optional($spec->specificationKeyType)->name,
                     'attr_name' => optional($spec->specificationKeyTypeAttribute)->name,
                 ];
-            });
+            })->values();
 
+            // ⭐ Model data
             $models[] = [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -92,14 +109,36 @@ class CompareApiController extends Controller
                 'average_rating_count' => $averageRatingCount,
                 'summery' => $summery,
             ];
+
+            // ⭐ Specification group
+            $grouped = $product->specifications
+                ->groupBy(fn($spec) => optional($spec->specificationKey)->name)
+                ->map(function ($specs) use ($product) {
+                    return $specs->groupBy(fn($s) => optional($s->specificationKeyType)->name)
+                        ->map(function ($types, $typeName) use ($product) {
+                            $attrNames = $types->pluck('specificationKeyTypeAttribute.name');
+                            return [$product->id => $attrNames->first()];
+                        });
+                });
+
+            foreach ($grouped as $keyName => $types) {
+                foreach ($types as $typeName => $value) {
+                    if (!isset($allSpecifications[$keyName][$typeName])) {
+                        $allSpecifications[$keyName][$typeName] = [];
+                    }
+                    $allSpecifications[$keyName][$typeName] += $value;
+                }
+            }
         }
 
         return response()->json([
             'status' => true,
             'compare_token' => $token,
             'products' => $models,
+            'specifications' => $allSpecifications,
         ]);
     }
+
 
     public function removeFromCompare(Request $request, $slug)
     {
