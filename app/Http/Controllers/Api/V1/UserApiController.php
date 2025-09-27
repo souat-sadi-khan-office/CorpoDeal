@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\Currency;
 use App\Models\NegativeBalanceRequest;
 use App\Models\ProductQuestion;
+use App\Models\User;
 use App\Models\UserBroughtCoupon;
 use App\Models\UserPoint;
 use App\Models\WishList;
@@ -17,6 +18,7 @@ use App\Repositories\Interface\OrderRepositoryInterface;
 use App\Repositories\Interface\ProductRepositoryInterface;
 use App\Repositories\Interface\CurrencyRepositoryInterface;
 use App\Repositories\Interface\InstallmentPlanInterface;
+use Illuminate\Support\Facades\Hash;
 
 class UserApiController extends Controller
 {
@@ -504,6 +506,34 @@ class UserApiController extends Controller
         return response()->json([
             'status' => true,
             'html' => $html
+        ]);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        // Check if the password is correct
+        if (!Hash::check($request->password, auth('api')->user()->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'The password you entered is incorrect.'
+            ]);
+        }
+
+        // Update the is_deleted column for the authenticated user
+        $user = User::findOrFail(auth('api')->user()->id);
+        $user->is_deleted = 1;
+        $user->save();
+
+        $request->user()->currentAccessToken()->delete();
+
+        // Redirect to a specified route (e.g., the homepage)
+        return response()->json([
+            'status' => true,
+            'message' => 'Your account has been successfully removed.'
         ]);
     }
 }
