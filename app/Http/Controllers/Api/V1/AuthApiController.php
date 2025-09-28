@@ -82,7 +82,7 @@ class AuthApiController extends Controller
             return response()->json(['status' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->where('is_deleted', 0)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['status' => false, 'message' => 'Invalid credentials'], 401);
