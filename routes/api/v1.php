@@ -28,6 +28,9 @@ Route::middleware(['check.api.token'])->group(function () {
     Route::get('categories/featured', [CategoryApiController::class, 'featuredCategories']);
     Route::get('categories/all', [CategoryApiController::class, 'allCategoriesWithChildren']);
 
+    Route::get('countries', [UserApiController::class, 'getCountries']);
+    Route::get('get-currency/{countryId}', [UserApiController::class, 'getCurrency']);
+
     Route::get('delivery-methods', [HomepageApiController::class, 'deliveryMethods']);
     Route::get('payment-methods', [HomepageApiController::class, 'paymentMethods']);
 
