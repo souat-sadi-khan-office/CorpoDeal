@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\AuthApiController;
 use App\Http\Controllers\Api\V1\SslCommerzController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\BannerController;
+use App\Http\Controllers\Api\V1\CustomerNotificationApiController;
 use App\Http\Controllers\Api\V1\BrandApiController;
 use App\Http\Controllers\Api\V1\CartApiController;
 use App\Http\Controllers\Api\V1\CategoryApiController;
@@ -85,6 +86,10 @@ Route::middleware(['check.api.token'])->group(function () {
         Route::get('quotes', [UserApiController::class, 'quotes'])->name('quote');
         Route::post('update-profile', [UserApiController::class, 'updateProfile'])->name('update.profile');
         Route::post('update-password', [UserApiController::class, 'updatePassword'])->name('update.password');
+
+        Route::get('/notifications', [CustomerNotificationApiController::class, 'index']);
+        Route::post('/notifications/{id}/read', [CustomerNotificationApiController::class, 'markAsRead']);
+        Route::delete('/notifications/clear', [CustomerNotificationApiController::class, 'clearAll']);
 
         Route::apiResource('phone-book', PhoneBookApiController::class);
         Route::apiResource('address-book', UserAddressApiController::class);

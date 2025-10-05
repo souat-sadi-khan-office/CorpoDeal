@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Coupon;
+use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderStatusHistory;
@@ -572,6 +573,14 @@ class CheckoutApiController extends Controller
                 'is_manual_pay' => $customRequest['payment_option'] === 'manual_pay',
                 'is_negative_balance_order' => $customRequest['payment_option'] === 'negative_balance',
                 'is_refund_requested' => false,
+            ]);
+
+            $notification = CustomerNotification::create([
+                'user_id' => $order->user_id,
+                'title'       => 'Order Placed',
+                'message'     => 'Your order '.$order->unique_id.' has been placed.',
+                'type'        => 'order',
+                'data'        => ['order_id' => $order->id],
             ]);
 
             // Step 6: Create or update order status

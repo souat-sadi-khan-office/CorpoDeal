@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\CPU\Images;
+use App\Models\CustomerNotification;
 use App\Models\User;
 use App\Models\WishList;
 use App\Models\UserPhone;
@@ -81,6 +82,14 @@ class UserRepository implements UserRepositoryInterface
 
         $user->update();
 
+        // Send Notification
+        CustomerNotification::create([
+            'user_id'     => $user->id,
+            'title'       => 'Profile Updated Successfully',
+            'message'     => 'Your Profile Updated Successfully',
+            'type'        => 'account',
+        ]);
+
         Auth::guard('customer')->setUser($user);
 
         return response()->json(['status' => true, 'load' => true, 'message' => 'Profile updated successfully.']);
@@ -112,6 +121,14 @@ class UserRepository implements UserRepositoryInterface
 
         $user->password = Hash::make($request->new_password);
         $user->save();
+
+        // Send Notification
+        CustomerNotification::create([
+            'user_id'     => $user->id,
+            'title'       => 'Password Changed Successfully',
+            'message'     => 'Your Password Changed Successfully',
+            'type'        => 'account',
+        ]);
 
         return response()->json(['status' => true, 'load' => true, 'message' => 'Password updated successfully.']);
     }
@@ -146,12 +163,8 @@ class UserRepository implements UserRepositoryInterface
                     $fullAddressParts[] = $address->area . '-' . $address->postcode;
                 }
             
-                // if ($address->city && $address->city->name) {
-                //     $fullAddressParts[] = $address->city->name;
-                // }
-
-                if ($address->city) {
-                    $fullAddressParts[] = $address->city;
+                if ($address->city && $address->city->name) {
+                    $fullAddressParts[] = $address->city->name;
                 }
                 
                 if ($address->country && $address->country->name) {

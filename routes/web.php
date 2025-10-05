@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\HelperController;
 use App\Http\Controllers\Admin\InstallmentPlanController;
+use App\Http\Controllers\CustomerNotificationController;
 use App\Http\Controllers\Frontend\VerificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\SearchController;
@@ -70,6 +71,10 @@ Route::middleware(['isCustomer', 'web', 'ipSession', 'email.verify'])->group(fun
     Route::get('account', function () {
         return redirect()->route('dashboard');
     });
+
+    Route::get('/notifications', [CustomerNotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [CustomerNotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/clear', [CustomerNotificationController::class, 'clearAll']);
 
     Route::get('save-pc', [UserController::class, 'savePc'])->name('save-pc');
     Route::get('pc-builder/view-item/{slug}', [UserController::class, 'viewPc'])->name('pc-builder.view.item');

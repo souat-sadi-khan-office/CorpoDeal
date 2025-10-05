@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use DataTables;
 use App\CPU\Images;
+use App\Models\CustomerNotification;
 use App\Models\Page;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +83,13 @@ class PageRepository implements PageRepositoryInterface
         if($data->meta_image) {
             $page->meta_image = Images::upload('pages', $data->meta_image);
         }
+
+        // Send Notification
+        CustomerNotification::create([
+            'title'       => 'Policy Updated',
+            'message'     => $data->name . 'page policy is updated.',
+            'type'        => 'policy',
+        ]);
 
         $page->update();
 

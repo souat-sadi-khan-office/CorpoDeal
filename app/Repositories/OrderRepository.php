@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Session;
 use App\Repositories\Interface\OrderRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\CustomerNotification;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -267,6 +268,14 @@ class OrderRepository implements OrderRepositoryInterface
                 'is_manual_pay' => $request['payment_option'] === 'manual_pay',
                 'is_negative_balance_order' => $request['payment_option'] === 'negative_balance',
                 'is_refund_requested' => false,
+            ]);
+
+            $notification = CustomerNotification::create([
+                'user_id' => $order->user_id,
+                'title'       => 'Order Placed',
+                'message'     => 'Your order '.$order->unique_id.' has been placed.',
+                'type'        => 'order',
+                'data'        => ['order_id' => $order->id],
             ]);
 
             // If order is created => create status table
@@ -686,6 +695,15 @@ class OrderRepository implements OrderRepositoryInterface
 
             if ($newStatus == 'packaging' && $order->details && $order->details->phone != '') {
 
+                // Send Notification
+                CustomerNotification::create([
+                    'user_id'     => $order->user_id,
+                    'title'       => 'Order Confirmed',
+                    'message'     => 'Great news! Your order '.$order->unique_id.' is confirmed.',
+                    'type'        => 'order',
+                    'data'        => ['order_id' => $order->id],
+                ]);
+
                 $template = get_settings('sms_phone_number_verification_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
@@ -695,6 +713,15 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             if ($newStatus == 'shipping' && get_settings('sms_order_placement_status') == 1 && $order->details && $order->details->phone != '') {
+
+                // Send Notification
+                CustomerNotification::create([
+                    'user_id'     => $order->user_id,
+                    'title'       => 'Order Packed',
+                    'message'     => 'Your order '.$order->unique_id.' is packed and ready for shipping.',
+                    'type'        => 'order',
+                    'data'        => ['order_id' => $order->id],
+                ]);
 
                 $trackOrderLink = route('order.tracking.information', $order->unique_id);
 
@@ -709,6 +736,15 @@ class OrderRepository implements OrderRepositoryInterface
 
             if ($newStatus == 'out_of_delivery' && get_settings('sms_out_for_delivery_status') == 1 && $order->details && $order->details->phone != '') {
 
+                // Send Notification
+                CustomerNotification::create([
+                    'user_id'     => $order->user_id,
+                    'title'       => 'Order Shipped',
+                    'message'     => 'Your order '.$order->unique_id.' has been shipped, and is on the way',
+                    'type'        => 'order',
+                    'data'        => ['order_id' => $order->id],
+                ]);
+
                 $template = get_settings('sms_out_for_delivery_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
@@ -719,6 +755,15 @@ class OrderRepository implements OrderRepositoryInterface
 
             if ($newStatus == 'delivered' && get_settings('sms_delivery_status_change') == 1 && $order->details && $order->details->phone != '') {
 
+                // Send Notification
+                CustomerNotification::create([
+                    'user_id'     => $order->user_id,
+                    'title'       => 'Order Delivered',
+                    'message'     => 'Your order '.$order->unique_id.' has been delivered. Thank you for shopping!',
+                    'type'        => 'order',
+                    'data'        => ['order_id' => $order->id],
+                ]);
+
                 $template = get_settings('sms_order_processing_update_template');
                 $template = str_replace('[[ORDER_ID]]', $order->unique_id, $template);
                 $template = str_replace('[[SYSTEM_NAME]]', get_settings('system_name'), $template);
@@ -728,6 +773,15 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             if ($newStatus == 'returned' && get_settings('sms_order_return_status') == 1 && $order->details && $order->details->phone != '') {
+
+                // Send Notification
+                CustomerNotification::create([
+                    'user_id'     => $order->user_id,
+                    'title'       => 'Order Refunded',
+                    'message'     => 'Your order '.$order->unique_id.' has been cancelled. Refund initiated',
+                    'type'        => 'order',
+                    'data'        => ['order_id' => $order->id],
+                ]);
 
                 $trackOrderLink = route('order.tracking.information', $order->unique_id);
                 $template = get_settings('sms_order_return_template');
@@ -833,6 +887,15 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             $this->assignPoints($order->id, $order->user_id);
+
+            // Send Notification
+            CustomerNotification::create([
+                'user_id'     => $order->user_id,
+                'title'       => 'Payment Successful',
+                'message'     => 'Your order '.$order->unique_id.' payment is successful.',
+                'type'        => 'payment',
+                'data'        => ['order_id' => $order->id],
+            ]);
         }
 
         // Apply status changes
@@ -855,25 +918,75 @@ class OrderRepository implements OrderRepositoryInterface
 
             switch ($newStatus) {
                 case 'packaging':
+                    
+                    // Send Notification
+                    CustomerNotification::create([
+                        'user_id'     => $order->user_id,
+                        'title'       => 'Order Confirmed',
+                        'message'     => 'Great news! Your order '.$order->unique_id.' is confirmed.',
+                        'type'        => 'order',
+                        'data'        => ['order_id' => $order->id],
+                    ]);
+
                     $template = get_settings('sms_phone_number_verification_template');
                     break;
                 case 'shipping':
+
+                    // Send Notification
+                    CustomerNotification::create([
+                        'user_id'     => $order->user_id,
+                        'title'       => 'Order Packed',
+                        'message'     => 'Your order '.$order->unique_id.' is packed and ready for shipping.',
+                        'type'        => 'order',
+                        'data'        => ['order_id' => $order->id],
+                    ]);
+                    
                     if (get_settings('sms_order_placement_status') == 1) {
                         $template = get_settings('sms_online_order_placement_template');
                         $template = str_replace('[[TRACKING_LINK]]', route('order.tracking.information', $order->unique_id), $template);
                     }
                     break;
                 case 'out_of_delivery':
+
+                    // Send Notification
+                    CustomerNotification::create([
+                        'user_id'     => $order->user_id,
+                        'title'       => 'Order Shipped',
+                        'message'     => 'Your order '.$order->unique_id.' has been shipped, and is on the way',
+                        'type'        => 'order',
+                        'data'        => ['order_id' => $order->id],
+                    ]);
+                    
                     if (get_settings('sms_out_for_delivery_status') == 1) {
                         $template = get_settings('sms_out_for_delivery_template');
                     }
                     break;
                 case 'delivered':
+
+                    // Send Notification
+                    CustomerNotification::create([
+                        'user_id'     => $order->user_id,
+                        'title'       => 'Order Delivered',
+                        'message'     => 'Your order '.$order->unique_id.' has been delivered. Thank you for shopping!',
+                        'type'        => 'order',
+                        'data'        => ['order_id' => $order->id],
+                    ]);
+                    
                     if (get_settings('sms_delivery_status_change') == 1) {
                         $template = get_settings('sms_order_processing_update_template');
                     }
                     break;
                 case 'returned':
+
+                    // Send Notification
+                    CustomerNotification::create([
+                        'user_id'     => $order->user_id,
+                        'title'       => 'Order Refunded',
+                        'message'     => 'Your order '.$order->unique_id.' has been cancelled. Refund initiated',
+                        'type'        => 'order',
+                        'data'        => ['order_id' => $order->id],
+                    ]);
+                    
                     if (get_settings('sms_order_return_status') == 1) {
                         $template = get_settings('sms_order_return_template');
                         $template = str_replace('[[STATUS]]', "Returned", $template);
@@ -906,7 +1019,6 @@ class OrderRepository implements OrderRepositoryInterface
             'message' => ucfirst(str_replace('_', ' ', $type)) . ' updated & note saved.'
         ]);
     }
-
 
     public function assignPoints($orderId, $userId)
     {
@@ -1105,8 +1217,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'customer_email' => 'required|email',
                 'customer_phone' => 'required',
                 'customer_company' => 'required',
-                'billing_city' => 'required',
-                // 'billing_city' => 'required|exists:cities,id',
+                'billing_city' => 'required|exists:cities,id',
                 'billing_area' => 'required',
                 'billing_address' => 'required',
                 'billing_address2' => 'required',
@@ -1201,12 +1312,10 @@ class OrderRepository implements OrderRepositoryInterface
 
         $address .= ', ' . $request["{$type}_area"];
 
-        // $cityName = City::find($request["{$type}_city"])->name ?? '';
-        // if ($cityName) {
-        //     $address .= ', ' . $cityName;
-        // }
-
-        $address .= ', '. $request["{$type}_city"];
+        $cityName = City::find($request["{$type}_city"])->name ?? '';
+        if ($cityName) {
+            $address .= ', ' . $cityName;
+        }
 
         $countryName = isset($request['country_name']) ? $request['country_name'] : '';
         if ($countryName) {
