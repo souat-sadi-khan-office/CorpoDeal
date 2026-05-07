@@ -24,8 +24,7 @@
     <meta name="twitter:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
 
     {!! get_settings('home_meta_article_tag') !!}
-    <script>alert(1);</script>
-    @endsection
+@endsection
 @section('content')
 
 @include('frontend.homepage.bannerSection', ['banners' => $banners])
