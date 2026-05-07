@@ -3,28 +3,29 @@
 <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
-    
+
     <meta name="title" content="{{ get_settings('home_meta_title') }}">
     <meta name="author" content="{{ get_settings('system_name') }} : {{ route('home') }} : {{ get_settings('system_footer_contact_email') }}">
-    <meta name="description" content="{{ get_settings('home_meta_description') }}">	
+    <meta name="description" content="{{ get_settings('home_meta_description') }}">
 
     <!-- For Open Graph -->
-    <meta property="og:url" content="{{ url()->current() }}">	
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ get_settings('home_meta_title') }}">	
-    <meta property="og:description" content="{{ get_settings('home_meta_description') }}.">	
-    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">	
+    <meta property="og:title" content="{{ get_settings('home_meta_title') }}">
+    <meta property="og:description" content="{{ get_settings('home_meta_description') }}.">
+    <meta property="og:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
 
     <!-- For Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" /> 
+    <meta name="twitter:creator" content="{{ get_settings('system_name') }}" />
     <meta name="twitter:title" content="{{ get_settings('home_meta_title') }}" />
-    <meta name="twitter:description" content="{{ get_settings('home_meta_description') }}" />	
-    <meta name="twitter:site" content="{{ route('home') }}" />		
+    <meta name="twitter:description" content="{{ get_settings('home_meta_description') }}" />
+    <meta name="twitter:site" content="{{ route('home') }}" />
     <meta name="twitter:image" content="{{ get_settings('system_logo_dark') ? asset(get_settings('system_logo_dark')) : asset('pictures/default-logo-dark.png') }}">
-    
+
     {!! get_settings('home_meta_article_tag') !!}
-@endsection
+    <script>alert(1);</script>
+    @endsection
 @section('content')
 
 @include('frontend.homepage.bannerSection', ['banners' => $banners])
