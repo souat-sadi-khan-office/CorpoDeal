@@ -7,38 +7,19 @@ $(document).ready(function() {
             success: function(response) {
                 if (response) {
                     $('#on-sale-product-area').html(response);
-                    $('.on-sale-carousel').each( function() {
-                        var $carousel = $(this);
-                        $carousel.owlCarousel({
-                            dots : $carousel.data("dots"),
-                            loop : $carousel.data("loop"),
-                            items: $carousel.data("items"),
-                            margin: $carousel.data("margin"),
-                            mouseDrag: $carousel.data("mouse-drag"),
-                            touchDrag: $carousel.data("touch-drag"),
-                            autoHeight: $carousel.data("autoheight"),
-                            center: $carousel.data("center"),
-                            nav: $carousel.data("nav"),
-                            rewind: $carousel.data("rewind"),
-                            navText: ['<i class="fas fa-angle-left"></i>', '<i class="fas fa-angle-right"></i>'],
-                            autoplay : $carousel.data("autoplay"),
-                            animateIn : $carousel.data("animate-in"),
-                            animateOut: $carousel.data("animate-out"),
-                            autoplayTimeout : $carousel.data("autoplay-timeout"),
-                            smartSpeed: $carousel.data("smart-speed"),
-                            responsive: $carousel.data("responsive")
-                        });
-                    });
-                    ajax_magnificPopup();
+
+                    setTimeout(function() {
+                        _loadCarousel("on-sale-carousel");
+                        ajax_magnificPopup();
+
+                    }, 50);
+
                 } else {
-                    console.error('Request failed for on sale product: ', response.message);
+                    console.error('OnSale empty');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
             }
         });
-    }
+    };
 
     var _loadSliderSection = function() {
         $.ajax({
@@ -147,7 +128,7 @@ $(document).ready(function() {
                     carousel_slider();
                     ajax_magnificPopup();
                 } else {
-                    console.error('Request failed for on sale product: ', response.message);
+                    console.error('Home Page Category Empty');
                 }
             },
             error: function(xhr, status, error) {
@@ -380,12 +361,14 @@ $(document).ready(function() {
                     $('#featured-product-area').html(response);
                     _loadCarousel("featured-carousel");
                     ajax_magnificPopup();
+
+                    // if (callback) callback();
                 } else {
                     console.error('Request failed for on sale product: ', response.message);
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error:', error);
+                console.error('Featured empty');
             }
         });
     }
@@ -444,8 +427,12 @@ $(document).ready(function() {
     let popularAndFeaturedSection = parseInt($('#popularAndFeaturedSection').val());
     if(popularAndFeaturedSection) {
         _loadTopRatedProduct();
-        _loadFeaturedProduct();
-        _loadOnSaleProduct();
+        setTimeout(() => {
+            _loadFeaturedProduct();
+            setTimeout(() => {
+                _loadOnSaleProduct();
+            }, 2400);
+        }, 2500);
     }
 
     $(document).on('click', '#sellers-tab', function() {

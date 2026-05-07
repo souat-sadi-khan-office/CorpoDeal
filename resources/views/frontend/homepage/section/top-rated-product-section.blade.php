@@ -63,9 +63,9 @@
                         <div class="top-rated-product-carousel product_list carousel_slider owl-carousel owl-theme nav_style5" data-nav="false" data-dots="false" data-loop="true" data-margin="20" data-responsive='{"0":{"items": "1"}, "380":{"items": "1"}, "640":{"items": "2"}, "991":{"items": "1"}}'>
                             <div class="item">
                                 @foreach($products as $index => $product)
-                                
+
                                     @include('frontend.components.product_main', ['tag' => 'discount_price', 'listing' => 'short'])
-                            
+
                                     @if(($index + 1) % 3 == 0)
                                         </div><div class="item">
                                     @endif
