@@ -20,9 +20,9 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.brand.create') }}" class="btn btn-soft-success">
-                            <i class="bi bi-plus"></i>
-                            Create New
+                        <a href="{{ route('admin.brand.create') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-plus" style="margin-right: 5px;"></i>
+                            Add New Brand
                         </a>
                     </div>
                 @endif

@@ -13,7 +13,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.banner.index') }}">Brand Management</a>
+                            <a style="color: #000;" href="{{ route('admin.banner.index') }}">Brand Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Create new Brand</li>
                     </ol>
@@ -21,8 +21,8 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.brand.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.brand.index') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     </div>
@@ -36,14 +36,14 @@
 @endpush
 @section('content')
     <div class="row">
-        <div class="col-md-7 mx-auto">
+        <div class="col-md-12">
             <form action="{{ route('admin.brand.store') }}" enctype="multipart/form-data" class="content_form" method="post">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="name">Name <span class="text-danger">*</span></label>
-                                <input type="text" placeholder="Enter Brand Name" name="name" id="name" class="form-control" required>
+                                <input type="text" name="name" id="name" class="form-control" required>
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
@@ -54,12 +54,12 @@
                             <div class="col-md-12 mb-3 form-group">
                                 <label for="logo">Logo <span class="text-danger">*</span></label>
                                 <input type="file" accept=".jpg, .png, .webp"  name="logo" id="logo" class="form-control dropify" required>
-                                <span class="text-danger">Logo size is <b>185 X 55</b> pixrl. Please use <b>.WEBP</b> format picture for better performance.</span>
+                                <span class="text-danger">Logo size is <b>185 X 55</b> pixel. Please use <b>.WEBP</b> format picture for better performance.</span>
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="status">Status <span class="text-danger">*</span></label>
-                                <select name="status" id="status" class="form-control select" required>
+                                <select name="status" id="status" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option selected value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
@@ -67,7 +67,7 @@
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="is_featured">Featured <span class="text-danger">*</span></label>
-                                <select name="is_featured" id="is_featured" class="form-control select" required>
+                                <select name="is_featured" id="is_featured" class="form-control select" required data-minimum-results-for-search="Infinity">
                                     <option value="1">Yes</option>
                                     <option selected value="0">No</option>
                                 </select>
@@ -102,17 +102,17 @@
                     
                             <div class="col-md-12 form-group">
                                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.create'))
-                                    <button type="submit" class="btn btn-soft-success"  id="submit">
+                                    <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                                         <i class="bi bi-send"></i>
                                         Create
                                     </button>
-                                    <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                                    <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                         Loading...
                                     </button>
                                 @endif
                                 @if (Auth::guard('admin')->user()->hasPermissionTo('brand.view'))
-                                    <a href="{{ route('admin.stuff.index') }}" class="btn btn-soft-danger">
+                                    <a href="{{ route('admin.stuff.index') }}" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-backspace"></i>
                                         Back
                                     </a>

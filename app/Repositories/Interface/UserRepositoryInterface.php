@@ -9,7 +9,7 @@ interface UserRepositoryInterface
     public function updateProfile($request);
     public function updatePassword($request);
     public function getUserPhoneList();
-    public function getUserWishList();
+    public function getUserWishList($userId);
     public function removeWishList($id);
     public function informations($country_id);
 }

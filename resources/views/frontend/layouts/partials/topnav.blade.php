@@ -91,7 +91,7 @@
                             <div class="ac-content">
                                 <h5>Location</h5>
                                 <p>
-                                    {{ session()->get('user_city') }}
+                                    {{ session()->get('user_country') }}
                                 </p>
                             </div>
                         </div>

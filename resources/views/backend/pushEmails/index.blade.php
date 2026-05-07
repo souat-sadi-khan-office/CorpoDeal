@@ -20,13 +20,14 @@
     </div>
 @endsection
 @section('content')
-    <form action="{{ route('admin.mail.send') }}" method="POST"
-          enctype="multipart/form-data" class="content_form">
+    <form action="{{ route('admin.mail.send') }}" method="POST" enctype="multipart/form-data" class="content_form">
         @csrf
         <div class="col-md-12 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Email Message <span class="text-danger">*</span></h2>
+                    <h2 class="h6 mb-0">
+                        <strong>Send/Test Mail to Any Email</strong>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">

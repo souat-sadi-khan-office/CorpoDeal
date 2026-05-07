@@ -4,15 +4,17 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Create new Pricing Tier</h1>
+                    <h1 class="h3 mb-0">
+                        <b>Create new Pricing Tier</b>
+                    </h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.pricing-tier.index') }}">Pricing Tier Management</a>
+                            <a style="color: #000;" href="{{ route('admin.pricing-tier.index') }}">Pricing Tier Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Create new Pricing Tier</li>
                     </ol>
@@ -20,8 +22,8 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('pricing-tier.update'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     </div>
@@ -35,11 +37,14 @@
 @endpush
 @section('content')
     <form action="{{ route('admin.pricing-tier.store') }}" class="content_form" method="post">
+        <input type="hidden" name="currency_id" value="305">
         <div class="row">
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Tier Information</h2>
+                        <h2 class="h6 mb-0">
+                            <b>Tier Information</b>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -49,7 +54,7 @@
                                 <input type="text" name="name" id="name" class="form-control" required>
                             </div>
 
-                            <div class="col-md-12 form-group mb-3">
+                            {{-- <div class="col-md-12 form-group mb-3">
                                 <label for="currency_id">Currency <span class="text-danger">*</span></label>
                                 <select name="currency_id" id="currency_id" class="form-control select" required data-parsley-errors-container="#currency_id_error" data-placeholder="Select one">
                                     <option value="">Select one</option>
@@ -58,7 +63,7 @@
                                     @endforeach
                                 </select>
                                 <span id="currency_id_error"></span>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-6 form-group mb-3">
                                 <label for="discount_type">Discount Type <span class="text-danger">*</span></label>
@@ -91,7 +96,7 @@
                                 </select>
                             </div>
                             
-                            <div class="col-md-4 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
                                 <label for="applicable_to">Applicable To <span class="text-danger">*</span></label>
                                 <select name="applicable_to" id="applicable_to" class="form-control">
                                     <option value="full_order" selected>Full Order</option>
@@ -100,14 +105,14 @@
                                 </select>
                             </div>
 
-                            <div class="col-sm-6 form-group mb-3" id="htmlTarget">
-                                <label for="start_date" class="form-label">Start date</label>
-                                <input id="start_date" type="text"  class="form-control" name="start_date">
+                            <div class="col-md-6 mb-3 form-group" id="htmlTarget">
+                                <label for="start_date">Start date</label>
+                                <input id="start_date" type="date" class="form-control" name="start_date">
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="end_date">End Date <span class="text-danger">*</span></label>
-                                <input type="text" name="end_date" id="end_date" class="form-control">
+                                <input type="date" name="end_date" id="end_date" class="form-control">
                             </div>
                             
                             @include('backend.components.descriptionInput')
@@ -118,16 +123,16 @@
             </div>
 
             <div class="col-md-12 form-group">
-                <button type="submit" class="btn btn-soft-success"  id="submit">
+                <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                     <i class="bi bi-send"></i>
                     Create
                 </button>
-                <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     Loading...
                 </button>
                 @if (Auth::guard('admin')->user()->hasPermissionTo('pricing-tier.update'))
-                    <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-soft-danger">
+                    <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-backspace"></i>
                         Back
                     </a>
@@ -144,48 +149,48 @@
         _initCkEditor("editor");
         _componentSelect();
 
-        const element = document.getElementById('start_date');
-        const input = document.getElementById('start_date');
-        const picker = new tempusDominus.TempusDominus(element, {
-            defaultDate: new Date(),
-            display: {
-                components: {
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: true,
-                    clock: false 
-                }
-            }
-        });
+        // const element = document.getElementById('start_date');
+        // const input = document.getElementById('start_date');
+        // const picker = new tempusDominus.TempusDominus(element, {
+        //     defaultDate: new Date(),
+        //     display: {
+        //         components: {
+        //             calendar: true,
+        //             date: true,
+        //             month: true,
+        //             year: true,
+        //             decades: true,
+        //             clock: false 
+        //         }
+        //     }
+        // });
 
-        element.addEventListener('change.td', (e) => {
-            const selectedDate = picker.dates.formatInput(e.detail.date); 
-            console.log(selectedDate);
-            input.value = selectedDate;
-        });
+        // element.addEventListener('change.td', (e) => {
+        //     const selectedDate = picker.dates.formatInput(e.detail.date); 
+        //     console.log(selectedDate);
+        //     input.value = selectedDate;
+        // });
 
-        const element2 = document.getElementById('end_date');
-        const input2 = document.getElementById('end_date');
-        const picker2 = new tempusDominus.TempusDominus(element2, {
-            defaultDate: new Date(),
-            display: {
-                components: {
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: true,
-                    clock: false 
-                }
-            }
-        });
+        // const element2 = document.getElementById('end_date');
+        // const input2 = document.getElementById('end_date');
+        // const picker2 = new tempusDominus.TempusDominus(element2, {
+        //     defaultDate: new Date(),
+        //     display: {
+        //         components: {
+        //             calendar: true,
+        //             date: true,
+        //             month: true,
+        //             year: true,
+        //             decades: true,
+        //             clock: false 
+        //         }
+        //     }
+        // });
 
-        element2.addEventListener('change.td', (e) => {
-            const selectedDate = picker2.dates.formatInput(e.detail.date);
-            input2.value = selectedDate;
-        });
+        // element2.addEventListener('change.td', (e) => {
+        //     const selectedDate = picker2.dates.formatInput(e.detail.date);
+        //     input2.value = selectedDate;
+        // });
 
     </script>
 @endpush

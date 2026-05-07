@@ -8,19 +8,20 @@
     <form action="{{ route("admin.coupon.store") }}" method="POST" class="ajax-form">
         <div class="row">
 
-            <div class="col-md-12 form-group">
+            {{-- <div class="col-md-12 form-group">
                 <div class="alert alert-primary">
                     <strong>Note</strong>: Enter your price here in <b>US Dollar</b>. Price will be automatically converted to customer default currency.
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-md-12 form-group">
                 <label for="coupon_code">Coupon code <span class="text-danger">*</span></label>
-                <input type="text" name="coupon_code" id="coupon_code" class="form-control" required>
+                <input type="text" name="coupon_code" id="coupon_code" class="form-control" required minlength="5">
+                <small class="text-muted">Coupon code must be over 5 character.</small>
             </div>
             
             <div class="col-md-4 mt-3 form-group">
-                <label for="minimum_shipping_amount">Minimum shipping amount <span class="text-danger">*</span></label>
+                <label for="minimum_shipping_amount">Minimum shopping amount <span class="text-danger">*</span></label>
                 <input type="text" name="minimum_shipping_amount" id="minimum_shipping_amount" value="0" class="form-control" required>
             </div>
             
@@ -50,7 +51,7 @@
                 </select>
             </div>
 
-            <div class="col-md-6 mt-3 form-group">
+            {{-- <div class="col-md-6 mt-3 form-group">
                 <label for="start_date">Start date <span class="text-danger">*</span></label>
                 <input type="text" name="start_date" id="start_date" class="form-control">
             </div>
@@ -58,9 +59,9 @@
             <div class="col-md-6 mt-3 form-group">
                 <label for="end_date">End date</label>
                 <input type="text" name="end_date" id="end_date" class="form-control">
-            </div>
+            </div> --}}
 
-            <div class="col-md-12 form-group mt-3">
+            <div class="col-md-6 form-group mt-3">
                 <label for="is_sellable">Is Sellable</label>
                 <select name="is_sellable" id="is_sellable" class="form-control">
                     <option value="1">Sellable</option>
@@ -71,6 +72,28 @@
             <div class="col-md-12 form-group mt-3 points_to_buy_area" style="display: none;">
                 <label for="points_to_buy">Number of points to buy this coupon <span class="text-danger">*</span></label>
                 <input type="text" name="points_to_buy" id="points_to_buy" class="form-control number">
+            </div>
+
+            <div class="col-md-6 form-group mt-3">
+                <label for="is_new_user">New User Only?</label>
+                <select name="is_new_user" id="is_new_user" class="form-control">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 form-group mt-3">
+                <label for="deadline">Coupon Deadline (optional)</label>
+                <input type="date" name="deadline" id="deadline" class="form-control">
+            </div>
+
+            <div class="col-md-6 form-group mt-3">
+                <label for="platform">Platform <span class="text-danger">*</span></label>
+                <select name="platform" id="platform" class="form-control" required>
+                    <option value="web">Web Only</option>
+                    <option value="app">App Only</option>
+                    <option value="both">Web & App</option>
+                </select>
             </div>
 
             <div class="col-md-12 mt-3 text-end">

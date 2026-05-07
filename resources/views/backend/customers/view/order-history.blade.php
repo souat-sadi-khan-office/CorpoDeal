@@ -1,21 +1,21 @@
 @php($data=$model->orders()
-            ->select('id', 'unique_id', 'final_amount', 'exchange_rate', 'payment_status', 'status', 'created_at', 'payment_id', 'currency_id', 'is_cod', 'is_refund_requested')
-            ->with('payment:id,currency,gateway_name', 'currency:id,code,symbol')
-            ->latest()
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'unique_id' => $order->unique_id,
-                    'currency' => isset($order->payment->currency) ? $order->payment->currency : @$order->currency->code,
-                    'currency_symbol' => isset($order->currency->symbol) ? $order->currency->symbol : null,
-                    'gateway_name' => $order->is_cod ? 'Cash on Delivery' : (isset($order->payment->gateway_name) ? $order->payment->gateway_name : null),
-                    'payment_status' => $order->payment_status,
-                    'status' => $order->is_refund_requested ? "Refund Requested" : $order->status,
-                    'amount' => $order->final_amount * $order->exchange_rate,
-                    'created_at' => $order->created_at->format('d M Y, h:i:s A')
-                ];
-            }))
+    ->select('id', 'unique_id', 'final_amount', 'exchange_rate', 'payment_status', 'status', 'created_at', 'payment_id', 'currency_id', 'is_cod','is_manual_pay', 'is_refund_requested')
+    ->with('payment:id,currency,gateway_name', 'currency:id,code,symbol')
+    ->latest()
+    ->get()
+    ->map(function ($order) {
+        return [
+            'id' => $order->id,
+            'unique_id' => $order->unique_id,
+            'currency' => isset($order->payment->currency) ? $order->payment->currency : @$order->currency->code,
+            'currency_symbol' => isset($order->currency->symbol) ? $order->currency->symbol : null,
+            'gateway_name' => $order->is_cod ? 'Cash on Delivery' : ($order->is_manual_pay ? 'Manual Bank Pay' : ($order->payment->gateway_name ?? null)),
+            'payment_status' => $order->payment_status,
+            'status' => $order->is_refund_requested ? "Refund Requested" : $order->status,
+            'amount' => $order->final_amount * $order->exchange_rate,
+            'created_at' => $order->created_at->format('d M Y, h:i:s A')
+        ];
+}))
   
 
 <div class="row">

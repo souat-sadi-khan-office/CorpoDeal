@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Repositories\Interface\SupplierRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\StockRequest;
 use App\Http\Controllers\Controller;
@@ -10,6 +11,10 @@ use App\Repositories\Interface\ZoneRepositoryInterface;
 use App\Repositories\Interface\CountryRepositoryInterface;
 use App\Repositories\Interface\CurrencyRepositoryInterface;
 use App\Repositories\Interface\ProductStockRepositoryInterface;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+
+
 
 class ProductStockController extends Controller
 {
@@ -18,19 +23,24 @@ class ProductStockController extends Controller
     private $zoneRepository;
     private $countryRepository;
     private $cityRepository;
+    private $supplierRepository;
 
     public function __construct(
         ProductStockRepositoryInterface $stockRepository,
         CurrencyRepositoryInterface $currencyRepository,
         ZoneRepositoryInterface $zoneRepository,
         CountryRepositoryInterface $countryRepository,
-        CityRepositoryInterface $cityRepository
+        CityRepositoryInterface $cityRepository,
+        SupplierRepositoryInterface $supplierRepository,
+
     ) {
         $this->stockRepository = $stockRepository;
         $this->currencyRepository = $currencyRepository;
         $this->zoneRepository = $zoneRepository;
         $this->countryRepository = $countryRepository;
         $this->cityRepository = $cityRepository;
+        $this->supplierRepository = $supplierRepository;
+
     }
 
     /**
@@ -67,8 +77,10 @@ class ProductStockController extends Controller
         $zones = $this->zoneRepository->getAllActiveZones();
         $countries = $this->countryRepository->getAllActiveCountry();
         $cities = $this->cityRepository->getAllActiveCity();
+        $suppliers = $this->supplierRepository->index()->where('status', 1);
 
-        return view('backend.stock.create', compact('currencies','zones', 'countries', 'cities', 'product_id'));
+
+        return view('backend.stock.create', compact('currencies','zones', 'countries', 'cities','suppliers', 'product_id'));
     }
 
     /**
@@ -78,14 +90,61 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.create') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);
         }
-        
-        return $this->stockRepository->createStock($request->all());        
+
+        return $this->stockRepository->createStock($request->all());
     }
+
+    public function generateStockForAll()
+    {
+        DB::beginTransaction();
+        try {
+            $products = Product::all();
+
+            foreach ($products as $product) {
+                $randomUnitPrice = rand(10, 500); // random price between 10–500 USD
+                $purchaseUnitPrice = rand(5, $randomUnitPrice - 1);
+                $quantity = 100;
+
+                $data = [
+                    'product_id' => $product->id,
+                    'supplier_id' => 1,
+                    'currency_id' => 1,
+                    'sku' => $product->sku ?? 'SKU-' . strtoupper(uniqid()),
+                    'quantity' => $quantity,
+                    'unit_price' => $randomUnitPrice,
+                    'purchase_unit_price' => $purchaseUnitPrice,
+                    'purchase_total_price' => $purchaseUnitPrice * $quantity,
+                    'is_sellable' => 1,
+                    'stock_types' => 'globally',
+                    'globally_stock_amount' => $quantity,
+                    'low_stock_quantity' => 10, // default low stock alert
+                ];
+
+                // call repository method
+                $this->stockRepository->createStock($data);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Stock generated for all products successfully!',
+                'goto' => route('admin.stock.index')
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
 
     /**
      * Display the specified resource.
@@ -108,7 +167,7 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.delete') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);
@@ -124,7 +183,7 @@ class ProductStockController extends Controller
     {
         if (auth()->guard('admin')->user()->hasPermissionTo('stock.create') === false) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'goto' => route('admin.dashboard'),
                 'message' => "You don\'t have permission"
             ]);

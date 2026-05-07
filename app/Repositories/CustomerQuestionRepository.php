@@ -38,7 +38,7 @@ class CustomerQuestionRepository implements CustomerQuestionRepositoryInterface
 
                         return '<span class="badge bg-'. $bg .'">'. $status .'</span>';
                     } else {
-                        return '<div class="form-check form-switch"><input data-url="' . route('admin.customer-review.status', $model->id) . '" class="form-check-input" type="checkbox" role="switch" name="status" id="status' . $model->id . '" ' . $checked . ' data-id="' . $model->id . '"></div>';
+                        return '<div class="form-check form-switch"><input data-url="' . route('admin.customer.question.status', $model->id) . '" class="form-check-input" type="checkbox" role="switch" name="status" id="status' . $model->id . '" ' . $checked . ' data-id="' . $model->id . '"></div>';
                     }
                 })
                 ->addColumn('action', function ($model) {

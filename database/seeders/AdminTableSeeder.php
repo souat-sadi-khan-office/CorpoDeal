@@ -18,8 +18,8 @@ class AdminTableSeeder extends Seeder
         DB::table('admins')->insert([
             [
                 'name' => 'Rahas Istiyak',
-                'email' => 'admin@example.com',
-                'phone' => '1234567890',
+                'email' => 'admin@local.lan',
+                'phone' => '123456789',
                 'designation' => 'Super Admin',
                 'password' => Hash::make('123456789'),
                 'avatar' => 'default.png',

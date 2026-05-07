@@ -31,7 +31,7 @@
 @endpush
 
 @section('content')
-<div class="section bg_gray">
+<div class="section bg_gray pt-4 mm">
 	<div class="custom-container">
         <div class="row">
             @include('frontend.customer.partials.sidebar')

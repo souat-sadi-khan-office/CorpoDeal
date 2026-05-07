@@ -21,14 +21,24 @@
         <div class="col-lg-6 col-md-6">
             <div class="pr_detail">
                 <div class="product_description">
-                    <h4 class="product_title"><a href="{{ route('slug.handle', $product['slug']) }}">{{ ucfirst($product['name']) }}</a></h4>
+                    <h4 class="product_title">
+                        <a href="{{ route('slug.handle', $product['slug']) }}">
+                            <strong>{{ ucfirst($product['name']) }}</strong>    
+                        </a>
+                    </h4>
                     <div class="product_price">
                         @if (isset($product['discount_type']))
                             <span class="price">{{ format_price(convert_price($product['discounted_price'])) }}</span>
                             <del>{{ format_price(convert_price($product['price'])) }}</del>
-                            <div class="on_sale">
+                            {{-- <div class="on_sale">
                                 <span>{{ $product['discount_type'] == 'amount' ? format_price(convert_price($product['price'])) : $product['discount'] . '%' }}
                                     Off</span>
+                            </div> --}}
+                            <div class="on_sale">
+                                <span>
+                                    {{ $product['discount_type'] == 'amount' ? format_price(convert_price($product['discount'])) : $product['discount'] . '%' }}
+                                    Off
+                                </span>
                             </div>
                         @else
                             <span class="price">{{ format_price(convert_price($product['price'])) }}</span>
@@ -108,8 +118,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://twitter.com/intent/tweet?url={{ urlencode($shareUrl) }}&text={{ urlencode($product['name']) }}" target="_blank" rel="noopener noreferrer">
-                                <i class="fab fa-twitter"></i>
+                            <a href="https://x.com/intent/tweet?url={{ urlencode($shareUrl) }}&text={{ urlencode($product['name']) }}" target="_blank" rel="noopener noreferrer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 2h2.5L11 2h-2.5zM13 2h2.5L15.5 2h-2.5zM10.5 2h5v0h-5zM8.5 2h5v0h-5zM10 2h3.5L13.5 2h-3.5z"><animate fill="freeze" attributeName="d" dur="0.8s" keyTimes="0;0.3;0.5;1" values="M8.5 2h2.5L11 2h-2.5zM13 2h2.5L15.5 2h-2.5zM10.5 2h5v0h-5zM8.5 2h5v0h-5zM10 2h3.5L13.5 2h-3.5z;M8.5 2h2.5L11 22h-2.5zM13 2h2.5L15.5 22h-2.5zM10.5 2h5v2h-5zM8.5 20h5v2h-5zM10 2h3.5L13.5 22h-3.5z;M8.5 2h2.5L11 22h-2.5zM13 2h2.5L15.5 22h-2.5zM10.5 2h5v2h-5zM8.5 20h5v2h-5zM10 2h3.5L13.5 22h-3.5z;M1 2h2.5L18.5 22h-2.5zM5.5 2h2.5L23 22h-2.5zM3 2h5v2h-5zM16 20h5v2h-5zM18.5 2h3.5L5 22h-3.5z"></animate></path></svg>
                             </a>
                         </li>
                         <li>

@@ -13,7 +13,7 @@
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.flash-deal.index') }}">Flash Deal Management</a>
+                            <a style="color:#000;" href="{{ route('admin.flash-deal.index') }}">Flash Deal Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Create new Flash Deal</li>
                     </ol>
@@ -21,8 +21,8 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('flash-deal.view'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.flash-deal.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.flash-deal.index') }}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     </div>
@@ -41,7 +41,9 @@
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Deal Information</h2>
+                        <h2 class="h6 mb-0">
+                            <b>Deal Information</b>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -52,7 +54,7 @@
                             </div>
 
                             <div class="col-md-12 form-group mb-3">
-                                <label for="slgu">Slug <span class="text-danger">*</span></label>
+                                <label for="slug">Slug <span class="text-danger">*</span></label>
                                 <input type="text" name="slug" id="slug" class="form-control" required>
                             </div>
 
@@ -79,7 +81,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                <label for="deadline_time">Dealline time <span class="text-danger">*</span></label>
+                                <label for="deadline_time">Deadline time <span class="text-danger">*</span></label>
                                 <input type="number" name="deadline_time" id="deadline_time" class="form-control" value="7">
                             </div>
                             
@@ -103,7 +105,9 @@
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">SEO Meta Tags</h2>
+                        <h2 class="h6 mb-0">
+                            <b>SEO Meta Tags</b>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -151,12 +155,14 @@
             <div class="col-md-12 form-group mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Product Information</h2>
+                        <h2 class="h6 mb-0">
+                            <b>Product Information</b>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12 form-group mb-3">
-                                <div class="alert alert-danger">If any product has discount or exists in another flash deal, the discount will be replaced by this discount & time limit.</div>
+                                <div class="alert alert-primary">If any product has discount or exists in another flash deal, the discount will be replaced by this discount & time limit.</div>
                             </div>
 
                             <div class="col-md-12 product_area mb-3 table-responsive"></div>
@@ -171,17 +177,17 @@
 
             <div class="col-md-12 form-group">
                 @if (Auth::guard('admin')->user()->hasPermissionTo('flash-deal.create'))
-                    <button type="submit" class="btn btn-soft-success"  id="submit">
+                    <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                         <i class="bi bi-send"></i>
                         Create
                     </button>
-                    <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                    <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading...
                     </button>
                 @endif
                 @if (Auth::guard('admin')->user()->hasPermissionTo('flash-deal.view'))
-                    <a href="{{ route('admin.flash-deal.index') }}" class="btn btn-soft-danger">
+                    <a href="{{ route('admin.flash-deal.index') }}" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-backspace"></i>
                         Back
                     </a>
@@ -270,7 +276,7 @@
                 </div>
             `);
             $.ajax({
-                url: '/search/product-data',
+                url: '/search/flash-deals-product-data',
                 method: 'POST',
                 data: {
                     data: value
@@ -282,7 +288,7 @@
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <th>Product</th>
-                                <th>Base Price</th>
+                                <th>Unit Price</th>
                                 <th>Discount</th>
                                 <th>Discount Type</th>
                             </thead>

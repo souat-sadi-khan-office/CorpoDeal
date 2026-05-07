@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app', ['title' => $product['site_title'] ])
 
-@push('page_meta_information')
+@section('meta')
 
     <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
@@ -27,7 +27,49 @@
     <meta name="twitter:image" content="{{ asset($product['thumb_image']) }}">
     {!!$product['meta_article_tags']!!}
 
-@endpush
+    @php
+        $imageArray = [];
+        if(isset($product['images']) && count($product['images']) > 0) {
+            foreach ($product['images'] as $key => $image) {
+                array_push($imageArray, asset($image->image));
+            }
+        }
+
+        $categoryBreadCrumbArray = [];
+        foreach ($breadcrumb as $category) {
+            array_push($categoryBreadCrumbArray, $category->name);
+        }
+        $categoryBreadCrumb = implode(' > ', $categoryBreadCrumbArray);
+    @endphp
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": "{{ $product['name'] }}",
+            "image": {!! json_encode($imageArray) !!},
+            "description": "{{ $product['meta_description'] }}",
+            "sku": "{{ $product['sku'] }}",
+            "mpn": "{{ $product['mpn'] ?? $product['sku'] }}",
+            "gtin13": "{{ $product['gtin'] ?? '' }}"
+            "brand": {
+                "@type": "Brand",
+                "name": "{{ $product['brand_name'] }}"
+            },
+            "color": "{{ $product['id'] % 2 == 0 ? 'Black' : 'White' }}",
+            "material": "Aluminum",
+            "category": "{!! $categoryBreadCrumb !!}",
+            "audience": {
+                "@type": "PeopleAudience",
+                "suggestedGender": "unisex",
+                "suggestedAge": {
+                    "@type": "QuantitativeValue",
+                    "minValue": 16,
+                    "maxValue": 65
+                }
+            },
+        }
+    </script>
+@endsection
 
 @push('breadcrumb')
     <div class="breadcrumb_section page-title-mini">
@@ -57,13 +99,26 @@
     </div>
 @endpush
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/owlcarousel/css/owl.carousel.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/owlcarousel/css/owl.theme.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/owlcarousel/css/owl.theme.default.min.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/magnific-popup.css') }}">
     <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick.css') }}">
-    <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick-theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/slick-theme.css') }}"> --}}
+    <style>
+        .full-description h2 {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+        .full-description h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .full-description ul {
+            margin-bottom: 15px;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="main_content">
@@ -74,11 +129,18 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 mb-4 mb-md-0">
                         <div class="product-image vertical_gallery">
-                            <div id="pr_item_gallery" class="product_gallery_item slick_slider" data-vertical="true"
-                                 data-vertical-swiping="true" data-slides-to-show="5" data-slides-to-scroll="1"
+                            <div id="pr_item_gallery" class="product_gallery_item slick_slider" data-vertical="true"  data-vertical-swiping="true" data-slides-to-show="5" data-slides-to-scroll="1"
                                  data-infinite="false">
+                                @php
+                                    $thumb_image = $product['thumb_image'];
+                                @endphp
                                 @if (isset($product['images']))
                                     @foreach ($product['images'] as $key => $image)
+                                        @if ($key == 0)
+                                            @php
+                                                $thumb_image = $image->image;
+                                            @endphp
+                                        @endif
                                         <div class="item">
                                             <a href="javascript:;"
                                                class="product_gallery_item {{ $key == 0 ? 'active' : '' }}"
@@ -92,8 +154,8 @@
                                 @endif
                             </div>
                             <div class="product_img_box">
-                                <img id="product_img" src="{{ asset($product['thumb_image']) }}"
-                                     data-zoom-image="{{ asset($product['thumb_image']) }}"
+                                <img id="product_img" src="{{ asset($thumb_image) }}"
+                                     data-zoom-image="{{ asset($thumb_image) }}"
                                      alt="{{ $product['name'] }} Original Image"/>
                                 <a href="javascript:;" class="product_img_zoom" title="Zoom">
                                     <span class="linearicons-zoom-in"></span>
@@ -105,7 +167,7 @@
                         <div class="pr_detail">
                             <div class="product_description">
                                 <h1 class="h4 product_title">
-                                    {{ $product['name'] }}
+                                    <strong> {{ $product['name'] }}</strong>
                                 </h1>
                                 <div class="product_price">
                                     @if (isset($product['discount_type']))
@@ -113,8 +175,10 @@
                                             class="price">{{ format_price(convert_price($product['discounted_price'])) }}</span>
                                         <del>{{ format_price(convert_price($product['price'])) }}</del>
                                         <div class="on_sale">
-                                        <span>{{ $product['discount_type'] == 'amount' ? format_price(convert_price($product['discount'])) : $product['discount'] . '%' }}
-                                            Off</span>
+                                            <span>
+                                                {{ $product['discount_type'] == 'amount' ? format_price(convert_price($product['discount'])) : $product['discount'] . '%' }}
+                                                Off
+                                            </span>
                                         </div>
                                     @else
                                         <span class="price">{{ format_price(convert_price($product['price'])) }}</span>
@@ -133,8 +197,16 @@
 
                                     <span class="rating_num">({{ $product['ratings_count'] }})</span>
                                 </div>
-                                <br>
-                                <div style="margin-top: 25px;" class="pr_desc"></div>
+                                <br> <br>
+                                <div class="pr_switch_wrap">
+                                    <span class="switch_lable">Key Features</span><br>
+                                    @foreach ($product['key_features'] as $features)
+                                        <li>
+                                            {{ $features['type_name'] }} : {{ $features['attribute_name'] }}
+                                        </li>
+                                    @endforeach
+                                </div>
+                                <div style="margin-top: 0px;" class="pr_desc"></div>
                                 <div class="product_sort_info">
                                     @if (isset($product['points']) && $product['points'] > 0)
                                         <div class="stickers">
@@ -152,9 +224,9 @@
 
                                     <ul>
                                         @if ($product['total_sold'] > 0)
-                                            <li><i class="linearicons-shield-check"></i> {{ $product['total_sold'] }}
+                                            {{-- <li><i class="linearicons-shield-check"></i> {{ $product['total_sold'] }}
                                                 Units Sold
-                                            </li>
+                                            </li> --}}
                                         @endif
                                         @if ($product['return_deadline'] > 0)
                                             <li><i class="linearicons-sync"></i> {{ $product['return_deadline'] }} Day
@@ -162,18 +234,24 @@
                                             </li>
                                         @endif
                                         @if ($product['is_COD_available'])
-                                            <li><i class="linearicons-bag-dollar"></i> Cash on Delivery available</li>
+                                            <li style="padding-left: 0">💵 Cash on Delivery available</li>
+                                        @endif
+                                        @if ($product['delivery_type'])
+                                            <li style="padding-left: 0">
+                                                @if ($product['delivery_type'] == 'available')
+                                                    📦 Available for immediate dispatch from our local warehouse <br>
+                                                    Delivery within 1–3 business days
+                                                @else   
+                                                    🚢 This is an <strong>imported product and will be sourced from overseas</strong>. Delivery may take longer than usual.  
+                                                    @if ($product['est_shipping_time'] > 0)
+                                                        Estimated delivery: {{ $product['est_shipping_time'] }} business days (depends on customs & logistics).
+                                                    @endif
+                                                @endif
+                                            </li>
                                         @endif
                                     </ul>
                                 </div>
-                                <div class="pr_switch_wrap">
-                                    <span class="switch_lable">Key Features</span><br>
-                                    @foreach ($product['key_features'] as $features)
-                                        <li>
-                                            {{ $features['type_name'] }} : {{ $features['attribute_name'] }}
-                                        </li>
-                                    @endforeach
-                                </div>
+                                
                             </div>
                             @if ($product['is_low_stock'])
                                 <button class="btn btn-fill-warning btn-sm" type="button">
@@ -185,11 +263,11 @@
                                 <hr/>
 
                                 @if (!$product['available_in_city'] )
-                                    <div class="product-status">
+                                    {{-- <div class="product-status">
                                         This product is available for purchase and will be shipped to your location from our different warehouse. Delivery times may vary based on your city
-                                    </div>
+                                    </div> --}}
                                 @endif
-                                
+
 
                                 <div class="cart_extra">
                                     <div class="cart-product-quantity">
@@ -203,23 +281,19 @@
                                     </div>
                                     <div class="cart_btn">
                                         <button class="btn btn-fill-out btn-sm add-to-cart" data-id="{{ $product['slug'] }}" type="button">
-                                            <i class="icon-basket-loaded"></i> 
+                                            <i class="icon-basket-loaded"></i>
                                             Add to cart
                                         </button>
 
-                                        @if (Auth::guard('customer')->check())
-                                            <a href="javascript:;" data-id="{{ $product['slug'] }}" class="btn buy-now btn-fill-out btn-sm">
-                                                <i class="fas fa-shopping-bag"></i>
-                                                Buy Now
-                                            </a>
-                                        @else   
+                                        @if (!Auth::guard('customer')->check())
+
                                             <a href="{{ route('login', ['buy' => $product['slug']]) }}" class="btn btn-fill-out btn-sm">
                                                 <i class="fas fa-shopping-bag"></i>
                                                 Buy Now
                                             </a>
                                         @endif
 
-                                        
+
                                         <a class="add_compare" data-id="{{ $product['slug'] }}" href="javascript:;"
                                            data-bs-toggle="tooltip" data-bs-placement="Top" title="Add to Compare">
                                             <i class="fas fa-random"></i>
@@ -233,8 +307,9 @@
                             @else
                                 <hr/>
                                 <div class="product-status">
-                                    This item cannot be shipped to your selected delivery location. Please choose a
-                                    different delivery location
+                                    <!-- This item cannot be shipped to your selected delivery location. Please choose a
+                                    different delivery location -->
+                                    Out of Stock
                                 </div>
                                 <div class="cart_extra">
                                     <div class="ml-0 cart_btn">
@@ -253,7 +328,13 @@
 
                             <hr/>
                             <ul class="product-meta">
-                                <li>SKU: <a href="#">BE45VGRT</a></li>
+                                @if (isset($product['sku']))
+                                    <li>
+                                        SKU: 
+                                        <a href="javascript:;">{{ $product['sku'] }}</a>
+                                    </li>
+                                @endif
+                                
                                 @if (isset($product['category']))
                                     <li>
                                         Category:
@@ -282,9 +363,9 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('slug.handle', ['slug' => $product['slug']])) }}&text={{ urlencode($product['name']) }}"
+                                        <a href="https://x.com/intent/tweet?url={{ urlencode(route('slug.handle', ['slug' => $product['slug']])) }}&text={{ urlencode($product['name']) }}"
                                            target="_blank">
-                                            <i class="fab fa-twitter"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 2h2.5L11 2h-2.5zM13 2h2.5L15.5 2h-2.5zM10.5 2h5v0h-5zM8.5 2h5v0h-5zM10 2h3.5L13.5 2h-3.5z"><animate fill="freeze" attributeName="d" dur="0.8s" keyTimes="0;0.3;0.5;1" values="M8.5 2h2.5L11 2h-2.5zM13 2h2.5L15.5 2h-2.5zM10.5 2h5v0h-5zM8.5 2h5v0h-5zM10 2h3.5L13.5 2h-3.5z;M8.5 2h2.5L11 22h-2.5zM13 2h2.5L15.5 22h-2.5zM10.5 2h5v2h-5zM8.5 20h5v2h-5zM10 2h3.5L13.5 22h-3.5z;M8.5 2h2.5L11 22h-2.5zM13 2h2.5L15.5 22h-2.5zM10.5 2h5v2h-5zM8.5 20h5v2h-5zM10 2h3.5L13.5 22h-3.5z;M1 2h2.5L18.5 22h-2.5zM5.5 2h2.5L23 22h-2.5zM3 2h5v2h-5zM16 20h5v2h-5zM18.5 2h3.5L5 22h-3.5z"></animate></path></svg>
                                         </a>
                                     </li>
                                     <li>
@@ -323,7 +404,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link product-details-tab active" id="Spacification-tab"
                                        data-bs-toggle="tab" href="#Spacification" role="tab"
-                                       aria-controls="Spacification" aria-selected="true">Spacification</a>
+                                       aria-controls="Spacification" aria-selected="true">Specification</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link product-details-tab" id="Description-tab" data-bs-toggle="tab"
@@ -356,9 +437,9 @@
 
                                     <div class="section-head">
                                         <h2>Specification</h2>
-                                        <p>Looking for guidance on building your perfect PC? Get detailed insights and
+                                        {{-- <p>Looking for guidance on building your perfect PC? Get detailed insights and
                                             expert advice on each component to ensure compatibility and top
-                                            performance.</p>
+                                            performance.</p> --}}
                                     </div>
 
                                     <table class="data-table flex-table" cellpadding="0" cellspacing="0">
@@ -374,7 +455,7 @@
                                                 @foreach ($data as $item)
                                                     <tr>
                                                         <td class="name">{{ $item['specificationKeyType'] }}</td>
-                                                        <td class="value">{{ $item['specificationKeyTypeAttribute'] }}</td>
+                                                        <td class="value">{!! nl2br($item['specificationKeyTypeAttribute']) !!}</td>
                                                     </tr>
                                                 @endforeach
                                                 </tbody>
@@ -388,11 +469,11 @@
                                      aria-labelledby="Description-tab">
                                     <div class="section-head">
                                         <h2>Description</h2>
-                                        <p>Explore a wide range of PC components designed to meet your performance
+                                        {{-- <p>Explore a wide range of PC components designed to meet your performance
                                             needs. From powerful processors to high-speed storage, every part plays a
                                             crucial role in building a custom PC tailored for gaming, content creation,
                                             or productivity. Find the right components to optimize your system’s speed,
-                                            graphics, and overall efficiency.</p>
+                                            graphics, and overall efficiency.</p> --}}
                                     </div>
 
                                     <div class="full-description" itemprop="description">
@@ -667,7 +748,7 @@
     </div>
 @endsection
 @push('scripts')
-    <script src="{{ asset('frontend/assets/owlcarousel/js/owl.carousel.min.js')}}"></script>
+    {{-- <script src="{{ asset('frontend/assets/owlcarousel/js/owl.carousel.min.js')}}"></script>
     <script src="{{ asset('frontend/assets/js/magnific-popup.min.js')}}"></script>
     <script src="{{ asset('frontend/assets/js/waypoints.min.js')}}"></script>
     <script src="{{ asset('frontend/assets/js/parallax.js')}}"></script>
@@ -675,10 +756,8 @@
     <script src="{{ asset('frontend/assets/js/isotope.min.js')}}"></script>
     <script src="{{ asset('frontend/assets/js/jquery.dd.min.js')}}"></script>
     <script src="{{ asset('frontend/assets/js/slick.min.js')}}"></script>
-    <script src="{{ asset('frontend/assets/js/jquery.elevatezoom.js')}}"></script>
+    <script src="{{ asset('frontend/assets/js/jquery.elevatezoom.js')}}"></script> --}}
     <script src="{{ asset('frontend/assets/js/pages/product.js')}}"></script>
 
     {!!$product['meta_script_tags']!!}
-
-
 @endpush

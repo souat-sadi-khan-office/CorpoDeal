@@ -4,15 +4,17 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Update Pricing Tier Information</h1>
+                    <h1 class="h3 mb-0">
+                        <b>Update Pricing Tier Information</b>
+                    </h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color: #000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.pricing-tier.index') }}">Pricing Tier Management</a>
+                            <a style="color: #000;" href="{{ route('admin.pricing-tier.index') }}">Pricing Tier Management</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Update tier information</li>
                     </ol>
@@ -20,8 +22,8 @@
 
                 <div class="col-sm-6 text-end">
                     @if (Auth::guard('admin')->user()->hasPermissionTo('pricing-tier.update'))
-                        <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-soft-danger">
-                            <i class="bi bi-backspace"></i>
+                        <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-backspace" style="margin-right: 5px;"></i>
                             Back
                         </a>
                     @endcan
@@ -34,13 +36,16 @@
     <link rel="stylesheet" href="{{ asset('backend/assets/css/tempus-dominus.min.css') }}">
 @endpush
 @section('content')
-    <form action="{{ route('admin.pricing-tier.update', $model->id) }}" enctype="multipart/form-data" class="content_form" method="post">
+    <form action="{{ route('admin.pricing-tier.update', $model->id) }}" class="content_form" method="post">
+        <input type="hidden" name="currency_id" value="305">
         @method('PATCH')
         <div class="row">
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Tier Information</h2>
+                        <h2 class="h6 mb-0">
+                            <b>Tier Information</b>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -50,7 +55,7 @@
                                 <input type="text" name="name" id="name" class="form-control" required value="{{ $model->name }}">
                             </div>
 
-                            <div class="col-md-12 form-group mb-3">
+                            {{-- <div class="col-md-12 form-group mb-3">
                                 <label for="currency_id">Currency <span class="text-danger">*</span></label>
                                 <select name="currency_id" id="currency_id" class="form-control select" required data-parsley-errors-container="#currency_id_error" data-placeholder="Select one">
                                     <option value="">Select one</option>
@@ -59,7 +64,7 @@
                                     @endforeach
                                 </select>
                                 <span id="currency_id_error"></span>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-6 form-group mb-3">
                                 <label for="discount_type">Discount Type <span class="text-danger">*</span></label>
@@ -102,13 +107,13 @@
                             </div>
 
                             <div class="col-sm-6 form-group mb-3" id="htmlTarget">
-                                <label for="start_date" class="form-label">Start date</label>
-                                <input id="start_date" value="{{ $model->start_date ? date('m/d/Y', strtotime($model->start_date)) : '' }}" type="text"  class="form-control" name="start_date">
+                                <label for="start_date">Start date</label>
+                                <input id="start_date" value="{{ $model->start_date ? $model->start_date : '' }}" type="date"  class="form-control" name="start_date">
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
                                 <label for="end_date">End Date <span class="text-danger">*</span></label>
-                                <input type="text" value="{{ $model->end_date ? date('m/d/Y', strtotime($model->end_date)) : '' }}" name="end_date" id="end_date" class="form-control">
+                                <input type="date" value="{{ $model->end_date ? $model->end_date : '' }}" name="end_date" id="end_date" class="form-control">
                             </div>
                             
                             @include('backend.components.descriptionInput', ['description' => $model->description])
@@ -119,16 +124,16 @@
             </div>
 
             <div class="col-md-12 form-group">
-                <button type="submit" class="btn btn-soft-success"  id="submit">
+                <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                     <i class="bi bi-send"></i>
                     Update
                 </button>
-                <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     Loading...
                 </button>
                 @if (Auth::guard('admin')->user()->hasPermissionTo('pricing-tier.update'))
-                    <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-soft-danger">
+                    <a href="{{ route('admin.pricing-tier.index') }}" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-backspace"></i>
                         Back
                     </a>
@@ -145,46 +150,46 @@
         _initCkEditor("editor");
         _componentSelect();
 
-        const element = document.getElementById('start_date');
-        const input = document.getElementById('start_date');
-        const picker = new tempusDominus.TempusDominus(element, {
-            defaultDate: new Date(),
-            display: {
-                components: {
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: true,
-                    clock: false 
-                }
-            }
-        });
+        // const element = document.getElementById('start_date');
+        // const input = document.getElementById('start_date');
+        // const picker = new tempusDominus.TempusDominus(element, {
+        //     defaultDate: new Date(),
+        //     display: {
+        //         components: {
+        //             calendar: true,
+        //             date: true,
+        //             month: true,
+        //             year: true,
+        //             decades: true,
+        //             clock: false 
+        //         }
+        //     }
+        // });
 
-        element.addEventListener('change.td', (e) => {
-            const selectedDate = picker.dates.formatInput(e.detail.date); 
-            input.value = selectedDate;
-        });
+        // element.addEventListener('change.td', (e) => {
+        //     const selectedDate = picker.dates.formatInput(e.detail.date); 
+        //     input.value = selectedDate;
+        // });
 
-        const element2 = document.getElementById('end_date');
-        const input2 = document.getElementById('end_date');
-        const picker2 = new tempusDominus.TempusDominus(element2, {
-            defaultDate: new Date(),
-            display: {
-                components: {
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: true,
-                    clock: false 
-                }
-            }
-        });
+        // const element2 = document.getElementById('end_date');
+        // const input2 = document.getElementById('end_date');
+        // const picker2 = new tempusDominus.TempusDominus(element2, {
+        //     defaultDate: new Date(),
+        //     display: {
+        //         components: {
+        //             calendar: true,
+        //             date: true,
+        //             month: true,
+        //             year: true,
+        //             decades: true,
+        //             clock: false 
+        //         }
+        //     }
+        // });
 
-        element2.addEventListener('change.td', (e) => {
-            const selectedDate = picker2.dates.formatInput(e.detail.date);
-            input2.value = selectedDate;
-        });
+        // element2.addEventListener('change.td', (e) => {
+        //     const selectedDate = picker2.dates.formatInput(e.detail.date);
+        //     input2.value = selectedDate;
+        // });
     </script>
 @endpush

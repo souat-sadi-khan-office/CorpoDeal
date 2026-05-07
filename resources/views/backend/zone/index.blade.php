@@ -1,5 +1,5 @@
 @extends('backend.layouts.app', ['modal' => 'md'])
-@section('title', 'Zone Management')
+@section('title', 'Shipping Zone Management')
 @push('style')
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 @endpush
@@ -14,13 +14,13 @@
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Zone Management</li>
+                        <li class="breadcrumb-item active" aria-current="page">Shipping Zone Management</li>
                     </ol>
                 </div>
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('zone.create')) --}}
                     <div class="col-sm-6 text-end">
-                        <a href="javascript:;" data-url="{{ route('admin.zone.create') }}" id="content_management" class="btn btn-soft-success">
+                        <a href="javascript:;" data-url="{{ route('admin.zone.create') }}" id="content_management" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
                             Create New
                         </a>
@@ -31,17 +31,16 @@
     </div>
 @endsection
 @section('content')
-
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-12 my-3">
+                <div class="col-md-12">
                     <div class="alert alert-warning" role="alert">
                         <b>Warning</b>: If you delete any zone from here, then within this zone - all country and others data will automatically delete.
                     </div>
                 </div>
                 <div class="col-md-12 table-responsive">
-                    <table class="table table-bordered table-striped table-hover" id="data-table">
+                    <table class="table table-bordered table-striped" id="data-table">
                         <thead>
                             <tr>
                                 <th width="5%">#</th>

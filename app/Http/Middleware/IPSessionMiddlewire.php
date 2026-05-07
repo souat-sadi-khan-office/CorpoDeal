@@ -402,8 +402,8 @@ class IPSessionMiddlewire
         ];
 
         // $ip = request()->ip() == '127.0.0.1' ? '221.120.227.235' : request()->ip();
-        $ip = request()->ip() == '127.0.0.1' ? '118.67.220.118' : request()->ip();
-        if (!Session::has('user_country') || !Session::has('user_city') || (Session::get('ip') != $ip)) {
+        $ip = request()->ip() == '127.0.0.1' ? '217.79.105.36' : request()->ip();
+        if (!Session::has('user_country') || !Session::has('user_country') || (Session::get('ip') != $ip)) {
             
             $location = Location::get($ip);
 

@@ -16,7 +16,7 @@ class BannerRepository implements BannerRepositoryInterface
 {
     public function getAllBanners()
     {
-        return Banner::all();
+        return Banner::orderBy('position', 'ASC')->get();
     }
 
     public function dataTable()
@@ -65,6 +65,9 @@ class BannerRepository implements BannerRepositoryInterface
             ->addColumn('action', function ($model) {
                 return view('backend.banner.action', compact('model'));
             })
+            ->addColumn('position', function ($model) {
+                return view('backend.banner.position', compact('model'));
+            })
             ->rawColumns(['action', 'status', 'created_by', 'banner_type', 'image'])
             ->make(true);
     }
@@ -97,7 +100,14 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function createBanner($data)
     {
+        $posNumber = 1;
+        $position = Banner::orderBy('position', 'DESC')->first();
+        if($position) {
+            $posNumber = $position->position + 1;
+        }
+
         Banner::create([
+            'platform' => $data->platform,
             'name' => $data->name,
             'header_title' => $data->header_title,
             'old_offer' => $data->old_offer,
@@ -110,7 +120,9 @@ class BannerRepository implements BannerRepositoryInterface
             'link' => $data->link,
             'alt_tag' => $data->alt_tag,
             'image' => $data->image ? Images::upload('banners', $data->image) : null,
+            'position' => $posNumber,
         ]);
+
         Cache::forget('banners');
         Cache::forget('mid_banners');
 
@@ -121,6 +133,7 @@ class BannerRepository implements BannerRepositoryInterface
     public function updateBanner($id, $data)
     {
         $banner = Banner::findOrFail($id);
+        $banner->platform = $data->platform;
         $banner->banner_type = $data->banner_type;
         $banner->name = $data->name;
         $banner->header_title = $data->header_title;

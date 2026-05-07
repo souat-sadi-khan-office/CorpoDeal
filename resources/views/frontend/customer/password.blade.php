@@ -31,7 +31,7 @@
 @endpush
 
 @section('content')
-    <div class="section bg_gray">
+    <div class="section bg_gray pt-4 mm">
         <div class="custom-container">
             <div class="row">
                 @include('frontend.customer.partials.sidebar')
@@ -61,7 +61,7 @@
                                             </div>
                                             <div class="form-group col-md-12 mb-3">
                                                 <label>Confirm Password <span class="required">*</span></label>
-                                                <input required="" class="form-control" name="confirmed_password" type="password">
+                                                <input required="" class="form-control" name="new_password_confirmation" type="password">
                                             </div>
                                             <div class="col-md-12 form-group mb-3">
                                                 <button type="submit" class="btn btn-fill-out" id="submit">Save</button>

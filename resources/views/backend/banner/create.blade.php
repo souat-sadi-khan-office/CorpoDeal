@@ -51,12 +51,18 @@
                                         <li><b>Old Offer</b>: This is optional Field. If you do'nt fill this field, it will show blank.</li>
                                         <li><b>New Offer</b>: This is optional Field. If you do'nt fill this field, it will show blank.</li>
                                         <li>
-                                            <b>Image Size</b>: Here is 3 types of banner type, those are given below:
+                                            <b>Website Image Size</b>: Here are 3 types of banner type, those are given below:
                                             <ol>
-                                                <li><b>Main Banner</b>: Width: 825px, Height: 550px</li>
-                                                <li><b>Main Sidebar Banner</b>: Width: 255px, Height: 255px</li>
-                                                <li><b>Mid Website Banner</b>: Width: 450px, Height: 250px</li>
+                                                <li><b>Main Banner</b>: Width: <b>1920px</b>, Height: <b>960px</b></li>
+                                                <li><b>Main Sidebar Banner</b>: Width: <b>765px</b>, Height: <b>765px</b></li>
+                                                <li><b>Mid Website Banner</b>: Width: <b>350px</b>, Height: <b>250px</b></li>
                                             </ol>
+                                            <hr>
+                                            <b>Mobile App Image Size</b>: Here are 2 types of banner type, those are given below:
+                                            <ol>
+                                                <li><b>Main Banner</b>: Width: <b>1080px</b>, Height: <b>600px</b></li>
+                                                <li><b>Mid Website Banner</b>: Width: <b>1080px</b>, Height: <b>360px</b></li>
+                                            </ol> <br>
                                         </li>
                                         <li><b>Link</b>: This is required. You must have to give any url here.</li>
                                     </ul>
@@ -83,13 +89,20 @@
                                 <input type="text" placeholder="If Have" name="new_offer" id="new_offer" class="form-control">
                             </div>
 
-                            <div class="col-md-12 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="platform">Platform <span class="text-danger">*</span></label>
+                                <select name="platform" id="platform" class="form-control select"data-minimum-results-for-search="Infinity">
+                                    <option selected value="web">Website</option>
+                                    <option value="app">Mobile APP</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 form-group mb-3">
                                 <label for="banner_type">Banner type <span class="text-danger">*</span></label>
-                                <select name="banner_type" id="banner_type" class="form-control select">
+                                <select name="banner_type" id="banner_type" class="form-control select" data-minimum-results-for-search="Infinity">
                                     <option selected value="main">Main Banner</option>
                                     <option value="main_sidebar">Main Sidebar Banner</option>
                                     <option value="Mid">Mid Website Banner</option>
-                                    {{-- <option value="Footer">Footer Banner</option> --}}
                                 </select>
                             </div>
 
@@ -137,17 +150,17 @@
 
                             <div class="col-md-12 form-group">
                                 @if (Auth::guard('admin')->user()->hasPermissionTo('banner.create'))
-                                    <button type="submit" class="btn btn-soft-success"  id="submit">
+                                    <button type="submit" class="btn btn-sm btn-dark"  id="submit">
                                         <i class="bi bi-send"></i>
                                         Create
                                     </button>
-                                    <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                                    <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                         Loading...
                                     </button>
                                 @endif
                                 @if (Auth::guard('admin')->user()->hasPermissionTo('banner.view'))
-                                    <a href="{{ route('admin.stuff.index') }}" class="btn btn-soft-danger">
+                                    <a href="{{ route('admin.banner.index') }}" class="btn btn-sm btn-outline-danger">
                                         <i class="bi bi-backspace"></i>
                                         Back
                                     </a>
@@ -171,40 +184,54 @@
             imgFileExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']
         });
         
-    </script>
-  <script>
-    $(document).ready(function() {
-        $('#source_type').on('change', function() {
-            var sourceType = $(this).val();
+        $(document).ready(function() {
+            $('#source_type').on('change', function() {
+                var sourceType = $(this).val();
 
-            $('#source_id').empty().append('<option selected value="" disabled>--Select Source--</option>');
+                $('#source_id').empty().append('<option selected value="" disabled>--Select Source--</option>');
 
-            if (sourceType) {
-                $('#sourceContainer').show();
+                if (sourceType) {
+                    $('#sourceContainer').show();
 
-                var typeName = sourceType.charAt(0).toUpperCase() + sourceType.slice(1); 
-                $('#sourceLabel').text(typeName + ' Name'); 
+                    var typeName = sourceType.charAt(0).toUpperCase() + sourceType.slice(1); 
+                    $('#sourceLabel').text(typeName + ' Name'); 
 
-                $.ajax({
-                    url: '/admin/banner/source/' + sourceType, 
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.source && response.source.length > 0) {
-                            $.each(response.source, function(index, item) {
-                                $('#source_id').append('<option value="' + item.id + '">' + item.name + '</option>');
-                            });
-                        } else {
-                            $('#source_id').append('<option value="" disabled>No sources found</option>');
+                    $.ajax({
+                        url: '/admin/banner/source/' + sourceType, 
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.source && response.source.length > 0) {
+                                $.each(response.source, function(index, item) {
+                                    $('#source_id').append('<option value="' + item.id + '">' + item.name + '</option>');
+                                });
+                            } else {
+                                $('#source_id').append('<option value="" disabled>No sources found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            toastr.error('An error occurred while fetching the sources.');
                         }
-                    },
-                    error: function(xhr) {
-                        toastr.error('An error occurred while fetching the sources.');
-                    }
-                });
-            } else {
-                $('#sourceContainer').hide();
-            }
+                    });
+                } else {
+                    $('#sourceContainer').hide();
+                }
+            });
+
+            let allBannerOptions = $('#banner_type option').clone();
+            $('#platform').on('change', function () {
+                let platform = $(this).val();
+
+                $('#banner_type').empty();
+
+                if (platform === 'web') {
+                    $('#banner_type').append(allBannerOptions);
+                } else if (platform === 'app') {
+                    $('#banner_type').append(allBannerOptions.filter('[value="main"], [value="Mid"]'));
+                }
+
+                $('#banner_type').val($('#banner_type option:first').val()).trigger('change');
+            });
+
         });
-    });
 </script>
 @endpush

@@ -210,41 +210,40 @@
     <script src="{{ asset('frontend/assets/js/pages/login.js') }}"></script>
     <script>
 
-document.addEventListener("DOMContentLoaded", function () {
-    let treeViews = document.querySelectorAll(".treeview");
+        document.addEventListener("DOMContentLoaded", function () {
+            let treeViews = document.querySelectorAll(".treeview");
 
-    treeViews.forEach(function (treeview) {
-        let toggleBtn = treeview.querySelector(".toggle");
-        let submenu = treeview.querySelector("ul");
+            treeViews.forEach(function (treeview) {
+                let toggleBtn = treeview.querySelector(".toggle");
+                let submenu = treeview.querySelector("ul");
 
-        treeview.addEventListener("mouseenter", function () {
-            if (submenu) {
-                submenu.style.display = "block";
-                submenu.style.transition = "none"; // Remove animation
-            }
-            if (toggleBtn) {
-                toggleBtn.textContent = toggleBtn.textContent.replace("⮮", "⮬");
-                if (toggleBtn.classList.contains("trigger")) {
-                    treeview.parentElement.parentElement.classList.add("dropdown-selector");
-                }
-            }
+                treeview.addEventListener("mouseenter", function () {
+                    if (submenu) {
+                        submenu.style.display = "block";
+                        submenu.style.transition = "none"; // Remove animation
+                    }
+                    if (toggleBtn) {
+                        toggleBtn.textContent = toggleBtn.textContent.replace("⮮", "⮬");
+                        if (toggleBtn.classList.contains("trigger")) {
+                            treeview.parentElement.parentElement.classList.add("dropdown-selector");
+                        }
+                    }
+                });
+
+                treeview.addEventListener("mouseleave", function () {
+                    if (submenu) {
+                        submenu.style.display = "none";
+                        submenu.style.transition = "none"; // Remove animation
+                    }
+                    if (toggleBtn) {
+                        toggleBtn.textContent = toggleBtn.textContent.replace("⮬", "⮮");
+                        if (toggleBtn.classList.contains("trigger")) {
+                            treeview.parentElement.parentElement.classList.remove("dropdown-selector");
+                        }
+                    }
+                });
+            });
         });
-
-        treeview.addEventListener("mouseleave", function () {
-            if (submenu) {
-                submenu.style.display = "none";
-                submenu.style.transition = "none"; // Remove animation
-            }
-            if (toggleBtn) {
-                toggleBtn.textContent = toggleBtn.textContent.replace("⮬", "⮮");
-                if (toggleBtn.classList.contains("trigger")) {
-                    treeview.parentElement.parentElement.classList.remove("dropdown-selector");
-                }
-            }
-        });
-    });
-});
-
 
         $(document).ready(function () {
             $('.toggle').click(function () {

@@ -10,7 +10,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.dashboard') }}">
+                            <a style="color:#000;" href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
@@ -20,9 +20,9 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('pricing-tier.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.pricing-tier.create') }}" class="btn btn-soft-success">
-                            <i class="bi bi-plus"></i>
-                            Create New
+                        <a href="{{ route('admin.pricing-tier.create') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-plus" style="margin-right: 5px;"></i>
+                            Add New Tier
                         </a>
                     </div>
                 @endif

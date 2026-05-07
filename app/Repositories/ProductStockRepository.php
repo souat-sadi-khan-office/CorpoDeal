@@ -9,13 +9,14 @@ use App\Models\ProductDetail;
 use App\Models\StockPurchase;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interface\ProductStockRepositoryInterface;
+use Illuminate\Support\Facades\Artisan;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductStockRepository implements ProductStockRepositoryInterface
 {
     public function getAllStock()
     {
-        return StockPurchase::with('product', 'admin')->orderBy('id', 'DESC')->get();
+        return StockPurchase::with('product', 'admin','supplier')->orderBy('id', 'DESC')->get();
     }
 
     public function dataTable()
@@ -43,12 +44,15 @@ class ProductStockRepository implements ProductStockRepositoryInterface
             ->editColumn('created_by', function ($model) {
                 return $model->admin ? $model->admin->name : 'No admin found';
             })
+            ->editColumn('supplier', function ($model) {
+                return $model->supplier ? $model->supplier->name : 'N/A';
+            })
             ->editColumn('sku', function ($model) {
                 return $model->sku;
             })
             ->editColumn('status', function ($model) {
                 $checked = $model->is_sellable == 1 ? 'checked' : '';
-                
+
                 if (Auth::guard('admin')->user()->hasPermissionTo('stock.create')) {
                     return '<div class="form-check form-switch"><input data-url="' . route('admin.stock.status', $model->id) . '" class="form-check-input" type="checkbox" role="switch" name="status" id="status' . $model->id . '" ' . $checked . ' data-id="' . $model->id . '"></div>';
                 } else {
@@ -60,15 +64,15 @@ class ProductStockRepository implements ProductStockRepositoryInterface
 
             })
             ->editColumn('unit_price', function ($model) {
-                return get_system_default_currency()->symbol. number_format(covert_to_defalut_currency($model->unit_price), 0);
+                return get_system_default_currency()->symbol. (covert_to_defalut_currency($model->unit_price));
             })
             ->editColumn('total_price', function ($model) {
-                return get_system_default_currency()->symbol. number_format(covert_to_defalut_currency($model->quantity * $model->unit_price), 0);
+                return get_system_default_currency()->symbol. (covert_to_defalut_currency($model->quantity * $model->unit_price));
             })
             ->addColumn('action', function ($model) {
                 return view('backend.stock.action', compact('model'));
             })
-            ->rawColumns(['action', 'created_at', 'status', 'created_by', 'sku', 'unit_price', 'total_price', 'product'])
+            ->rawColumns(['action', 'created_at', 'status','supplier', 'created_by', 'sku', 'unit_price', 'total_price', 'product'])
             ->make(true);
     }
 
@@ -83,7 +87,7 @@ class ProductStockRepository implements ProductStockRepositoryInterface
         $totalGetQuantity = 0;
         $stockType = $data['stock_types'];
         switch($stockType) {
-            case 'globally': 
+            case 'globally':
                 $totalGetQuantity = $data['globally_stock_amount'];
             break;
             case 'zone_wise':
@@ -105,11 +109,11 @@ class ProductStockRepository implements ProductStockRepositoryInterface
     public function createStock($data)
     {
         // check if the total quantity is the same as the stock types
-        $this->checkQuantity($data); 
-
+        $this->checkQuantity($data);
         // Stock Purchase
         $stockPurchase = new StockPurchase;
         $stockPurchase->product_id = $data['product_id'];
+        $stockPurchase->supplier_id = $data['supplier_id'] ?? null;
         $stockPurchase->admin_id = Auth::guard('admin')->id();
         $stockPurchase->currency_id = $data['currency_id'];
         $stockPurchase->sku = $data['sku'];
@@ -136,6 +140,7 @@ class ProductStockRepository implements ProductStockRepositoryInterface
                 case 'globally':
                     $stock = new ProductStock;
                     $stock->product_id = $product->id;
+                    $stock->supplier_id = $data['supplier_id']??null;
                     $stock->stock_purchase_id  = $stockPurchase->id;
                     $stock->in_stock = 1;
                     $stock->number_of_sale = 0;
@@ -206,8 +211,10 @@ class ProductStockRepository implements ProductStockRepositoryInterface
         $details->low_stock_quantity = $data['low_stock_quantity'];
         $details->save();
 
+        Artisan::call('optimize:clear');
+
         return response()->json(['status' => true, 'message' => 'Stock created successfully.', 'goto' => route('admin.stock.index')]);
-    }
+    }           
 
     public function deleteStock($id)
     {
@@ -234,14 +241,16 @@ class ProductStockRepository implements ProductStockRepositoryInterface
             $product->save();
         }
 
+        Artisan::call('optimize:clear');
+
         return response()->json([
-            'status' => true, 
+            'status' => true,
             'load' => true,
             'message' => "Stock purchase record deleted successfully"
         ]);
     }
 
-    public function updateStatus($request, $id) 
+    public function updateStatus($request, $id)
     {
         $request->validate([
             'status' => 'required|boolean',
@@ -292,6 +301,8 @@ class ProductStockRepository implements ProductStockRepositoryInterface
             $productDetails->save();
             $product->save();
         }
+
+        Artisan::call('optimize:clear');
 
         return response()->json(['success' => true, 'message' => 'Stock purchase status updated successfully.']);
     }

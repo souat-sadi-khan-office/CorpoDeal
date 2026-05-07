@@ -19,7 +19,7 @@
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Order Management - {{request()->status?ucwords(str_replace('_',' ',request()->status)):'All'}}</li>
+                        <li class="breadcrumb-item active" aria-current="page">Order Management - {{ request()->status ? ucwords(str_replace('_',' ',request()->status)) : 'All Order'}}</li>
                     </ol>
                 </div>
             </div>
@@ -37,14 +37,13 @@
                             <tr>
                                 <th>ID</th>
                                 <th width="5%" class="text-center">#</th>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Phone</th>
-                                <th>Order Amount</th>
+                                <th width="22%">Order ID</th>
+                                <th width="20%">Customer</th>
+                                <th>Amount</th>
                                 <th>Payment</th>
                                 <th>Method</th>
                                 <th>Status</th>
-                                <th style="width:15%!important;text-align:center;">Created</th>
+                                {{-- <th style="width:15%!important;text-align:center;">Created</th> --}}
                             </tr>
                         </thead>
                     </table>
@@ -56,17 +55,16 @@
 
 @endsection
 @push('style')
-<style>
-    tr td:nth-child(1) ,
-    tr td:nth-child(3) ,
-    tr td:nth-child(4) ,
-    tr td:nth-child(5) ,
-    tr td:nth-child(6) ,
-    tr td:nth-child(7) {
-        text-align: center;
-        padding-top: 20px!important;
-    }
-</style>
+    <style>
+        tr td:nth-child(1) ,
+        tr td:nth-child(4) ,
+        tr td:nth-child(5) ,
+        tr td:nth-child(6) ,
+        tr td:nth-child(7) {
+            text-align: center;
+            padding-top: 20px!important;
+        }
+    </style>
 @endpush
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -75,6 +73,15 @@
     <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
     <script>
 
+        function copyUniqueId(uniqueId) {
+            const tempInput = document.createElement('input');
+            tempInput.value = uniqueId;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            toastr.success('Order ID Copied: ' + uniqueId);
+        }
         $(function () {
             var table = $('#Orders').DataTable({
                 processing: true,
@@ -90,12 +97,11 @@
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                     {data: 'unique_id', name: 'unique_id'},
                     {data: 'customer', name: 'customer'},
-                    {data: 'phone', name: 'phone'},
                     {data: 'amount', name: 'amount'},
                     {data: 'payment_status', name: 'payment_status'},
                     {data: 'gateway_name', name: 'gateway_name'},
                     {data: 'status', name: 'status'},
-                    {data: 'created_at', name: 'created_at'},
+                    // {data: 'created_at', name: 'created_at'},
                 ],
                 order: [[0, 'desc']]
             });

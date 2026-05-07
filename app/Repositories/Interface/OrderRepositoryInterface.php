@@ -13,10 +13,12 @@ interface OrderRepositoryInterface
     public function details($id);
 
     public function updateStatus($request, $orderId);
+    
+    public function updateOrderWithNote($request, $orderId);
 
-    public function userOrders();
+    public function userOrders($userId);
 
-    public function userData();
+    public function userData($userId);
 
     public function updateStockByOrderId($id,$type);
 

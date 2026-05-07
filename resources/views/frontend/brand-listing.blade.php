@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => $model->site_title ])
+@extends('frontend.layouts.app', ['title' => $model->meta_title ])
 
 @push('page_meta_information')
 
@@ -154,25 +154,22 @@
                                     </div>
                                 </div>
 
-                                <!-- Brand -->
+                                <!-- Categories -->
                                 <div class="widget mb-3">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#brand-filter" aria-expanded="false" aria-controls="brand-filter">
-                                                Brand
+                                                Category
                                             </button>
                                         </h2>
                                         <div id="brand-filter" class="accordion-collapse collapse show" aria-labelledby="flash-brand">
                                             <div class="accordion-body scrollbar">
                                                 <ul class="list_brand">
-                                                    @php
-                                                        $brands = App\Models\Brand::select('id','name', 'slug')->where('status', 1)->orderBy('name', 'ASC')->get();
-                                                    @endphp
-                                                    @foreach ($brands as $brand)
+                                                    @foreach ($categories as $category)
                                                         <li>
                                                             <div class="custome-checkbox">
-                                                                <input class="form-check-input" type="checkbox" name="brand" id="brand-{{ $brand->id }}" value="{{ $brand->id }}">
-                                                                <label class="form-check-label" for="brand-{{ $brand->id }}"><span>{{ $brand->name }}</span></label>
+                                                                <input class="form-check-input" type="checkbox" name="categories" id="category-{{ $category->id }}" value="{{ $category->id }}">
+                                                                <label class="form-check-label" for="category-{{ $category->id }}"><span>{{ $category->name }}</span></label>
                                                             </div>
                                                         </li>
                                                     @endforeach
@@ -181,6 +178,31 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Types -->
+                                {{-- <div class="widget mb-3">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#brand-filter" aria-expanded="false" aria-controls="brand-filter">
+                                                Types
+                                            </button>
+                                        </h2>
+                                        <div id="brand-filter" class="accordion-collapse collapse show" aria-labelledby="flash-brand">
+                                            <div class="accordion-body scrollbar">
+                                                <ul class="list_brand">
+                                                    @foreach ($model->types as $types)
+                                                        <li>
+                                                            <div class="custome-checkbox">
+                                                                <input class="form-check-input" type="checkbox" name="brand_types" id="brand-{{ $types->id }}" value="{{ $types->id }}">
+                                                                <label class="form-check-label" for="brand-{{ $types->id }}"><span>{{ $types->name }}</span></label>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> --}}
 
                                 <!-- Rating -->
                                 <div class="widget mb-3">
@@ -323,19 +345,45 @@
 @endphp
 @push('scripts')
     <script>
+        $(document).ready(function () {
+            var params = new URLSearchParams(window.location.search);
 
+            // Availability filters restore
+            if (params.get('in_stock') == 1) {
+                $('#in_stock_availability').prop('checked', true);
+            }
+            if (params.get('out_of_stock') == 1) {
+                $('#out_of_stock_availability').prop('checked', true);
+            }
+            if (params.get('pre_order') == 1) {
+                $('#pre_order_availability').prop('checked', true);
+            }
+            if (params.get('up_coming') == 1) {
+                $('#up_coming_availability').prop('checked', true);
+            }
 
-        function updateActiveSort() {
-            var currentSort = $('#sort-by').val();  // Get the current selected sort value
-            $('.nav-link').removeClass('active');  // Remove active class from all links
+            // Sort restore
+            if (params.get('sort')) {
+                $('#sort-by').val(params.get('sort'));
+            }
 
-            // Add active class to the correct sort option
-            $('.nav-link[data-sort="' + currentSort + '"]').addClass('active');
-        }
+            // Show restore
+            if (params.get('show')) {
+                $('.number-of-data-show select').val(params.get('show'));
+            }
 
-        $(document).ready(function() {
+            // Brand restore
+            var categories = params.getAll('categories[]');
+            categories.forEach(function (b) {
+                $('input[name^="categories"][value="' + b + '"]').prop('checked', true);
+            });
 
-            //Price Range Filter
+            // Rating restore
+            var ratings = params.getAll('rating[]');
+            ratings.forEach(function (r) {
+                $('.rating-checkbox[value="' + r + '"]').prop('checked', true);
+            });
+
             var $priceFilter = $('#price_filter');
             var minPrice = parseInt($priceFilter.data('min-value'));
             var maxPrice = parseInt($priceFilter.data('max-value'));
@@ -352,136 +400,103 @@
                     updatePriceRange(ui.values[0], ui.values[1]);
                 }
             });
-            var debounceTimeout;
+
             function updatePriceRange(minValue, maxValue) {
-                var priceSign = $priceFilter.data('price-sign');  // Get the currency symbol
-
+                var priceSign = $priceFilter.data('price-sign');
                 $priceDisplay.text(priceSign + minValue + " - " + priceSign + maxValue);
-
                 $priceFirst.val(minValue);
                 $priceSecond.val(maxValue);
-                clearTimeout(debounceTimeout);
-
-                debounceTimeout = setTimeout(function () {
-                    filterProducts();
-                }, 1500);
+                applyFilters();
             }
 
-            // Trigger filterProducts on checkbox or select changes (including brand/specification changes)
-            $('.form-check, .custom_select select').on('change', function() {
-                filterProducts();
-            });
+            $('.form-check, .custom_select select, #sort-by, .rating-checkbox, input[name^="categories"], input[name^="specification"]')
+                .on('change', applyFilters);
 
-            $(document).on('change', '#sort-by', function() {
-                filterProducts();
-            });
-
-            // Brand filter
-            $('input[name^="brand"]').on('change', function () {
-                filterProducts();
-            });
-
-            //Rating Filter
-            $('.rating-checkbox').on('change', function () {
-                filterProducts();
-
-            });
-
-            // Specification filter
-            $('input[name^="specification"]').on('change', function () {
-                filterProducts();
-            });
-
-            // Handle sorting by clicking on nav links
-            $(document).on('click', '.sort-option', function() {
-                var sortBy = $(this).data('sort'); // Get the sorting value from data-sort attribute
-                $('#sort-by').val(sortBy);  // Update the hidden select dropdown to match the selected sort option
-
-                // Update the active class for the sorting links
+            $(document).on('click', '.sort-option', function () {
+                var sortBy = $(this).data('sort');
+                $('#sort-by').val(sortBy);
                 $('.nav-link').removeClass('active');
                 $(this).addClass('active');
-
-                // Trigger the filter function to apply new sort criteria
-                filterProducts();
+                applyFilters();
             });
 
-            // Filter products function
-            function filterProducts() {
-                // Get checkbox values
-                var in_stock = $('#in_stock_availability').is(':checked');
-                var out_of_stock = $('#out_of_stock_availability').is(':checked');
-                var pre_order = $('#pre_order_availability').is(':checked');
-                var up_coming = $('#up_coming_availability').is(':checked');
-                var price_range=[
-                    $('#price_first').val(),
-                    $('#price_second').val(),
-                ];
-                // Get the selected sort value from the hidden select dropdown
-                var sortBy = $('#sort-by').val();
-                var showData = $('.number-of-data-show select').val();
+            function applyFilters() {
+                var params = new URLSearchParams(window.location.search);
 
-                var brands = [];
-                var specifications = [];
-
-
-                // Get selected brands
-                $('input[name^="brand"]:checked').each(function () {
-                    brands.push($(this).val());
-                });
-
-                // Get selected specifications
-                $('input[name^="specification"]:checked').each(function () {
-                    specifications.push($(this).val());
-                });
-
-                // Get category ID
-                var catId = $('#routeCID').val();
-                var rating=[];
-                var selectedRatings = $('.rating-checkbox:checked').map(function () {
-                    return parseInt($(this).val());
-                }).get();
-
-                if (selectedRatings.length > 0) {
-                    var minRating = Math.min.apply(null, selectedRatings);
-                    var maxRating = Math.max.apply(null, selectedRatings) + 0.99;
-
-                    maxRating = maxRating > 5 ? 5 : maxRating;
-                        rating=[
-                        minRating,
-                        maxRating,
-                    ];
+                // Availability filters
+                if ($('#in_stock_availability').is(':checked')) {
+                    params.set('in_stock', 1);
+                } else {
+                    params.delete('in_stock');
                 }
 
-                // Show loading overlay
-                // $('.preloader').show();
+                if ($('#out_of_stock_availability').is(':checked')) {
+                    params.set('out_of_stock', 1);
+                } else {
+                    params.delete('out_of_stock');
+                }
 
-                // Send AJAX request
-                $.ajax({
-                    url: '{{ route('filter.products')}}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        in_stock: in_stock == true ? in_stock : null,
-                        out_of_stock: out_of_stock == true ? out_of_stock : null,
-                        pre_order: pre_order == true ? pre_order : null,
-                        up_coming: up_coming == true ? pre_order : null,
-                        sortBy: sortBy,
-                        brands: brands,
-                        specifications: specifications,
-                        price_range: price_range,
-                        rating: rating,
-                        showData: showData
-                    },
-                    success: function(response) {
-                        // Hide loading overlay and update the product area
-                        $('#product-area').html(response);
-                        $('.preloader').hide();
-                    },
-                    error: function(xhr, status, error) {
-                        $('.preloader').hide();
-                    }
-                });
+                if ($('#pre_order_availability').is(':checked')) {
+                    params.set('pre_order', 1);
+                } else {
+                    params.delete('pre_order');
+                }
+
+                if ($('#up_coming_availability').is(':checked')) {
+                    params.set('up_coming', 1);
+                } else {
+                    params.delete('up_coming');
+                }
+
+                // Price filter (only if changed)
+                let minPrice = $('#price_first').val();
+                let maxPrice = $('#price_second').val();
+                if (minPrice && maxPrice) {
+                    params.set('price_min', minPrice);
+                    params.set('price_max', maxPrice);
+                } else {
+                    params.delete('price_min');
+                    params.delete('price_max');
+                }
+
+                // Sort filter (only if selected)
+                let sort = $('#sort-by').val();
+                if (sort) {
+                    params.set('sort', sort);
+                } else {
+                    params.delete('sort');
+                }
+
+                // Show filter (only if selected)
+                let show = $('.number-of-data-show select').val();
+                if (show) {
+                    params.set('show', show);
+                } else {
+                    params.delete('show');
+                }
+
+                // Brand Types filter
+                var categories = $('input[name^="categories"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                params.delete('categories[]');
+                if (categories.length) {
+                    categories.forEach(b => params.append('categories[]', b));
+                }
+
+                // Rating filter
+                var ratings = $('.rating-checkbox:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                params.delete('rating[]');
+                if (ratings.length) {
+                    ratings.forEach(r => params.append('rating[]', r));
+                }
+
+                // Redirect with only selected filters
+                window.location = window.location.pathname + '?' + params.toString();
             }
+
         });
     </script>
 @endpush

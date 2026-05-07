@@ -14,6 +14,7 @@ class StockPurchase extends Model
 
     protected $fillable = [
         'product_id',
+        'supplier_id',
         'admin_id',
         'currency_id',
         'sku',
@@ -29,10 +30,19 @@ class StockPurchase extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+    public function serials()
+    {
+        return $this->hasMany(ProductSerial::class, 'stock_purchase_id');
+    }
 
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     public function currency()

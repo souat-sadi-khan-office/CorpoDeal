@@ -212,7 +212,7 @@ class OrderController extends Controller
                 'currency_code' => $request->currency_code,
                 'subtotal' => round($request->totalAmount, 2),
                 'transaction_id' => $order['order']->unique_id,
-                'address' => $request->billing_address . ',' . $request->billing_area,
+                'address' => $request->billing_address . ',' . $request->billing_city . ',' . $request->billing_area,
                 'phone' => $request->customer_phone,
                 'name' => $request->customer_name,
                 'email' => $request->customer_email,

@@ -76,7 +76,19 @@
 
                     <h4 class="mt-2 mb-3">Your order is confirmed!</h4>
 
-                    <h6 class="name">Hello <strong>{{ $details['user_name'] }}</strong>,</h6><span class="fs-12 text-black-50">your order has been confirmed and will be shipped in two days</span>
+                    <h6 class="name">Hello <strong>{{ $details['user_name'] }}</strong>,</h6>
+
+                    @if($details['is_manual_pay'])
+                        <div class="alert alert-secondary my-2">
+                            Your order has been placed. <br>
+                            Now make the payment to the bank within the next 7 days. <br>
+                            Upload the payment slip from your profile -> Orders -> Order -> View -> Upload Slip button. <br>
+                            Once uploaded, we’ll process your order next.
+                        </div>
+                    @else
+                        <span class="fs-12 text-black-50">Your order has been confirmed and will be shipped soon.</span>
+                    @endif
+
                     <hr>
                     <div class="d-flex flex-row justify-content-between align-items-center order-details">
                         <div><span class="d-block fs-12">Order date</span><span class="font-weight-bold">{{ $details['created_at'] }}</span></div>

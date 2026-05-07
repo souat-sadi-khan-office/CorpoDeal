@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Create new stock</h1>
+                    <h1 class="h3 mb-0">Add new Stock</h1>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
                             <a href="{{ route('admin.dashboard') }}">
@@ -18,16 +18,16 @@
                                 Stock Management
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Create new stock</li>
+                        <li class="breadcrumb-item active" aria-current="page">Add new Stock</li>
                     </ol>
                 </div>
                 <div class="col-sm-6 text-end">
                     @if (Auth::guard('admin')->user()->hasPermissionTo('stock.view'))
-                        <a href="{{ route('admin.stock.index') }}" class="btn btn-soft-danger">
+                        <a href="{{ route('admin.stock.index') }}" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-backspace"></i>
                             Back
                         </a>
-                    @endif 
+                    @endif
                 </div>
             </div>
         </div>
@@ -35,27 +35,39 @@
 @endsection
 
 @section('content')
-   
+
     <form action="{{ route('admin.stock.store')}}" method="POST" class="content_form" enctype="multipart/form-data">
+        <input type="hidden" name="sku" value="-">
         @csrf
         <div class="row">
-    
+
             <!-- Product Costing & Pricing -->
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Product Cosingt & Pricing </h2>
+                        <h2 class="h6 mb-0">
+                            <strong>Product Costing & Pricing</strong>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
 
                             <!-- product -->
-                            <div class="col-md-12 form-group mb-3">
+                            <div class="col-md-8 form-group mb-3">
                                 <label for="product_id">Product <span class="text-danger">*</span></label>
                                 <input type="hidden" id="added_product_id" value="{{ $product_id }}">
                                 <input type="hidden" id="defaultProductImage" value="">
                                 <select name="product_id" required data-parsley-errors-container="#product_id_error" id="product_id" class="form-control"></select>
                                 <span id="product_id_error"></span>
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="supplier_id">Supplier <span class="text-danger">*</span></label>
+                                <select name="supplier_id" id="supplier_id" required class="form-control select" data-parsley-errors-container="#supplier_id_error" data-placeholder="Select Supplier">
+                                    <option value="">Select Supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div id="already-data-area" style="display: none;">
@@ -78,50 +90,44 @@
                             <div id="data-area"  style="display:none;">
                                 <div class="row">
 
-                                    <!-- sku -->
-                                    <div class="col-md-4 form-group mb-3">
-                                        <label for="sku">SKU</label>
-                                        <input type="text" name="sku" id="sku" class="form-control">
-                                    </div>
-
                                     <!-- unit_price -->
-                                    <div class="col-md-4 form-group mb-3">
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="unit_price">Unit Price <span class="text-danger">*</span></label>
                                         <input type="text" name="unit_price" id="unit_price" class="form-control number" value="0" required >
                                     </div>
 
-                                    <!-- low_stock_quantity -->
-                                    <div class="col-md-4 form-group mb-3">
-                                        <label for="low_stock_quantity">Low Stock Alert Quantity <span class="text-danger">*</span></label>
-                                        <input type="text" name="low_stock_quantity" id="low_stock_quantity" class="form-control number" value="0" required >
-                                    </div>
-
-                                    <!-- quanitiy -->
+                                    <!-- quantity -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="quantity">Quantity <span class="text-danger">*</span></label>
                                         <input type="text" name="quantity" id="quantity" class="form-control number" value="0" required>
-                                        <small class="text-muted">Product quanity must be same on the product stock adding table.</small>
+                                        <small class="text-muted">Product quantity must be same on the product stock adding table.</small>
                                     </div>
 
                                     <!-- total_price -->
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="total_price">Total Price <span class="text-danger">*</span></label>
-                                        <input type="text" name="total_price" id="total_price" class="form-control" value="0" required>
+                                        <input type="text" name="total_price" id="total_price" class="form-control" value="0" required readonly>
                                         <small class="text-muted">Total Price = Unit Price X Quantity</small>
                                     </div>
 
+                                    <!-- low_stock_quantity -->
+                                    <div class="col-md-6 form-group mb-3">
+                                        <label for="low_stock_quantity">Low Stock Alert Quantity <span class="text-danger">*</span></label>
+                                        <input type="text" name="low_stock_quantity" id="low_stock_quantity" class="form-control number" value="0" required >
+                                    </div>
+
                                     <!-- purchase_unit_price -->
-                                    <div class="col-md-6 form-goup mb-3">
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="purchase_unit_price">Purchase Unit Price </label>
                                         <input type="text" name="purchase_unit_price" id="purchase_unit_price" class="form-control number" value="0" >
-                                        <small class="text-muted">This is the product purchase unit price from sellter.</small>
+                                        <small class="text-muted">This is the product purchase unit price from seller.</small>
                                     </div>
-                                    
+
                                     <!-- purchase_total_price -->
-                                    <div class="col-md-6 form-goup mb-3">
+                                    <div class="col-md-6 form-group mb-3">
                                         <label for="purchase_total_price">Purchase Total Price </label>
-                                        <input type="text" name="purchase_total_price" id="purchase_total_price" class="form-control number" value="0" >
-                                        <small class="text-muted">This is the product purchase price from sellter.</small>
+                                        <input type="text" name="purchase_total_price" id="purchase_total_price" class="form-control number" value="0" readonly>
+                                        <small class="text-muted">This is the product purchase price from seller.</small>
                                     </div>
 
                                     <!-- currency_id -->
@@ -140,10 +146,10 @@
                                         <input type="file" name="file" id="file" class="form-control">
                                     </div>
 
-                                    <!-- is_selleable -->
+                                    <!-- is_sellable -->
                                     <div class="col-md-4 form-group mb-3">
-                                        <label for="is_selleable">Is sellable <span class="text-danger">*</span></label>
-                                        <select name="is_sellable" id="is_sellable" required class="form-contom select">
+                                        <label for="is_sellable">Is sellable <span class="text-danger">*</span></label>
+                                        <select name="is_sellable" id="is_sellable" required class="form-control select">
                                             <option selected value="1">Yes</option>
                                             <option value="0">No</option>
                                         </select>
@@ -159,13 +165,15 @@
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Product Stocks </h2>
+                        <h2 class="h6 mb-0">
+                            <strong>Product Stocks</strong>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12 form-group mb-3">
+                            <div class="col-md-12 form-group">
                                 <div class="alert alert-warning">
-                                    <b>Warning</b>: Here product stock must be the same quanity as on the <b>Product costing</b> quanity.
+                                    <b>Warning</b>: Here product stock must be the same quantity as on the <b>Product costing</b> quantity.
                                 </div>
                             </div>
 
@@ -175,7 +183,7 @@
                                     <option selected value="globally">Globally</option>
                                     <option disabled value="zone_wise">Zone wise</option>
                                     <option disabled value="country_wise">Country wise</option>
-                                    <option value="city_wise">City Wise</option>
+                                    <option disabled value="city_wise">City Wise</option>
                                 </select>
                             </div>
 
@@ -230,12 +238,12 @@
                                 </div>
 
                                 <div id="city_wise_data"></div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-    
+
             <div class="col-md-12 form-group mb-3 text-end">
                 <button class="btn btn-soft-success" type="submit" id="submit">
                     <i class="bi bi-send"></i>
@@ -273,6 +281,11 @@
                 });
             }
 
+            $(document).on('keyup', '#quantity', function() {
+                let quantity = $(this).val();
+                $('#globally_stock_amount').val(quantity);
+            })
+
             $(document).on('change', '#product_id', function() {
                 let product_id = $(this).val();
 
@@ -295,10 +308,10 @@
                             case 'globally':
                                 stock_type = 'Globally';
                             break;
-                            case 'zone_wise': 
+                            case 'zone_wise':
                                 stock_type = 'Zone wise';
-                            break; 
-                            case 'country_wise': 
+                            break;
+                            case 'country_wise':
                                 stock_type = 'Country wise';
                             break;
                             case 'city_wise':
@@ -344,7 +357,7 @@
                         $('#city_wise_area').hide();
                         $('#city_wise_data').html("");
                     break;
-                    case 'country_wise': 
+                    case 'country_wise':
                         $('#globally_area').hide();
                         $('#globally_stock_amount').removeAttr('required');
 
@@ -356,13 +369,13 @@
                         $('#city_wise_area').hide();
                         $('#city_wise_data').html("");
                     break;
-                    case 'city_wise': 
+                    case 'city_wise':
                         $('#globally_area').hide();
                         $('#globally_stock_amount').removeAttr('required');
 
                         $('#zone_wise_area').hide();
                         $('#zone_wise_data').html("");
-                        
+
                         $('#country_wise_area').hide();
                         $('#country_wise_data').html("");
 
@@ -543,7 +556,7 @@
             $('#product_id').select2({
                 width: '100%',
                 placeholder: 'Select products',
-                templateResult: formatProductOption, 
+                templateResult: formatProductOption,
                 templateSelection: formatProductSelection,
                 ajax: {
                     url: '/search/product',

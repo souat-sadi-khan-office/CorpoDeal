@@ -14,18 +14,18 @@
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Product Specifications Update</li>
+                        <li class="breadcrumb-item active" aria-current="page">Update Product Specifications</li>
                     </ol>
                 </div>
 
-                {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('category.create')) --}}
-                <div class="col-sm-6 text-end">
-                    <a href="{{ route('admin.product.create') }}" class="btn btn-soft-success">
-                        <i class="bi bi-plus"></i>
-                        Create Product
-                    </a>
-                </div>
-                {{-- @endif --}}
+                @if (Auth::guard('admin')->user()->hasPermissionTo('product.create'))
+                    <div class="col-sm-6 text-end">
+                        <a href="{{ route('admin.product.create') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-plus" style="margin-right: 10px;"></i>
+                            Add new Product
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -40,11 +40,11 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
-                                <th width="7%">Status</th>
-                                <th width="7%">Featured?</th>
-                                <th width="7%">Specs</th>
-                                <th width="20%" class="text-center">Actions</th>
+                                <th width="64">Product</th>
+                                <th width="7%">Published</th>
+                                <th width="7%">Featured</th>
+                                <th width="10%">Specs</th>
+                                <th width="10%" class="text-end">Action</th>
                             </tr>
                         </thead>
                     </table>
@@ -120,6 +120,32 @@
             _componentRemoteModalLoadAfterAjax();
             _isfeaturedUpdate();
             _statusUpdate();
+
+            $(document).on('click', '.move-up, .move-down, .move-key-up, .move-key-down', function(e) {
+                e.preventDefault();
+
+                let button = $(this);
+                let url = button.data('url');
+
+                // Spinner
+                let originalIcon = button.html();
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {_token: "{{ csrf_token() }}"},
+                    success: function(res) {
+                        if (res.success) {
+                            $("#specificationTable").html(res.html);
+                        }
+                    },
+                    complete: function() {
+                        button.prop('disabled', false).html(originalIcon);
+                    }
+                });
+            });
+
 
         });
     </script>

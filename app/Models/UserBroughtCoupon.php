@@ -14,7 +14,7 @@ class UserBroughtCoupon extends Model
 
     public function user()
     {
-        return $this->hasMany(User::class, 'user_id');
+        return $this->hasMany(User::class);
     }
 
     public function coupon()

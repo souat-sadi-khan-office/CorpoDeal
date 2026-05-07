@@ -21,9 +21,9 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('stuff.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.stuff.create') }}" class="btn btn-soft-success">
+                        <a href="{{ route('admin.stuff.create') }}" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New Stuff
                         </a>
                     </div>
                 @endif

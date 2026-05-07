@@ -175,7 +175,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->guard('admin')->user()->hasPermissionTo('product.store') === false) {
+        if (auth()->guard('admin')->user()->hasPermissionTo('product.create') === false) {
             return response()->json([
                 'status' => false, 
                 'goto' => route('admin.dashboard'),
@@ -296,8 +296,8 @@ class ProductController extends Controller
         return $this->productRepository->duplicateProduct($request, $id);
     }
 
-    public function specificationproducts(Request $request){
-
+    public function specificationproducts(Request $request)
+    {
         if ($request->ajax()) {
             return $this->productRepository->specificationproductsDatatable();
         }
@@ -305,6 +305,23 @@ class ProductController extends Controller
         return view('backend.product.specification.index');
     }
 
+    public function specificationproductModalEmpty($id)
+    {
+        $product = Product::find($id);
+        if(!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Product not found'
+            ]); 
+        }
+
+        ProductSpecification::where('product_id', $id)->delete();
+        return response()->json([
+            'status' => true,
+            'load' => true,
+            'message' => 'Specification removed successfully'
+        ]);
+    }
 
     public function specificationproductModal($id)
     {
@@ -338,4 +355,164 @@ class ProductController extends Controller
     {
         return $this->productRepository->specificationsAdd($request,$id);
     }
+
+    public function moveUp($productId, $id)
+    {
+        $current = ProductSpecification::findOrFail($id);
+
+        $previous = ProductSpecification::where('product_id', $current->product_id)
+            ->where('position', '<', $current->position)
+            ->orderBy('position', 'desc')
+            ->first();
+
+        if ($previous) {
+            $temp = $current->position;
+            $current->position = $previous->position;
+            $previous->position = $temp;
+
+            $current->save();
+            $previous->save();
+        }
+
+        return $this->refreshSpecificationTable($productId);
+    }
+
+    public function moveDown($productId, $id)
+    {
+        $current = ProductSpecification::findOrFail($id);
+
+        $next = ProductSpecification::where('product_id', $current->product_id)
+            ->where('position', '>', $current->position)
+            ->orderBy('position', 'asc')
+            ->first();
+
+        if ($next) {
+            $temp = $current->position;
+            $current->position = $next->position;
+            $next->position = $temp;
+
+            $current->save();
+            $next->save();
+        }
+
+        return $this->refreshSpecificationTable($productId);
+    }
+
+    public function keyMoveUp($productId, $keyId)
+    {
+        $currentGroup = ProductSpecification::where('product_id', $productId)
+            ->where('key_id', $keyId)
+            ->orderBy('position')
+            ->get();
+
+        if ($currentGroup->isEmpty()) {
+            return response()->json(['success' => false]);
+        }
+
+        $currentMinPos = $currentGroup->min('position');
+
+        // Find previous group
+        $previousGroupKeyId = ProductSpecification::where('product_id', $productId)
+            ->where('position', '<', $currentMinPos)
+            ->orderBy('position', 'desc')
+            ->first()
+            ?->key_id;
+
+        if ($previousGroupKeyId) {
+            $previousGroup = ProductSpecification::where('product_id', $productId)
+                ->where('key_id', $previousGroupKeyId)
+                ->get();
+
+            // Swap positions
+            foreach ($currentGroup as $row) {
+                $row->position -= $previousGroup->count();
+                $row->save();
+            }
+            foreach ($previousGroup as $row) {
+                $row->position += $currentGroup->count();
+                $row->save();
+            }
+        }
+
+        return $this->refreshSpecificationTable($productId);
+    }
+
+    public function keyMoveDown($productId, $keyId)
+    {
+        $currentGroup = ProductSpecification::where('product_id', $productId)
+            ->where('key_id', $keyId)
+            ->orderBy('position')
+            ->get();
+
+        if ($currentGroup->isEmpty()) {
+            return response()->json(['success' => false]);
+        }
+
+        $currentMaxPos = $currentGroup->max('position');
+
+        // Find next group
+        $nextGroupKeyId = ProductSpecification::where('product_id', $productId)
+            ->where('position', '>', $currentMaxPos)
+            ->orderBy('position', 'asc')
+            ->first()
+            ?->key_id;
+
+        if ($nextGroupKeyId) {
+            $nextGroup = ProductSpecification::where('product_id', $productId)
+                ->where('key_id', $nextGroupKeyId)
+                ->get();
+
+            // Swap positions
+            foreach ($currentGroup as $row) {
+                $row->position += $nextGroup->count();
+                $row->save();
+            }
+            foreach ($nextGroup as $row) {
+                $row->position -= $currentGroup->count();
+                $row->save();
+            }
+        }
+
+        return $this->refreshSpecificationTable($productId);
+    }
+
+    protected function refreshSpecificationTable($productId)
+    {
+        $data = ProductSpecification::where('product_id', $productId)
+            ->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')
+            ->orderBy('position', 'ASC')
+            ->get();
+
+        $product = Product::find($productId);
+        $product_name = $product?->name;
+        $category_id = $product?->category_id;
+
+        $mapped = $data->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'key_id' => $item->key_id,
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name,
+                'specificationKey' => $item->specificationKey?->name,
+                'specificationKeyType' => $item->specificationKeyType?->name,
+                'specificationKeyTypeAttribute' => $item->specificationKeyTypeAttribute 
+                    ? $item->specificationKeyTypeAttribute->name . ' ' . $item->specificationKeyTypeAttribute->extra 
+                    : null,
+                'key_feature' => $item->key_feature,
+            ];
+        });
+
+        $models = $mapped->groupBy('key_id');
+
+        $html = view('backend.product.specification._table', [
+            'models' => $models,
+            'product_name' => $product_name,
+            'category_id' => $category_id,
+            'product_id' => $productId, 
+        ])->render();
+
+        return response()->json(['success' => true, 'html' => $html]);
+    }
+
+
 }

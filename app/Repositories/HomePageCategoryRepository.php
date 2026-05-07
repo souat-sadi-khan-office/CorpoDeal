@@ -32,7 +32,7 @@ class HomePageCategoryRepository implements HomePageCategoryRepositoryInterface
                 return '<div class="form-check form-switch"><input data-url="' . route('admin.home-page-category.status', $model->id) . '" class="form-check-input" type="checkbox" role="switch" name="status" id="status' . $model->id . '" ' . $checked . ' data-id="' . $model->id . '"></div>';
             })
             ->editColumn('align', function ($model) {
-                $buttonClass = $model->is_right == 1 ? 'btn btn-success' : 'btn btn-primary';
+                $buttonClass = $model->is_right == 1 ? 'btn btn-sm btn-success' : 'btn btn-sm btn-primary';
                 $badgeText = $model->is_right == 1 ? 'Right To Left' : 'Left to Right';
 
                 return '<button type="button" class="' . $buttonClass . ' position-relative">

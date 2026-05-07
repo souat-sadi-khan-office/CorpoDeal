@@ -7,6 +7,7 @@ use App\Models\UserCoupon;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\CartDetail;
+use App\Models\Order;
 use App\Models\UserPoint;
 use App\Models\UserBroughtCoupon;
 use Illuminate\Support\Facades\Auth;
@@ -61,11 +62,14 @@ class CouponRepository implements CouponRepositoryInterface
             'discount_amount' => $data->discount_type !== 'percent'?covert_to_usd($data->discount_amount):$data->discount_amount,
             'discount_type' => $data->discount_type,
             'maximum_discount_amount' => covert_to_usd($data->maximum_discount_amount),
-            'start_date' => $data->start_date ? date('Y-m-d', strtotime($data->start_date)) : null,
-            'end_date' => $data->end_date ? date('Y-m-d', strtotime($data->end_date)) : null,
+            // 'start_date' => $data->start_date ? date('Y-m-d', strtotime($data->start_date)) : null,
+            // 'end_date' => $data->end_date ? date('Y-m-d', strtotime($data->end_date)) : null,
+            'is_new_user' => $data->is_new_user ?? 0,
+            'deadline' => $data->deadline ?? null,
+            'platform' => $data->platform ?? 'both',
             'status' => $data->status,
             'is_sellable' => $data->is_sellable,
-            'points_to_buy' => $data->points_to_buy,
+            'points_to_buy' => $data->points_to_buy ?? 0,
         ]);
 
         $json = ['status' => true, 'load' => true, 'message' => 'Coupon created successfully'];
@@ -85,6 +89,9 @@ class CouponRepository implements CouponRepositoryInterface
         $coupon->status = $data->status;
         $coupon->is_sellable = $data->is_sellable;
         $coupon->points_to_buy = $data->points_to_buy;
+        $coupon->is_new_user = $data->is_new_user;
+        $coupon->deadline = $data->deadline;
+        $coupon->platform = $data->platform;
         $coupon->update();
 
         return response()->json(['status' => true, 'load' => true, 'message' => 'Coupon updated successfully.']);
@@ -125,109 +132,181 @@ class CouponRepository implements CouponRepositoryInterface
 
     public function checkCoupon($data)
     {
+        // 1. Validate Request
         $validator = Validator::make($data, [
             'coupon_code' => 'required|string|min:5|max:50|exists:coupons,coupon_code',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'validator' => true, 'message' => $validator->errors()]);
+            return response()->json([
+                'status' => false,
+                'validator' => true,
+                'message' => $validator->errors()
+            ]);
         }
 
-        // check the coupon
+        // 2. Fetch Coupon
         $coupon = $this->findByCoupon($data['coupon_code']);
-        if(!$coupon) {
-            return response()->json(['status' => false, 'message' => 'Coupon not found']);
+        if (!$coupon) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Coupon not found.'
+            ]);
         }
 
-        // check start_date & end_date
-        if($coupon->start_date && ($coupon->start_date > date('Y-m-d'))) {
-            return response()->json(['status' => false, 'message' => 'You can use this coupon after '. get_system_date($coupon->start_date)]);
+        $today = date('Y-m-d');
+
+        // 4. Check Deadline Date
+        if ($coupon->deadline && $coupon->deadline < $today) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This coupon expired on ' . get_system_date($coupon->deadline)
+            ]);
         }
 
-        // check minimum shipping amount
-        if($coupon->end_date && ($coupon->end_date < date('Y-m-d'))) {
-            return response()->json(['status' => false, 'message' => 'This coupon is expired on '. get_system_date($coupon->end_date)]);
-        }
+        $userId = Auth::guard('customer')->user()->id;
 
-        // check the user is already used this and this is a free coupon
-        if($coupon->is_sellable == 0) {
-            $userCoupon = $this->userCoupon($coupon->id);
-            if($userCoupon) {
-                return response()->json(['status' => false, 'message' => 'This coupon is already used.']);
+        // 5. New User Only Coupon Check
+        if ($coupon->is_new_user_only) {
+            $hasPreviousOrder = Order::where('user_id', $userId)->exists();
+            if ($hasPreviousOrder) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This coupon is only valid for new users.'
+                ]);
             }
         }
 
-        if($coupon->is_sellable == 1) {
-            $userBoughtCoupon = UserBroughtCoupon::where('user_id', Auth::guard('customer')->user()->id)->where('coupon_id', $coupon->id)->first();
-            if(!$userBoughtCoupon) {
-                return response()->json(['status' => false, 'message' => "You don't have this coupon"]);
+        // 6. Mobile App Only Coupon Check
+        $isAppRequest = request()->header('X-App-Request') === 'mobile'; // Optional header from app
+        if ($coupon->is_mobile_app_only && !$isAppRequest) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This coupon is only valid on the mobile app.'
+            ]);
+        }
+
+
+        // 5. Coupon Usage Check (Free vs. Paid)
+        if ($coupon->is_sellable == 0) {
+            // Free coupon: Check if already used
+            if ($this->userCoupon($coupon->id)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This coupon has already been used.'
+                ]);
+            }
+        } else {
+            // Paid coupon: Check if user has it and hasn’t used it
+            $userCoupon = UserBroughtCoupon::where('user_id', $userId)
+                ->where('coupon_id', $coupon->id)
+                ->first();
+
+            if (!$userCoupon) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "You don't own this coupon."
+                ]);
             }
 
-            if($userBoughtCoupon->status == 1) {
-                return response()->json(['status' => false, 'message' => "You already used this coupon."]);
+            if ($userCoupon->status == 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "You have already used this coupon."
+                ]);
             }
         }
 
-        // set up discount amount
-        $total_price = 0;
-        $discounted_amount = 0;
-        $discounted_price = 0;
-        $tax_amount = 0;
+        // 6. Calculate Cart Total and Taxes
+        $cart = Cart::where('user_id', $userId)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Your cart is empty.'
+            ]);
+        }
 
-        $cart = Cart::where('user_id', Auth::guard('customer')->user()->id)->first();
         $items = CartDetail::where('cart_id', $cart->id)->get();
+        $totalPrice = 0;
+        $taxAmount = 0;
+        $productRepository = app(Interface\ProductRepositoryInterface::class);
+        $cartUpdated = false;
 
         foreach ($items as $item) {
             $stockResponse = getProductStock($item->product_id);
             if (!$stockResponse['status']) {
-                $cart_updated = true;
+                // Remove out-of-stock items from cart
                 $itemQuantity = $item->quantity;
                 $item->delete();
                 $cart->total_quantity -= $itemQuantity;
                 $cart->save();
-            } else {
-                $productRepository = app(Interface\ProductRepositoryInterface::class);;
-
-                if ($item->product->taxes->isNotEmpty()) {
-                    foreach ($item->product->taxes as $tax) {
-                        if ($tax->tax_type == 'percent') {
-                            $product_tax_amount = (($item->product->unit_price * $tax->tax) / 100) * $tax->quantity;
-                        } else {
-                            $product_tax_amount = ($tax->tax * $item->quantity);
-                        }
-                    }
-
-                    $tax_amount += $product_tax_amount;
-                }
-
-                $price = $productRepository->discountPrice($item->product);
-                $total_price += ($price * $item->quantity);
+                $cartUpdated = true;
+                continue;
             }
+
+            // Apply taxes if available
+            if ($item->product->taxes->isNotEmpty()) {
+                foreach ($item->product->taxes as $tax) {
+                    $taxAmount += ($tax->tax_type == 'percent')
+                        ? (($item->product->unit_price * $tax->tax) / 100) * $item->quantity
+                        : ($tax->tax * $item->quantity);
+                }
+            }
+
+            // Calculate price
+            $price = $productRepository->discountPrice($item->product);
+            $totalPrice += ($price * $item->quantity);
         }
 
-        if($coupon->minimum_shipping_amount > $total_price) {
-            return response()->json(['status' => false, 'message' => 'Minimum '. format_price(convert_price($coupon->minimum_shipping_amount)) .' is required to apply this coupon']);
+        if ($cartUpdated) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Some products in your cart are out of stock and have been removed. Please try again.'
+            ]);
         }
 
-        // check maximum_discount_amount
-        if ($coupon->discount_type == 'percent') {
-            $discounted_amount = ($total_price * $coupon->discount_amount) / 100;
-        } elseif ($coupon->discount_type == 'amount') {
-            $discounted_amount = $coupon->discount_amount;
+        // 7. Check Minimum Shipping Amount
+        if ($coupon->minimum_shipping_amount > $totalPrice) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Minimum ' . format_price(convert_price($coupon->minimum_shipping_amount)) . ' is required to apply this coupon.'
+            ]);
         }
 
-        if($coupon->maximum_discount_amount != 0 && $coupon->maximum_discount_amount < $discounted_amount) {
-            $discounted_amount = $coupon->maximum_discount_amount;
+        // 8. Calculate Discount
+        $discountAmount = 0;
+        if ($coupon->discount_type === 'percent') {
+            $discountAmount = ($totalPrice * $coupon->discount_amount) / 100;
+        } elseif ($coupon->discount_type === 'amount') {
+            $discountAmount = $coupon->discount_amount;
         }
 
-        $shipping_charge = get_settings('system_default_delivery_charge')??10;
-        $discounted_price = $total_price - $discounted_amount;
-        $total_amount = ($total_price + $tax_amount + $shipping_charge) - $discounted_amount;
+        // Apply max discount cap
+        if ($coupon->maximum_discount_amount != 0 && $coupon->maximum_discount_amount < $discountAmount) {
+            $discountAmount = $coupon->maximum_discount_amount;
+        }
 
+        // 9. Shipping Cost
+        $shippingCharge = 0;
+        if (get_settings('shipping_cost_type') === 'flat_rate') {
+            $shippingCharge = get_settings('system_default_delivery_charge');
+        }
 
-        // return true
-        return response()->json(['status' => true, 'message' => 'Coupon Added Successfully.', 'formatted_amount' => format_price(convert_price($discounted_amount)), 'total_amount' => format_price(convert_price($total_amount)), 'amount' => $discounted_price, 'discount_amount' => convert_price($discounted_amount) ]);
+        // 10. Final Amounts
+        $discountedPrice = $totalPrice - $discountAmount;
+        $totalAmount = ($totalPrice + $taxAmount + $shippingCharge) - $discountAmount;
+
+        // 11. Return Response
+        return response()->json([
+            'status' => true,
+            'message' => 'Coupon applied successfully.',
+            'formatted_amount' => format_price(convert_price($discountAmount)),
+            'total_amount' => format_price(convert_price($totalAmount)),
+            'amount' => $discountedPrice,
+            'discount_amount' => convert_price($discountAmount),
+        ]);
     }
+
 
     public function buyCoupon($data)
     {

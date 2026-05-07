@@ -25,7 +25,7 @@ class SpecificationAttributes extends SpecificationsTypes
         }
 
         $keys = $this->productSpecificationRepository->attributeindex();
-       
+
         $view = $this->productSpecificationRepository->attributeindexview($keys);
 
         if ($request->ajax()) {

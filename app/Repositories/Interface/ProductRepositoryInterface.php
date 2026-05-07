@@ -4,11 +4,13 @@ namespace App\Repositories\Interface;
 
 interface ProductRepositoryInterface
 {
+    public function allProducts();
     public function index($request, $category_id);
     public function search($search, $categories,$brands,$sort);
     public function storeProduct($request);
     public function updateProduct($request, $id);
     public function flashDealProduct($product);
+    public function filterProducts($request);
     public function dataTable();
     public function dataTableWithAjaxSearch($category_id, $brand_id);
     public function updateStatus($request, $id);

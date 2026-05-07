@@ -546,6 +546,40 @@ class SearchController extends Controller
         return response()->json([], 200);
     }
 
+    public function searchForFlashDealsProductDetails(Request $request)
+    {
+        $productIds = $request->data;
+
+        if ($productIds != null) {
+            $products = Product::whereIn('id', $productIds)
+                ->with(['stock' => function ($query) {
+                    $query->where('in_stock', true)
+                        ->where('in_stock', true)->orderBy('stock', 'desc')->limit(1);
+                }])
+                ->get();
+
+            if ($products) {
+                $result = $products->map(function ($product) {
+                    $stock = optional($product->stock->first())->stock ?? 0;
+
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'thumb_image' => url($product->thumb_image),
+                        'unit_price' => round(covert_to_defalut_currency(get_product_price($product)['discounted_price']), 3),
+                        'stock' => $stock,
+                    ];
+                });
+
+                return response()->json($result, 200);
+            }
+        } else {
+            return response()->json();
+        }
+
+        return response()->json([], 200);
+    }
+
     // for product stock
     public function searchForProductStock(Request $request)
     {
@@ -578,5 +612,4 @@ class SearchController extends Controller
 
         return response()->json(['source' => $data]);
     }
-
 }

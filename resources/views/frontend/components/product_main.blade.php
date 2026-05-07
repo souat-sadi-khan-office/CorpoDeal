@@ -16,7 +16,7 @@
             @endif
         @endisset
 
-        <div class="product_img {{ isset($listing) && $listing == 'section_wise' ? 'normal-card' : '' }}">
+        <div class="product_img {{ isset($listing) && $listing == 'section_wise' ? 'normal-card' : 'short_product' }}">
             <a href="{{ route('slug.handle', $product['slug']) }}">
                 <img src="{{ asset($product['thumb_image']) }}"
                     alt="thumb_image">
@@ -27,7 +27,7 @@
             @if (!isset($listing) || $listing != 'short')
                 <div class="product_action_box">
                     <ul class="list_none pr_action_btn">
-                        @if ($product['stock_status'] == 'in_stock')
+                        @if ($product['stage'] != 'pre-order' && $product['stock_status'] == 'in_stock')
                             <li>
                                 <a class="add-to-cart" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="Top" title="Add to Cart" data-id="{{ $product['slug'] }}">
                                     <i class="fas fa-shopping-bag"></i>
@@ -41,7 +41,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('quick.view', $product['slug']) }}" class="popup-ajax">
+                            <a href="{{ route('quick.view', $product['slug']) }}" class="popup-ajax" data-bs-toggle="tooltip" data-bs-placement="Top" title="Quick View">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </li>
@@ -73,38 +73,13 @@
                     <span class="price">{{ format_price(convert_price($product['unit_price'])) }}</span>
                 @endif
             </div>
-            <div class="rating_wrap ml-3">
+            <div class="rating_wrap mb-3 ml-3">
                 <div class="rating">
                     <div class="product_rate" style="width:{{ $product['averageRating'] }}%"></div>
                 </div>
                 <span class="rating_num">({{ $product['ratingCount'] }})</span>
             </div>
             @if (isset($listing) && $listing == 'main')
-                <div class="pr_desc">
-                    <ul>
-                        @if (count($product['specifications']) > 0)
-                            @foreach ($product['specifications'] as $features)
-                                <li style="font-size: 85%">
-                                    {{ $features['type_name'] }} : {{ $features['attr_name'] }}
-                                </li>
-                            @endforeach
-                        @else
-                            <li style="font-size: 85%">
-                                <b>Dimensions</b>: Detailed size specifications for length, width.
-                            </li>
-                            <li style="font-size: 85%">
-                                <b>Material</b>: Information about the primary materials and overall build quality.
-                            </li>
-                            <li style="font-size: 85%">
-                                <b>Features</b>: Key functionalities, unique selling points of the product.
-                            </li>
-                            <li style="font-size: 85%">
-                                <b>Warranty</b>: Duration, coverage, and terms of the product warranty provided.
-                            </li>
-                        @endif
-                        
-                    </ul>
-                </div>
 
                 @if ($product['stock_status'] == 'in_stock' && isset($listing_type))
                     <div class="d-flex justify-content-between align-items-center mt-3">
@@ -130,6 +105,35 @@
                     @endif
                 @endif
 
+                <div class="pr_desc_wrapper">
+                    <div class="pr_desc">
+                        <ul class="desc_content">
+                            @if (count($product['specifications']) > 0)
+                                @foreach ($product['specifications'] as $features)
+                                    <li style="font-size: 85%">
+                                        {{ $features['type_name'] }} : {{ $features['attr_name'] }}
+                                    </li>
+                                @endforeach
+                            @else
+                                <li style="font-size: 85%">
+                                    <b>Dimensions</b>: Compact rackmount form (LxW varies).
+                                </li>
+                                <li style="font-size: 85%">
+                                    <b>Material</b>: Durable metal, reinforced aluminum build.
+                                </li>
+                                <li style="font-size: 85%">
+                                    <b>Features</b>: 12 drive bays, ECC RAM, 6-core Xeon CPU.
+                                </li>
+                                <li style="font-size: 85%">
+                                    <b>Warranty</b>: 3-year limited, covers parts and labor.
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                    <div class="overlay_toggle">
+                        <a href="javascript:;" class="toggle_desc">Show More</a>
+                    </div>
+                </div>
             @endif
         </div>
     </div>

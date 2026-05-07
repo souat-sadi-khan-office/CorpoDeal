@@ -11,8 +11,8 @@
                                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }} background_bg" data-img-src="{{ asset($carousel->image) }}">
                                         <div class="banner_slide_content banner_content_inner">
                                             <div class="col-lg-7 col-10">
-                                                <div class="banner_content3 overflow-hidden">
-                                                    {{-- <h5 class="mb-3 staggered-animation font-weight-light text-white" data-animation="slideInLeft" data-animation-delay="0.5s" style="z-index: 2">
+                                                <div style="padding-left: 35px;" class="banner_content3 overflow-hidden">
+                                                    <h5 class="mb-3 staggered-animation font-weight-light text-white" data-animation="slideInLeft" data-animation-delay="0.5s" style="z-index: 2">
                                                         {{ @$carousel->header_title }}</h5>
                                                     <h2 class="staggered-animation text-white" data-animation="slideInLeft" data-animation-delay="1s" style="z-index: 2">
                                                         {{ @$carousel->name }}
@@ -26,7 +26,7 @@
                                                         data-animation-delay="1.5s"style="z-index: 2">
                                                             Shop Now
                                                         </a>
-                                                    @endif --}}
+                                                    @endif
                                                     
                                                 </div>
                                             </div>

@@ -6,7 +6,7 @@
             </div>
             <div class="view_all">
                 <a href="{{ route('search', ['sort' => 'on-sale']) }}" class="text_default">
-                    <span>View All {{ count($products) }}</span>
+                    <span>View All</span>
                 </a>
             </div>
         </div>

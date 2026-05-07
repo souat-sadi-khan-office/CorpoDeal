@@ -146,7 +146,8 @@
                 </div>
             </div>
             <div class="col-lg-6 pt-2 pt-lg-0 mt-4 mt-lg-0">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.027951234913!2d90.41347647411571!3d23.782018978648825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70066af71ad%3A0xe8d77e0731081e3!2sProfile%20House!5e0!3m2!1sen!2sbd!4v1732418647290!5m2!1sen!2sbd" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                {{-- <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.027951234913!2d90.41347647411571!3d23.782018978648825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70066af71ad%3A0xe8d77e0731081e3!2sProfile%20House!5e0!3m2!1sen!2sbd!4v1732418647290!5m2!1sen!2sbd" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> --}}
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.818534367386!2d103.84725357331287!3d1.2826957617914745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da190c24a55555%3A0x1cbca8bfb70a8cd8!2sPrudential%20Tower!5e0!3m2!1sen!2sbd!4v1743151247166!5m2!1sen!2sbd" style="width:100%; height: 500px; border:0" allowfullscreen></iframe>
             </div>
         </div>
     </div>

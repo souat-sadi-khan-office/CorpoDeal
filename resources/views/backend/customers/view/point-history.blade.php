@@ -4,18 +4,18 @@
             <div class="col-md-9">
                 <h4 class="h6 mb-3">
                     <b>User Point History</b> 
-                    <span class="badge bg-success">{{ $model->points }}</span> 
+                    <span class="badge bg-success">Total Point: {{ $model->points }}</span> 
                 </h4>
             </div>
             <div class="col-md-3 text-end">
-                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.show', $model->id) }}" class="btn btn-sm btn-outline-secondary" style="padding: 3px 8px; font-size: 12px;">
+                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.show', $model->id) }}" class="btn btn-sm btn-outline-dark">
                     <i class="bi bi-gift"></i>
                     Send Gift Points
                 </a>
             </div>
         </div>
         
-        <table class="table table-bordered" id="user-address-table">
+        <table class="table mt-3 table-bordered" id="user-address-table">
             <thead>
                 <th width="5%">#</th>
                 <th>Date</th>

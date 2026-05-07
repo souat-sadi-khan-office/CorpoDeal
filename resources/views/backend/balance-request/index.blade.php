@@ -2,6 +2,11 @@
 @section('title', 'Balance Requests')
 @push('style')
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+    </style>
 @endpush
 @section('page_name')
     <div class="app-content-header">
@@ -24,23 +29,24 @@
 @section('content')
 
     <div class="card">
+        <div class="card-header">
+            <h4 class="h6 mb-0">
+                <strong>Installment Balance Requests</strong>
+            </h4>
+        </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
                     <table class="table table-bordered table-striped table-hover" id="Requests">
                         <thead>
-                        <tr>
                             <th>#</th>
                             <th>Customer</th>
-                            <th>Status</th>
+                            <th>Date/Time</th>
+                            <th>Plan</th>
                             <th>Amount</th>
-                            <th>Created At</th>
-                            <th>Updated At</th>
-                            <th>Updated By</th>
-                            <th>Installment</th>
-                            <th>Documents</th>
+                            <th>Status</th>
+                            {{-- <th>Documents</th> --}}
                             <th>Action</th>
-                        </tr>
                         </thead>
                     </table>
                 </div>
@@ -74,45 +80,43 @@
                 serverSide: true,
                 ajax: "{{ route('admin.balance.request') }}",
                 columns: [
-                    {data: 'id', name: 'id'}, // Corresponds to "#"
-                    {data: 'customer', name: 'customer'}, // Corresponds to "Customer"
-                    {data: 'status', name: 'status'}, // Corresponds to "Status"
-                    {data: 'amount', name: 'amount'}, // Corresponds to "Amount"
-                    {data: 'created_at', name: 'created_at'}, // Corresponds to "Created At"
-                    {data: 'updated_at', name: 'updated_at'}, // Corresponds to "Updated At"
-                    {data: 'updated_by', name: 'updated_by'}, // Corresponds to "Updated By"
-                    {data: 'installment', name: 'installment'}, // Corresponds to "Installment"
-                    {
-                        data: null,
-                        name: 'documents',
-                        orderable: false,
-                        searchable: false,
-                        render: function (data, type, row) {
-                            let links = '';
-                            if (row.document) {
-                                links += `<a target="_blank" href="${row.document}">
-                               <i class="bi bi-file-binary-fill"></i>
-                              </a> `;
-                            }
-                            if (row.document_2) {
-                                links += `<a target="_blank" href="${row.document_2}">
-                               <i class="bi bi-file-earmark-ruled"></i>
-                              </a> `;
-                            }
-                            if (row.additional_documents) {
-                                JSON.parse(row.additional_documents).forEach(function (doc) {
-                                    links += `<a target="_blank" href="${doc}">
-                                  <i class="bi bi-file-earmark-ruled"></i>
+                    {data: 'id', name: 'id', orderable: false, visible: false},
+                    {data: 'customer', name: 'customer'},
+                    {data: 'date_time', name: 'date_time'},
+                    {data: 'installment', name: 'installment'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'status', name: 'status'},
+                    // {
+                    //     data: null,
+                    //     name: 'documents',
+                    //     orderable: false,
+                    //     searchable: false,
+                    //     render: function (data, type, row) {
+                    //         let links = '';
+                    //         if (row.document) {
+                    //             links += `<a target="_blank" href="${row.document}">
+                    //            <i class="bi bi-file-binary-fill"></i>
+                    //           </a> `;
+                    //         }
+                    //         if (row.document_2) {
+                    //             links += `<a target="_blank" href="${row.document_2}">
+                    //            <i class="bi bi-file-earmark-ruled"></i>
+                    //           </a> `;
+                    //         }
+                    //         if (row.additional_documents) {
+                    //             JSON.parse(row.additional_documents).forEach(function (doc) {
+                    //                 links += `<a target="_blank" href="${doc}">
+                    //               <i class="bi bi-file-earmark-ruled"></i>
 
-                                  </a> `;
-                                });
-                            }
-                            return links || 'N/A';
-                        }
-                    },
+                    //               </a> `;
+                    //             });
+                    //         }
+                    //         return links || 'N/A';
+                    //     }
+                    // },
                     {data: 'action', name: 'action', orderable: false, searchable: false}, // Corresponds to "Action"
                 ],
-                order: [[0, 'desc']]
+                // order: [[0, 'desc']]
             });
 
             // for brands

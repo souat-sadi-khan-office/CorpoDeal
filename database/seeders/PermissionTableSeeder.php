@@ -233,6 +233,16 @@ class PermissionTableSeeder extends Seeder
 
 			// Gateway Configuration
 			['name' => 'gateway-configuration.view'],
+
+            ['name' => 'product.serial-add'],
+            ['name' => 'product.serial-view'],
+
+            ['name' => 'supplier.create'],
+            ['name' => 'supplier.view'],
+            ['name' => 'supplier.edit'],
+            ['name' => 'supplier.assign'],
+            ['name' => 'payments.view']
+
 		];
 
 		$insert_data = [];

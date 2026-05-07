@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Carbon\Carbon;
 use App\CPU\Images;
 use App\CPU\Helpers;
 use App\Models\Product;
@@ -285,11 +286,11 @@ class ProductRepository implements ProductRepositoryInterface
                 })
                 ->when(isset($request->price_range) && count($request->price_range) == 2&& (isset($request->price_range[0])&&isset($request->price_range[1])), function ($q) use ($request) {
                     $q->whereBetween('unit_price', [convert_price_to_usd($request->price_range[0]), convert_price_to_usd($request->price_range[1])]);
-
                 })
-                ->when(isset($request->rating) && count($request->rating) > 0&& (isset($request->rating[0])&&isset($request->rating[1])), function ($q) use ($request) {
-                    $q->whereHas('details', function ($query) use ($request) {
-                        $query->whereBetween('average_rating', $request->rating);
+                ->when(isset($request->rating) && count($request->rating) > 0, function ($q) use ($request) {
+                    $minRating = min($request->rating);
+                    $q->whereHas('details', function ($query) use ($minRating) {
+                        $query->where('average_rating', '>=', $minRating);
                     });
                 })
                 ->when(isset($request->out_of_stock) && $request->out_of_stock == true && !isset($request->in_stock), function ($q) {
@@ -301,14 +302,14 @@ class ProductRepository implements ProductRepositoryInterface
                 ->when(isset($request->up_coming) && $request->up_coming == true, function ($q) {
                     $q->where('stage', 'upcoming');
                 })
-                ->when(isset($request->brands) && count($request->brands) > 0, function ($q) use ($request) {
+                ->when(isset($request->brand) && count($request->brand) > 0, function ($q) use ($request) {
                     $q->whereHas('brand', function ($query) use ($request) {
-                        $query->whereIn('id', $request->brands);
+                        $query->whereIn('id', $request->brand);
                     });
                 })
-                ->when(isset($request->specifications) && count($request->specifications) > 0, function ($q) use ($request) {
+                ->when(isset($request->specification) && count($request->specification) > 0, function ($q) use ($request) {
                     $q->whereHas('specifications', function ($specificationQuery) use ($request) {
-                        $specificationQuery->whereIn('attribute_id', $request->specifications);
+                        $specificationQuery->whereIn('attribute_id', $request->specification);
                     });
                 })
                 ->with(['ratings' => function ($query) {
@@ -326,13 +327,10 @@ class ProductRepository implements ProductRepositoryInterface
                 ->with(['image' => function ($query) {
                     $query->where('status', 1)->select('product_id', 'image');
                 }])
-                ->when(isset($request->sortBy) && $request->sortBy != null, function ($q) use ($request) {
-                    switch ($request->sortBy) {
-                        case 'latest':
+                ->when(isset($request->sort) && $request->sort != null, function ($q) use ($request) {
+                    switch ($request->sort) {
+                        case 'date':
                             $q->orderBy('created_at', 'desc');
-                            break;
-                        case 'popularity':
-                            $q->orderBy('ratings_count', 'desc');
                             break;
                         case 'price':
                             $q->orderBy('unit_price', 'asc');
@@ -340,7 +338,11 @@ class ProductRepository implements ProductRepositoryInterface
                         case 'price-desc':
                             $q->orderBy('unit_price', 'desc');
                             break;
+                        case 'popularity':
+                            $q->orderBy('ratings_count', 'desc');
+                            break;
                         default:
+                            $q->orderBy('created_at', 'desc');
                             break;
                     }
                 })
@@ -371,9 +373,12 @@ class ProductRepository implements ProductRepositoryInterface
                     $q->whereBetween('unit_price', [convert_price_to_usd($request->price_range[0]), convert_price_to_usd($request->price_range[1])]);
 
                 })
-                ->when(isset($request->brandTypes) && count($request->brandTypes) > 0, function ($q) use ($request) {
+                ->when(isset($request->categories) && count($request->categories) > 0, function ($q) use ($request) {
+                    $q->whereIn('category_id', $request->categories);
+                })
+                ->when(isset($request->brand_types) && count($request->brand_types) > 0, function ($q) use ($request) {
                     $q->whereHas('brandType', function ($query) use ($request) {
-                        $query->whereIn('id', $request->brandTypes);
+                        $query->whereIn('id', $request->brand_types);
                     });
                 })
                 ->with(['ratings' => function ($query) {
@@ -457,7 +462,201 @@ class ProductRepository implements ProductRepositoryInterface
             });
 
             return $products->setCollection($mappedProducts);
+        } elseif ($request->all_products) {
+            $products = Product::where('status', 1)
+                // ->whereIn('category_id', $category_id)
+                ->withCount('ratings')
+                ->with('brand:id,name,slug','details:id,product_id,average_rating')
+                ->when(isset($request->in_stock) && $request->in_stock == true && !isset($request->out_of_stock), function ($q) {
+                    $q->where('in_stock', 1);
+                })
+                ->when(isset($request->price_range) && count($request->price_range) == 2&& (isset($request->price_range[0])&&isset($request->price_range[1])), function ($q) use ($request) {
+                    $q->whereBetween('unit_price', [convert_price_to_usd($request->price_range[0]), convert_price_to_usd($request->price_range[1])]);
+
+                })
+                ->when(isset($request->rating) && count($request->rating) > 0&& (isset($request->rating[0])&&isset($request->rating[1])), function ($q) use ($request) {
+                    $q->whereHas('details', function ($query) use ($request) {
+                        $query->whereBetween('average_rating', $request->rating);
+                    });
+                })
+                ->when(isset($request->out_of_stock) && $request->out_of_stock == true && !isset($request->in_stock), function ($q) {
+                    $q->where('in_stock', 0);
+                })
+                ->when(isset($request->pre_order) && $request->pre_order == true, function ($q) {
+                    $q->where('stage', 'pre-order');
+                })
+                ->when(isset($request->up_coming) && $request->up_coming == true, function ($q) {
+                    $q->where('stage', 'upcoming');
+                })
+                ->when(isset($request->brands) && count($request->brands) > 0, function ($q) use ($request) {
+                    $q->whereHas('brand', function ($query) use ($request) {
+                        $query->whereIn('id', $request->brands);
+                    });
+                })
+                ->when(isset($request->specifications) && count($request->specifications) > 0, function ($q) use ($request) {
+                    $q->whereHas('specifications', function ($specificationQuery) use ($request) {
+                        $specificationQuery->whereIn('attribute_id', $request->specifications);
+                    });
+                })
+                ->with(['ratings' => function ($query) {
+                    $query->select('product_id', DB::raw('AVG(rating) as averageRating'))
+                        ->groupBy('product_id');
+                }])
+                ->with(['specifications' => function ($query) {
+                    $query->where('key_feature', 1)
+                        ->with([
+                            'specificationKeyType:id,name,position',
+                            'specificationKeyTypeAttribute:id,name,extra'
+                        ])->join('specification_key_types', 'product_specifications.type_id', '=', 'specification_key_types.id')
+                        ->orderBy('specification_key_types.position', 'ASC');
+                }])
+                ->with(['image' => function ($query) {
+                    $query->where('status', 1)->select('product_id', 'image');
+                }])
+                ->when(isset($request->sortBy) && $request->sortBy != null, function ($q) use ($request) {
+                    switch ($request->sortBy) {
+                        case 'latest':
+                            $q->orderBy('created_at', 'desc');
+                            break;
+                        case 'popularity':
+                            $q->orderBy('ratings_count', 'desc');
+                            break;
+                        case 'price':
+                            $q->orderBy('unit_price', 'asc');
+                            break;
+                        case 'price-desc':
+                            $q->orderBy('unit_price', 'desc');
+                            break;
+                        default:
+                            break;
+                    }
+                })
+                ->when(!isset($request->sortBy), function ($q) {
+                    $q->orderBy('ratings_count', 'desc');
+                })
+                ->paginate(12)
+                ->withQueryString();
+
+            $mappedProducts = $products->getCollection()->map(function ($product) {
+                return $this->mapper($product);
+            });
+
+            return $products->setCollection($mappedProducts);
         }
+    }
+
+    public function filterProducts($request)
+    {
+        $query = Product::whereIn('category_id', $request['category_ids'])
+            ->withCount('ratings')
+            ->with('brand:id,name,slug', 'details:id,product_id,average_rating')
+            ->with(['specifications' => function ($query) {
+                $query->where('key_feature', 1)
+                    ->with([
+                        'specificationKeyType:id,name,position',
+                        'specificationKeyTypeAttribute:id,name,extra'
+                    ])->join('specification_key_types', 'product_specifications.type_id', '=', 'specification_key_types.id')
+                    ->orderBy('specification_key_types.position', 'ASC');
+            }])
+            ->with(['ratings' => function ($query) {
+                $query->select('product_id', DB::raw('AVG(rating) as averageRating'))
+                    ->groupBy('product_id');
+            }]);
+
+        // Availability
+        if (isset($request['in_stock'])) {
+            $query->where('in_stock', '>', 0)
+                ->whereHas('details', function ($q) {
+                    $q->where('current_stock', '>', 0);
+                });
+        }
+        if (isset($request['out_of_stock'])) {
+            $query->where('in_stock', '=', 0)
+                ->whereHas('details', function ($q) {
+                    $q->where('current_stock', '<=', 0);
+                });
+        }
+        if (isset($request['pre_order'])) {
+            $query->where('stage', 'pre-order');
+        }
+        if (isset($request['up_coming'])) {
+            $query->where('stage', 'upcoming');
+        }
+
+        // Price
+        if (isset($request['price_min']) && isset($request['price_max'])) {
+            $query->whereBetween('unit_price', [$request['price_min'], $request['price_max']]);
+        }
+
+        // Brands
+        if ($request->has('brand') && count($request['brand']) > 0) {
+            $query->whereIn('brand_id', $request['brand']);
+        }
+
+        // Specifications
+        if ($request->has('specification') && count($request['specification']) > 0) {
+            $query->whereHas('specifications', function ($q) use ($request) {
+                $q->whereIn('specification_id', $request['specification']);
+            });
+        }
+
+        // Ratings
+        if (isset($request['rating']) && count($request['rating']) > 0) {
+            $minRating = min($request['rating']);
+            $query->whereHas('details', function ($q) use ($minRating) {
+                $q->where('average_rating', '>=', $minRating);
+            });
+        }
+
+        // Sorting
+        if (isset($request['sort']) && $request['sort'] !== null) {
+            switch ($request['sort']) {
+                case 'date':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'price':
+                    $query->orderBy('unit_price', 'asc');
+                    break;
+                case 'price-desc':
+                    $query->orderBy('unit_price', 'desc');
+                    break;
+                case 'popularity':
+                    $query->orderBy('ratings_count', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            // Default sort if no sorting param provided
+            $query->orderBy('ratings_count', 'desc');
+        }
+
+        // Pagination with mapped collection
+        $products = $query->paginate($request['show'] ?? 12);
+
+        $mappedProducts = $products->getCollection()->map(function ($product) {
+            return $this->mapper($product);
+        });
+
+        return $products->setCollection($mappedProducts);
+    }
+
+    public function allProducts()
+    {
+        return Product::where('status', 1)
+                ->withCount('ratings')
+                ->with(['ratings' => function ($query) {
+                    $query->select('product_id', DB::raw('AVG(rating) as averageRating'))
+                        ->groupBy('product_id');
+                }])
+                ->with(['image' => function ($query) {
+                    $query->where('status', 1)->select('product_id', 'image');
+                }])
+                ->latest()
+                ->paginate(12) // Use paginate here
+                ->through(function ($product) {
+                    return $this->mapper($product);
+                });
     }
 
     public function flashDealProduct($id)
@@ -570,9 +769,6 @@ class ProductRepository implements ProductRepositoryInterface
                 });
         } else {
             return PcBuilderItem::where('comp_type', $request->comp_type)
-                ->whereHas('product', function ($query) {
-                    $query->where('status', 1);
-                })
                 ->with(['details' => function($q) use ($request) {
                     $q->where('pc_builder_item', 1);
                     $q->where('component_type', 'core');
@@ -828,11 +1024,16 @@ class ProductRepository implements ProductRepositoryInterface
     public function accessMapper($product) {
         return $this->mapper($product);
     }
+
     private function mapper($product)
     {
         // Determine if the product is discounted
         $isDiscounted = $product->discount_type && $product->discount > 0;
-        $discountedPrice = $product->unit_price; // Default to unit price
+        $discountedPrice = $product->unit_price;
+
+        if (Carbon::parse($product->discount_end_date)->lt(today())) {
+            $isDiscounted = false;
+        }
 
         if ($isDiscounted) {
             $discountAmount = $product->discount_type == 'amount'
@@ -1027,12 +1228,12 @@ class ProductRepository implements ProductRepositoryInterface
             ->editColumn('info', function ($model) {
                 $numberOfSale = $model->details ? $model->details->number_of_sale : 0;
                 $averageRating = $model->details ? ($model->details->average_rating == null ? Helpers::productAverageRating($model->id) : $model->details->average_rating) : 0;
-                $numberOfStock = $model->details ? $model->details->current_stock : 0;
+                $numberOfStock = $model->details->current_stock ?? 0;
                 $stockStatus = 'success';
 
-                if ($model->details->current_stock == 0) {
+                if ($numberOfStock == 0) {
                     $stockStatus = 'danger';
-                } elseif ($model->details->current_stock <= $model->details->low_stock_quantity) {
+                } elseif ($numberOfStock <= $model->details->low_stock_quantity) {
                     $stockStatus = 'warning';
                 }
 
@@ -1059,7 +1260,7 @@ class ProductRepository implements ProductRepositoryInterface
 
             })
             ->editColumn('stock', function ($model) {
-                return $model->details ? $model->details->current_stock : 0;
+                return $model->details->current_stock ?? 0;
             })
             ->editColumn('featured', function ($model) {
                 $is_featured = $model->is_featured == 1 ? 'checked' : '';
@@ -1132,6 +1333,7 @@ class ProductRepository implements ProductRepositoryInterface
                 }
             })
             ->editColumn('stock', function ($model) {
+                dd($model->details);
                 return $model->details ? $model->details->current_stock : 0;
             })
             ->editColumn('featured', function ($model) {
@@ -1206,7 +1408,7 @@ class ProductRepository implements ProductRepositoryInterface
             'category_id' => 'required|array',
             'category_id.*' => 'exists:categories,id',
             'min_purchase_quantity' => 'required|integer|min:1',
-            'images' => 'required|array',
+            // 'thumb_image' => 'required|array',
             'video_provider' => 'nullable|string|max:255',
             'video_link' => 'nullable|string',
             'description' => 'nullable|string',
@@ -1230,10 +1432,10 @@ class ProductRepository implements ProductRepositoryInterface
             'minus_stock' => 'nullable|integer|min:0',
             'cash_on_delivery' => 'required|boolean',
             'est_shipping_time' => 'nullable|string|max:255',
-            'taxes' => 'required|array',
-            'taxes.*' => 'numeric|min:0',
-            'tax_types' => 'required|array',
-            'tax_types.*' => 'string',
+            // 'taxes' => 'required|array',
+            // 'taxes.*' => 'numeric|min:0',
+            // 'tax_types' => 'required|array',
+            // 'tax_types.*' => 'string',
             'shipping_cost' => 'required|numeric',
         ]);
 
@@ -1267,7 +1469,7 @@ class ProductRepository implements ProductRepositoryInterface
         $product->discount_end_date = $request->discount_end_date ? date('Y-m-d', strtotime($request->discount_end_date)) : null;
         $product->is_returnable = $request->is_returnable;
         $product->return_deadline = $request->return_deadline;
-        $product->stock_types = $request->stock_types;
+        $product->stock_types = $request->stock_types ?? 'globally';
         $product->save();
 
         if ($product) {
@@ -1280,6 +1482,7 @@ class ProductRepository implements ProductRepositoryInterface
             $details->low_stock_quantity = $request->low_stock_quantity;
             $details->cash_on_delivery = $request->cash_on_delivery;
             $details->est_shipping_days = $request->est_shipping_time;
+            $details->delivery_type = $request->delivery_type;
             $details->site_title = $request->site_title;
             $details->meta_title = $request->meta_title;
             $details->meta_keyword = $request->meta_keyword;
@@ -1296,7 +1499,7 @@ class ProductRepository implements ProductRepositoryInterface
 
             // If any taxes array exist
             $taxArray = $request->taxes;
-            if (count($taxArray) > 0) {
+            if (is_array($taxArray) && count($taxArray) > 0) {
                 $taxIdArray = $request->tax_id;
                 $taxTypeArray = $request->tax_types;
 
@@ -1515,8 +1718,8 @@ class ProductRepository implements ProductRepositoryInterface
                             'casing_psu_installed' => $request->casing_psu_installed,
                             'casing_fan_installed' => $request->casing_fan_installed,
                             'casing_number_of_fan_front' => $request->casing_number_of_fan_front,
-                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top,
-                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back
+                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top ?? 0,
+                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back ?? 0
                         ]);
                         break;
                     case 'processor':
@@ -1527,8 +1730,8 @@ class ProductRepository implements ProductRepositoryInterface
                             'cpu_generation' => $request->cpu_generation,
                             'socket_type' => $request->socket_type,
                             'default_tdp' => $request->default_tdp ?? 0,
-                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top,
-                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back
+                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top ?? 0,
+                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back ?? 0
                         ]);
                         break;
                     case 'motherboard':
@@ -1723,6 +1926,7 @@ class ProductRepository implements ProductRepositoryInterface
                 $details->video_provider = $request->video_provider;
                 $details->video_link = $request->video_link;
                 $details->description = $request->description;
+                $details->delivery_type = $request->delivery_type;
                 $details->site_title = $request->site_title;
                 $details->meta_title = $request->meta_title;
                 $details->meta_keyword = $request->meta_keyword;
@@ -1983,6 +2187,7 @@ class ProductRepository implements ProductRepositoryInterface
                     'average_rating' => 0,
                     'number_of_rating' => 0,
                     'average_purchase_price' => 0,
+                    'delivery_type' => $originalProduct->details->delivery_type,
                     'site_title' => $originalProduct->details->site_title,
                     'meta_title' => $originalProduct->details->meta_title,
                     'meta_keyword' => $originalProduct->details->meta_keyword,
@@ -2148,8 +2353,8 @@ class ProductRepository implements ProductRepositoryInterface
             'category_name' => $product->category->name,
             'category_slug' => $product->category->slug,
             'brand_id' => $product->brand_id,
-            'brand_name' => $product->brand->name,
-            'brand_slug' => $product->brand->slug,
+            'brand_name' => $product->brand ? $product->brand->name : '',
+            'brand_slug' => $product->brand ? $product->brand->slug : '',
             'name' => $product->name,
             'thumb_image' => $product->thumb_image,
             'sku' => $product->sku,
@@ -2184,11 +2389,13 @@ class ProductRepository implements ProductRepositoryInterface
         return $productDetails;
     }
 
-
-
-    public function userQuotes()
+    public function userQuotes($userId = null)
     {
-        return ProductQuestion::where('user_id', Auth::guard('customer')->id())->with('product', 'answer')->latest()->paginate(5);
+        if(!$userId) {
+            $userId = Auth::guard('customer')->id();
+        }
+
+        return ProductQuestion::where('user_id', $userId)->with('product', 'answer')->latest()->paginate(5);
     }
 
     private function product_cache_forget()
@@ -2232,13 +2439,23 @@ class ProductRepository implements ProductRepositoryInterface
         return Datatables::of($models)
             ->addIndexColumn()
             ->editColumn('name', function ($model) {
-                return '<div class="row"><div class="col-auto">' . Images::show($model['thumb_image']) . '</div><div class="col">' . $model['name'] . '</div></div>';
+                return '
+                    <div class="row">
+                        <div class="col-auto">
+                            ' . Images::show($model['thumb_image']) . '
+                        </div>
+
+                        <div class="col">
+                            ' . $model['name'] . '
+                        </div>
+                    </div>
+                ';
             })
             ->editColumn('created_by', function ($model) {
                 return $model['created_by'];
             })
             ->editColumn('status', function ($model) {
-                $checked = $model['status'] == 'active' ? 'checked' : '';
+                $checked = $model['status'] == 1 ? 'checked' : '';
                 return '<div class="form-check form-switch"><input data-url="' . route('admin.product.status', $model['id']) . '" class="form-check-input" type="checkbox" role="switch" name="status" id="status' . $model['id'] . '" ' . $checked . ' data-id="' . $model['id'] . '"></div>';
             })
             ->editColumn('is_featured', function ($model) {
@@ -2261,7 +2478,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function specificationproductModal($id)
     {
-        $data = ProductSpecification::where('product_id', $id)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->get();
+        $data = ProductSpecification::where('product_id', $id)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->orderBy('position', 'ASC')->get();
         if ($data->isEmpty()) {
             $product = Product::find($id);
             $product_name = isset($product) ? $product->name : null;
@@ -2325,7 +2542,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function specificationProduct($id)
     {
-        $data = ProductSpecification::where('product_id', $id)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->get();
+        $data = ProductSpecification::where('product_id', $id)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->orderBy('position', 'ASC')->get();
         if ($data->isEmpty()) {
             $product = Product::find($id);
             $product_name = isset($product) ? $product->name : null;
@@ -2354,9 +2571,9 @@ class ProductRepository implements ProductRepositoryInterface
         return $mapped->groupBy('key_id');
     }
 
-    public function specificationKeyFeaturedProduct($id)
+    public function specificationProductApi($id)
     {
-        $data = ProductSpecification::where('product_id', $id)->where('key_feature', 1)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->get();
+        $data = ProductSpecification::where('product_id', $id)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->get();
         if ($data->isEmpty()) {
             $product = Product::find($id);
             $product_name = isset($product) ? $product->name : null;
@@ -2368,6 +2585,36 @@ class ProductRepository implements ProductRepositoryInterface
         }
         $product_id = $id;
 
+
+        $mapped = $data->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'key_id' => $item->key_id ?? null,
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name,
+                'specificationKey' => $item->specificationKey ? $item->specificationKey->name : null,
+                'specificationKeyType' => $item->specificationKeyType ? $item->specificationKeyType->name : null,
+                'specificationKeyTypeAttribute' => $item->specificationKeyTypeAttribute ? $item->specificationKeyTypeAttribute->name . ' ' . $item->specificationKeyTypeAttribute->extra : null,
+                'key_feature' => $item->key_feature,
+            ];
+        });
+
+        return $mapped->groupBy('specificationKey');
+    }
+
+    public function specificationKeyFeaturedProduct($id)
+    {
+        $data = ProductSpecification::where('product_id', $id)->where('key_feature', 1)->with('product:id,category_id,name', 'specificationKey', 'specificationKeyType', 'specificationKeyTypeAttribute')->orderBy('id', 'ASC')->get();
+        if ($data->isEmpty()) {
+            $product = Product::find($id);
+            $product_name = isset($product) ? $product->name : null;
+            $category_id = isset($product) ? $product->category_id : null;
+        } else {
+
+            $product_name = isset($data) ? $data[0]->product->name : null;
+            $category_id = isset($data) ? $data[0]->product->category_id : null;
+        }
+        $product_id = $id;
 
         return $data->map(function ($item) {
             return [
@@ -2383,65 +2630,82 @@ class ProductRepository implements ProductRepositoryInterface
 
         if (isset($request->specification_key)) {
 
+            $keyPosition = 1;
+            $globalPosition = 1; // master counter for integer position
+
             foreach ($request->specification_key as $specification) {
                 $keyId = $specification['key_id'];
-                $processedTypeIds = []; // Track unique type_ids
+                $processedTypeIds = [];
 
-                // Loop through type_id
+                $typePosition = 1; // reset for each key
+
                 foreach ($specification['type_id'] as $typeId => $value) {
 
-                    if (is_numeric($typeId)) {
-                        $tkey = $value;
-                    }
                     if (!is_numeric($typeId)) {
-                        continue; // Skip features and attributes keys
+                        continue;
                     }
 
-                    // Skip if this type_id has already been processed
                     if (in_array($typeId, $processedTypeIds)) {
                         continue;
                     }
 
-                    // Initialize variables
-                    $firstAttributeId = null;
-                    $featuresExist = false;
+                    $featuresExist = isset($specification['type_id']['features'][$value]);
 
-                    // Check for attributes
                     if (
-                        isset($specification['type_id']['attribute_id'][$value])
-                        && is_array($specification['type_id']['attribute_id'][$value])
-                        && !empty($specification['type_id']['attribute_id'][$value])
+                        isset($specification['type_id']['attribute_id'][$value]) &&
+                        is_array($specification['type_id']['attribute_id'][$value]) &&
+                        !empty($specification['type_id']['attribute_id'][$value])
                     ) {
+                        $attributePosition = 1; // reset for each type
 
-                        // Get the first attribute ID
-                        $firstAttributeId = $specification['type_id']['attribute_id'][$value][0]; // First attribute
-                    }
+                        foreach ($specification['type_id']['attribute_id'][$value] as $attributeId) {
+                            $productSpecification = new ProductSpecification();
+                            $productSpecification->product_id = $id;
+                            $productSpecification->key_id = $keyId;
+                            $productSpecification->type_id = intval($value);
+                            $productSpecification->attribute_id = intval($attributeId);
+                            $productSpecification->key_feature = $featuresExist ? 1 : 0;
 
-                    // Check for features
-                    if (isset($specification['type_id']['features'][$value])) {
-                        $featuresExist = true; // Set to true if features exist
-                    }
+                            // flat running integer
+                            $productSpecification->position = $globalPosition++;
 
-                    // Create a ProductSpecification entry only if we have an attribute ID
-                    if ($firstAttributeId !== null) {
+                            $productSpecification->save();
+
+                            $attributePosition++;
+                        }
+                    } else {
+                        // type without attributes
                         $productSpecification = new ProductSpecification();
                         $productSpecification->product_id = $id;
                         $productSpecification->key_id = $keyId;
-                        $productSpecification->type_id = intval($tkey);
-                        $productSpecification->attribute_id = intval($firstAttributeId);
-
+                        $productSpecification->type_id = intval($value);
+                        $productSpecification->attribute_id = null;
                         $productSpecification->key_feature = $featuresExist ? 1 : 0;
+
+                        $productSpecification->position = $globalPosition++;
 
                         $productSpecification->save();
                     }
 
-                    // Mark this type_id as processed
                     $processedTypeIds[] = $typeId;
+                    $typePosition++;
                 }
+
+                $keyPosition++;
             }
-            return response()->json(['status' => true, 'load' => true, 'message' => 'Product Specifications Created successfully.']);
+
+
+            return response()->json([
+                'status' => true,
+                'load' => true,
+                'message' => 'Product Specifications Created successfully.'
+            ]);
         }
-        return response()->json(['status' => false, 'message' => 'No Specificatiions Posted.']);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'No Specifications Posted.'
+        ]);
     }
 
     public function delete($id)

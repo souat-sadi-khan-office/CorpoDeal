@@ -6,9 +6,11 @@
 @section('page_name')
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-sm-6">
-                    <h1 class="h3 mb-0">Website Footer Configuration</h1>
+                    <h1 class="h4 mb-0">
+                        <b>Website Footer Configuration</b>
+                    </h1>
                 </div>
             </div>
         </div>
@@ -18,37 +20,41 @@
 <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="content_form">
     @csrf
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">About Wizard</h2>
+                    <h2 class="h6 mb-0">
+                        <strong>About Wizard</strong>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12 form-group mb-3">
-                            <label for="system_about_wizard">About description</label>
+                        <div class="col-md-12 form-group">
                             <textarea name="system_about_wizard" id="system_about_wizard" class="form-control" rows="5" required>{!! get_settings('system_about_wizard') !!}</textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
+
+        <div class="col-md-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Contact Info Widget</h2>
+                    <h2 class="h6 mb-0">
+                        <b>Contact Info Widget</b>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12 form-group mb-3">
+                        <div class="col-md-4 form-group mb-3">
                             <label for="system_footer_contact_address">Contact address</label>
                             <input type="text" name="system_footer_contact_address" id="system_footer_contact_address" class="form-control" value="{{ get_settings('system_footer_contact_address') }}">
                         </div>
-                        <div class="col-md-12 form-group mb-3">
+                        <div class="col-md-4 form-group mb-3">
                             <label for="system_footer_contact_phone">Contact phone</label>
                             <input type="text" name="system_footer_contact_phone" id="system_footer_contact_phone" class="form-control" value="{{ get_settings('system_footer_contact_phone') }}">
                         </div>
-                        <div class="col-md-12 form-group mb-3">
+                        <div class="col-md-4 form-group mb-3">
                             <label for="system_footer_contact_email">Contact email</label>
                             <input type="text" name="system_footer_contact_email" id="system_footer_contact_email" class="form-control" value="{{ get_settings('system_footer_contact_email') }}">
                         </div>
@@ -56,10 +62,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
-            <div class="card mb-4">
+
+        <div class="col-md-6">
+            <div class="card h-100 mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Link Widget One</h2>
+                    <h2 class="h6 mb-0">
+                        <b>Link Widget One</b>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -70,10 +79,10 @@
                         <div class="col-md-12 form-group mb-3">
                             <div class="footer-nav-menu-one">
                                 @if (get_settings('footer_menu_one_labels') != null)
-                                    @php
-                                        $rand = rand(10000, 1000000);
-                                    @endphp
                                     @foreach ( json_decode(get_settings('footer_menu_one_labels')) as $key => $value)
+                                        @php
+                                            $rand = rand(10000, 1000000);
+                                        @endphp
                                         <div class="row mt-3" id="data-{{ $rand}}">
                                             <div class="col-4">
                                                 <div class="form-group">
@@ -94,20 +103,24 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <button
-                                type="button"
-                                class="btn mt-4 btn-primary btn-sm add-more-one">
-                                Add New
-                            </button>
                         </div>
                     </div>
                 </div>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-outline-dark btn-sm add-more-one">
+                        <i class="bi bi-plus"></i>
+                        Add New
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
-            <div class="card mb-4">
+
+        <div class="col-md-6">
+            <div class="card h-100 mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Link Widget Two</h2>
+                    <h2 class="h6 mb-0">
+                        <strong>Link Widget Two</strong>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -118,10 +131,10 @@
                         <div class="col-md-12 form-group mb-3">
                             <div class="footer-nav-menu-two">
                                 @if (get_settings('footer_menu_two_labels') != null)
-                                    @php
-                                        $rand = rand(10000, 1000000);
-                                    @endphp
                                     @foreach ( json_decode(get_settings('footer_menu_two_labels')) as $key => $value)
+                                        @php
+                                            $rand = rand(10000, 1000000);
+                                        @endphp
                                         <div class="row mt-3" id="data-{{ $rand}}">
                                             <div class="col-4">
                                                 <div class="form-group">
@@ -142,36 +155,41 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <button
-                                type="button"
-                                class="btn mt-4 btn-primary btn-sm add-more-two">
-                                Add New
-                            </button>
                         </div>
                     </div>
                 </div>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-sm btn-outline-dark btn-sm add-more-two">
+                        <i class="bi bi-plus"></i>        
+                        Add New
+                    </button>
+                </div>
             </div>
         </div>
-        
-        <div class="col-md-12 mt-3">
+
+        <div class="col-md-12 mt-4">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Copy Right Wizard</h2>
+                    <h2 class="h6 mb-0">
+                        <b>Copy Right Wizard</b>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 form-group mb-3">
-                            <label for="system_copyright_wizard">Copy right description</label>
                             <textarea name="system_copyright_wizard" id="system_copyright_wizard" class="form-control" rows="5" required>{!! get_settings('system_copyright_wizard') !!}</textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mt-3">
-            <div class="card mb-4">
+
+        <div class="col-md-6">
+            <div class="card h-100 mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Social Links</h2>
+                    <h2 class="h6 mb-0">
+                        <b>Social Links</b>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -209,15 +227,17 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-6">
-            <div class="card mb-4">
+            <div class="card h-100 mb-4">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Payment Methods Widget</h2>
+                    <h2 class="h6 mb-0">
+                        <b>Payment Methods Widget</b>
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12 form-group mb-3">
-                            <label for="system_payment_method_photo">Photo </label>
                             <input type="file" name="system_payment_method_photo" id="system_payment_method_photo" class="form-control dropify" data-default-file="{{ get_settings('system_payment_method_photo') ? asset(get_settings('system_payment_method_photo')) : '' }}">
                         </div>
                     </div>
@@ -227,12 +247,12 @@
 
         <div class="col-md-12 mt-3">
             <div class="card">
-                <div class="card-body text-end">
-                    <button type="submit" id="submit" class="btn btn-soft-success">
+                <div class="card-body text-center">
+                    <button type="submit" id="submit" class="btn btn-dark btn-sm">
                         <i class="bi bi-send"></i>
                         Update
                     </button>
-                    <button class="btn btn-soft-warning" style="display: none;" id="submitting" type="button" disabled>
+                    <button class="btn btn-sm btn-outline-dark" style="display: none;" id="submitting" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading...
                     </button>
@@ -244,7 +264,7 @@
 @endsection
 @push('script')
     <script src="{{ asset('backend/assets/js/dropify.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"></script>
     <script>
         _componentSelect();
 
@@ -272,7 +292,7 @@
                 const system_copyright_wizard = CKEDITOR.instances['system_copyright_wizard'].getData();
                 formData.append('system_about_wizard', system_about_wizard);
                 formData.append('system_copyright_wizard', system_copyright_wizard);
-                
+
                 //Start Ajax
                 $.ajax({
                     url: submit_url,
@@ -296,7 +316,7 @@
                             }
                         } else {
                             toastr.success(data.message);
-                            
+
                             $('.content_form')[0].reset();
 
                             if (data.load) {
@@ -392,6 +412,10 @@
             let id = $(this).data('parent');
             $('#data-'+id).remove();
         })
+        $(document).on('click', '.remove-parent', function() {
+            let id = $(this).data('parent');
+            $('#data-'+id).remove();
+        })
 
         $(document).on('click', '.add-more-two', function() {
             let id = Math.floor((Math.random() * 10000000) + 1);
@@ -419,7 +443,7 @@
             let id = $(this).data('parent');
             $('#data-'+id).remove();
         });
-        
+
         $(document).on('click', '.add-more-three', function() {
             let id = Math.floor((Math.random() * 10000000) + 1);
             let content = `<div class="row mt-3" id="data-`+ id +`">

@@ -2,6 +2,11 @@
 @section('title', 'Stock Management')
 @push('style')
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+    </style>
 @endpush
 @section('page_name')
     <div class="app-content-header">
@@ -20,9 +25,9 @@
 
                 @if (Auth::guard('admin')->user()->hasPermissionTo('stock.create'))
                     <div class="col-sm-6 text-end">
-                        <a href="{{ route('admin.stock.create') }}" class="btn btn-soft-success">
+                        <a href="{{ route('admin.stock.create') }}" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New Stock
                         </a>
                     </div>
                 @endif
@@ -33,6 +38,11 @@
 @section('content')
 
     <div class="card">
+        <div class="card-header">
+            <h4 class="h6 mb-0">
+                <strong>Product Stock Management</strong>
+            </h4>
+        </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 table-responsive">
@@ -41,9 +51,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Product</th>
+                                <th>Supplier</th>
                                 <th>Date</th>
                                 <th>Creator</th>
-                                <th>SKU</th>
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Status</th>
@@ -75,9 +85,9 @@
                         visible: false
                     },
                     {data: 'product', name: 'product'},
+                    {data: 'supplier', name: 'supplier'},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'created_by', name: 'created_by'},
-                    {data: 'sku', name: 'sku'},
                     {data: 'quantity', name: 'quantity'},
                     {data: 'unit_price', name: 'unit_price'},
                     {data: 'status', name: 'status'},

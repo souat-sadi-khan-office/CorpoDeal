@@ -1,5 +1,5 @@
 @extends('backend.layouts.app', ['modal' => 'md'])
-@section('title', 'Country Management')
+@section('title', 'Shipping Country Management')
 @push('style')
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 @endpush
@@ -14,15 +14,15 @@
                                 <i class="bi bi-house-add-fill"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Country Management</li>
+                        <li class="breadcrumb-item active" aria-current="page">Shipping Country Management</li>
                     </ol>
                 </div>
 
                 {{-- @if (Auth::guard('admin')->user()->hasPermissionTo('country.create')) --}}
                     <div class="col-sm-6 text-end">
-                        <a href="javascript:;" data-url="{{ route('admin.country.create') }}" id="content_management" class="btn btn-soft-success">
+                        <a href="javascript:;" data-url="{{ route('admin.country.create') }}" id="content_management" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-plus"></i>
-                            Create New
+                            Add New Country
                         </a>
                     </div>
                 {{-- @endif --}}
@@ -33,13 +33,18 @@
 @section('content')
 
     <div class="card">
+        <div class="card-header">
+            <h4 class="h6 mb-0">
+                <b>Shipping Countries</b>
+            </h4>
+        </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-12 my-3">
+                <!-- <div class="col-md-12 my-3">
                     <div class="alert alert-warning" role="alert">
                         <b>Warning</b>: If you delete any country from here, then within this country - all city data will automatically delete.
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-12 table-responsive">
                     <table class="table table-bordered table-striped table-hover" id="data-table">
                         <thead>

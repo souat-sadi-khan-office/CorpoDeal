@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use Illuminate\Http\Request;
 use App\Repositories\Interface\BannerRepositoryInterface;
+use Illuminate\Support\Facades\Cache;
 
 class BannerController extends Controller
 {
@@ -27,6 +29,22 @@ class BannerController extends Controller
         }
 
         return view('backend.banner.index');
+    }
+
+    public function slidersApi()
+    {
+        $banners = Cache::remember('banners', now()->addMinutes(300), function () {
+            $data = $this->bannerRepository->getAllBanners();
+
+            return $data->where('status', 1)
+                ->groupBy('banner_type')
+                ->filter(function ($group, $key) {
+                    if ($key === 'main_sidebar' && $group->count() >= 2) {
+                        return $group->shuffle()->take(2);
+                    }
+                    return $key !== 'main_sidebar' ? $group : collect();
+                });
+        });
     }
 
     public function create()
@@ -114,4 +132,50 @@ class BannerController extends Controller
 
         return $this->bannerRepository->updateStatus($request, $id);
     }
+
+    public function moveUp($id)
+    {
+        $banner = Banner::findOrFail($id);
+        $above = Banner::where('position', '<', $banner->position)
+                    ->orderBy('position', 'desc')
+                    ->first();
+
+        if ($above) {
+            $temp = $banner->position;
+            $banner->position = $above->position;
+            $above->position = $temp;
+
+            $banner->save();
+            $above->save();
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Moved up successfully'
+        ]);
+    }
+
+    public function moveDown($id)
+    {
+        $banner = Banner::findOrFail($id);
+        $below = Banner::where('position', '>', $banner->position)
+                    ->orderBy('position', 'asc')
+                    ->first();
+
+        if ($below) {
+            $temp = $banner->position;
+            $banner->position = $below->position;
+            $below->position = $temp;
+
+            $banner->save();
+            $below->save();
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Moved down successfully'
+        ]);
+    }
+
+
 }

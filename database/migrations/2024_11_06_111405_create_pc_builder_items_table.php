@@ -43,7 +43,7 @@ return new class extends Migration
             $table->integer('storage_default_tdp')->default(0);
             $table->string('gc_supported_pcie_slot')->nullable();
             $table->enum('gc_supported_form_factor', ['atx', 'matx', 'mitx', 'other'])->nullable();
-            $table->integer('gc_default_tdp')->default();
+            $table->integer('gc_default_tdp')->default(0);
             $table->string('cc_supported_socket')->nullable();
             $table->integer('cc_default_tdp')->default(0);
             $table->enum('casing_form_factor', ['atx', 'matx', 'mitx', 'other'])->nullable();
@@ -52,12 +52,12 @@ return new class extends Migration
             $table->integer('casing_number_of_fan_front')->default(0);
             $table->integer('casing_number_of_fan_top')->default(0);
             $table->integer('casing_number_of_fan_back')->default(0);
-            
+
             // Adding indexes
             $table->foreign('product_id')
                 ->references('id')->on('products')
                 ->onDelete('cascade');
-            
+
             $table->index('product_id');
             $table->index('comp_type');
 

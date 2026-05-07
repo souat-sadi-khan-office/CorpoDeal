@@ -11,6 +11,7 @@ class Banner extends Model
     use HasFactory,IstiyakTraitLog;
 
     protected $fillable = [
+        'platform',
         'banner_type',
         'name',
         'header_title',

@@ -16,6 +16,7 @@ interface AuthRepositoryInterface
     public function customer_login( $request, $guard);
     public function customer_logout($guard);
     public function registerUser($request);
+    public function setCustomerCart();
 
     public function postForgotPassword($request);
     public function validateOtp($request);

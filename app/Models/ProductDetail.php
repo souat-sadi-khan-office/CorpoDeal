@@ -23,6 +23,7 @@ class ProductDetail extends Model
         'number_of_rating',
         'average_purchase_price',
         'site_title',
+        'delivery_type',
         'meta_title',
         'meta_keyword',
         'meta_description',

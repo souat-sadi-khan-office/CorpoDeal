@@ -32,7 +32,7 @@ class CityRepository implements CityRepositoryInterface
                     return $model->country->name;
                 })
                 ->editColumn('cost', function($model) {
-                    return format_price(covert_to_defalut_currency($model->cost), 2);
+                    return format_price(covert_to_defalut_currency($model->cost));
                 })
                 ->editColumn('status', function ($model) {
                     $checked = $model->status == 1 ? 'checked' : '';

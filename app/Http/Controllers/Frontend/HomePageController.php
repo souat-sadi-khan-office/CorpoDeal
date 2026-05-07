@@ -635,25 +635,22 @@ class HomePageController extends Controller
 
     public function currencyChange(Request $request)
     {
-        $city = City::find($request->global_country_id);
+        $country = Country::find($request->global_country_id);
 
-        if ($request->global_currency_id) {
-            $currency = Currency::find($request->global_currency_id);
+        if ($country) {
+            $currency = Currency::where('country_id', $country->id)->first();
 
             // For Currency
             $request->session()->put('currency_id', $currency->id);
             $request->session()->put('currency_code', $currency->code);
             $request->session()->put('currency_symbol', $currency->symbol);
             $request->session()->put('currency_exchange_rate', $currency->exchange_rate);
+
+            Session::put('user_country', $country->name ?? 'Bangladesh');
+            Session::put('country', $country->name ?? 'Bangladesh');
         }
 
-        // for country -> city
-        $request->session()->put('user_city_id', $city->id);
-        $request->session()->put('user_city', $city->name);
-        $request->session()->put('user_city_selected', $city->name);
-        // $request->session()->put('country_flag', asset($country->image));
-
-        session()->flash('success', 'City changed to ' . $city->name);
+        session()->flash('success', 'Country changed to ' . $country->name);
     }
 
     public function allCategories()

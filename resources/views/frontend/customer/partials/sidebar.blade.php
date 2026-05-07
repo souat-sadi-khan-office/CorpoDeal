@@ -31,12 +31,16 @@
                     <span class="ml-2">Change Password</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ Request::is('account/negative-balance') ? 'active' : '' }}" href="{{ route('account.negative.balance') }}">
-                    <i class="fi fi-rr-piggy-bank"></i>
-                    <span class="ml-2">Negative Balance</span>
-                </a>
-            </li>
+
+            @if (get_settings('negative_balance_module') == 1)
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('account/negative-balance') ? 'active' : '' }}" href="{{ route('account.negative.balance') }}">
+                        <i class="fi fi-rr-piggy-bank"></i>
+                        <span class="ml-2">Negative Balance</span>
+                    </a>
+                </li>
+            @endif
+            
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('account/phone-book*') ? 'active' : '' }}" href="{{ route('account.phone-book.index') }}">
                     <i class="fi fi-rr-mobile-notch"></i>
@@ -55,12 +59,12 @@
                     <span class="ml-2">Wish List</span>
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link {{ Request::is('account/saved-pc') ? 'active' : '' }}" href="{{ route('account.saved_pc') }}">
                     <i class="fi fi-rr-screen"></i>
                     <span class="ml-2">Saved PC</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('account/star-points') ? 'active' : '' }}" href="{{ route('account.star_points') }}">
                     <i class="fi fi-rr-star"></i>

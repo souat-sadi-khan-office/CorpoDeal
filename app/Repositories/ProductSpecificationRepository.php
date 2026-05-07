@@ -71,7 +71,7 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
         return DataTables::of($models)
             ->addIndexColumn()
             ->editColumn('photo', function ($model) {
-                return '<img src="' . asset($model->photo) . '" alt="" height="50px">';
+                return Images::show($model->photo);
             })
             ->editColumn('specification_keys_count', function ($model) {
                 return "<div class='w-100 text-center'>
@@ -81,13 +81,19 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
                         </div>";
             })
 
-            ->editColumn('parent_id', function ($mode) {
-                // return $mode->parent_id;
-                return $mode->parent_id != null ? Helpers::categoryParent($mode->parent_id) : 'Primary Category';
+            ->editColumn('name', function ($model) {
+                $html = '<b>'. $model->name . '</b><br>';
+                if($model->parent_id != null) {
+                    $html .= '<small class="text-muted">Parent Category: '. Helpers::categoryParent($model->parent_id) . '</small>';
+                } else {
+                    $html .= '<small class="text-muted">Primary Category </small>';
+                }
+
+                return $html;
             })
             ->addColumn('action', function ($model) {
                 return view('backend.category.specificationKeys.action', compact('model'));
-            })->rawColumns(['action', 'photo', 'parent_id', 'specification_keys_count'])
+            })->rawColumns(['action', 'photo', 'name', 'specification_keys_count'])
             ->make(true);
     }
 
@@ -196,7 +202,7 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
             'specification_key_id' => 'required|integer',
             'position' => 'required|integer',
         ]);
-
+        
         // Conditionally add the 'filter_name' rule
         $validator->sometimes('filter_name', 'required|string|max:255', function ($input) {
             return isset($input->is_show_on_filter);
@@ -212,7 +218,7 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
                 'admin_id' => Auth::guard('admin')->id(),
                 'specification_key_id' => $data->specification_key_id,
                 'position' => $data->position,
-                'is_show_on_filter' => isset($data->is_show_on_filter),
+                'show_on_filter' => isset($data->is_show_on_filter) && $data->is_show_on_filter == 'on' ? 1 : 0,
                 'filter_name' => isset($data->is_show_on_filter) ? $data->filter_name : null,
                 'status' => isset($data->is_active),
             ]);
@@ -233,7 +239,9 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
     {
         return Datatables::of($models)
             ->addIndexColumn()
-
+            ->editColumn('name', function($model) {
+                return '<b>'. $model['name'] . '</b><br><small class="text-muted"> Category: '. $model['category_name'] . '</small>';
+            })
             ->editColumn('types_count', function ($model) {
                 return "<div class='w-100 text-center'>
                             <span class='badge bg-dark rounded-pill' style='padding: 10px 20px;'>
@@ -243,7 +251,7 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
             })
             ->addColumn('action', function ($model) {
                 return view('backend.category.specificationKeys.types.action', compact('model'));
-            })->rawColumns(['action', 'types_count'])
+            })->rawColumns(['action', 'name', 'types_count'])
             ->make(true);
     }
 
@@ -330,14 +338,17 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
     {
         $data = SpecificationKeyType::withCount('attributes')
             ->with('admin:id,name')
+            ->with('specificationKey:id,name')
             ->where('status', 1)
             ->orderBy('attributes_count', 'desc')
             ->get();
+
 
         return $data->map(function ($item) {
             return [
                 'id' => $item->id,
                 'name' => $item->name,
+                'key_name' => $item->specificationKey ? $item->specificationKey->name : '',
                 'filter_name' => $item->filter_name,
                 'attributes_count' => $item->attributes_count,
                 'created_by' => $item->admin ? $item->admin->name : null,
@@ -402,7 +413,9 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
     {
         return Datatables::of($models)
             ->addIndexColumn()
-
+            ->editColumn('name', function($model) {
+                return '<b>'. $model['name'] . '</b><br><small class="text-muted">Type Name: '. $model['key_name'] . '</small>'; 
+            })
             ->editColumn('attributes_count', function ($model) {
                 return "<div class='w-100 text-center'>
                              <span class='badge bg-dark rounded-pill' style='padding: 10px 20px;'>
@@ -412,7 +425,7 @@ class ProductSpecificationRepository implements ProductSpecificationRepositoryIn
             })
             ->addColumn('action', function ($model) {
                 return view('backend.category.specificationKeys.types.attributes.action', compact('model'));
-            })->rawColumns(['action', 'attributes_count'])
+            })->rawColumns(['action', 'name', 'attributes_count'])
             ->make(true);
     }
 

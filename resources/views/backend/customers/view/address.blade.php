@@ -2,19 +2,19 @@
     <div class="col-md-12 table-responsive">
         <div class="row">
             <div class="col-md-9">
-                <h4 class="h6 mb-3">
+                <h4 class="h6 mb-0">
                     <b>User Address Information</b>
                 </h4>
             </div>
             <div class="col-md-3 text-end">
-                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.address.create', $model->id) }}" class="btn btn-sm btn-outline-secondary" style="padding: 3px 8px; font-size: 12px;">
+                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.address.create', $model->id) }}" class="btn btn-sm btn-outline-dark">
                     <i class="bi bi-plus"></i>
-                    Add
+                    Add New Address
                 </a>
             </div>
         </div>
         
-        <table class="table table-bordered" id="user-address-table">
+        <table class="table mt-3 table-bordered" id="user-address-table">
             <thead>
                 <th width="5%">#</th>
                 <th>Date</th>
@@ -36,10 +36,10 @@
                                 <span class="badge bg-{{ $address->is_default == 1 ? 'success' : 'info' }}">{{ $address->is_default == 1 ? 'Default' : 'Normal' }}</span>
                             </td>
                             <td>
-                                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.address.edit', $address->id) }}" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" data-bs-placement="Top" title="Edit">
+                                <a id="content_management" href="javascript:;" data-url="{{ route('admin.customer.address.edit', $address->id) }}" class="btn btn-sm btn-outline-dark" data-bs-toggle="tooltip" data-bs-placement="Top" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="javascript:;" id="delete_item" data-id ="{{ $model->id }}" data-url="{{ route('admin.customer.address.destroy',$address->id) }}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                <a href="javascript:;" id="delete_item" data-id ="{{ $model->id }}" data-url="{{ route('admin.customer.address.destroy',$address->id) }}" class="btn btn-sm btn-outline-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>

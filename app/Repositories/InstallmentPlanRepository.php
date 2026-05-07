@@ -92,29 +92,48 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
             </div>';
             })
             ->editColumn('amount', function ($model) {
-                return $model->currency->code . ' ' . round($model->amount, 2);
+                return $model->currency->code . ' ' . number_format(round($model->amount, 2), 2);
             })
-            ->editColumn('created_at', function ($model) {
+            ->editColumn('date_time', function ($model) {
 
-                return get_system_date($model->created_at) . ' ' . get_system_time($model->created_at);
-            })
-            ->editColumn('updated_at', function ($model) {
+                $html = '<span style="font-size: 14px;">Created At: '. get_system_date($model->created_at) . ' ' . get_system_time($model->created_at). '</span>';
 
-                return get_system_date($model->updated_at) . ' ' . get_system_time($model->updated_at);
-            })
-            ->editColumn('updated_by', function ($model) {
+                if($model->created_at != $model->updated_at) {
+                    $html .= '<br> <span style="font-size: 14px;"> Updated At: '. get_system_date($model->updated_at) . ' ' . get_system_time($model->updated_at) . '</span>';
+                    if(isset($model->admin)) {
+                        $html .= '<br><span style="font-size:14px;">Updated By: '. $model->admin->name  .'</span>';
+                    }
+                }
 
-                return isset($model->admin) ? $model->admin->name : 'N/A';
+                return $html;
             })
+            // ->editColumn('updated_at', function ($model) {
+
+            //     return get_system_date($model->updated_at) . ' ' . get_system_time($model->updated_at);
+            // })
+            // ->editColumn('updated_by', function ($model) {
+
+            //     return ;
+            // })
             ->editColumn('installment', function ($model) {
 
-                return isset($model->installmentPlan) ? $model->installmentPlan->name . ' -' . $model->installmentPlan->length . ' Months +' . $model->installmentPlan->extra_charge_percent : 'N/A';
+                return isset($model->installmentPlan) ? $model->installmentPlan->name . ' (' . $model->installmentPlan->length . ' Months)' : 'N/A';
             })
             ->addColumn('customer', function ($model) {
-                return ' <div class="row">
-                            <div class="col-md-12">' . $model->user->name . '</div>
-                            <div class="col-md-12">' . $model->email . '</div>
-                        </div>';
+                $html = '<b>'. $model->user->name . '</b>';
+
+                if($model->user) {
+                    $html .= '<br><a style="color:#000;" title="Send Email" href="mailto:'. $model->user->email .'" target="_blank">'. $model->user->email . '</a>';
+                }
+
+                if(isset($model->user->phones) && count($model->user->phones) > 0) {
+                    $phone = $model->user->phones->first();
+                    if($phone) {
+                        $html .= '<br><a style="color:#000;" title="Call Us" href="tel:'. $phone->phone_number .'">'. $phone->phone_number . '</a>';
+                    }
+                }
+
+                return $html;
             })
             ->addColumn('documents', function ($model) {
                 $links = '';
@@ -140,7 +159,7 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
             ->addColumn('action', function ($model) {
                 return view('backend.balance-request.action', compact('model'));
             })
-            ->rawColumns(['action', 'updated_by', 'status', 'customer', 'updated_at', 'installment', 'amount', 'created_at', 'documents'])
+            ->rawColumns(['action', 'updated_by', 'status', 'customer', 'date_time', 'installment', 'amount', 'documents'])
             ->make(true);
     }
 
@@ -152,7 +171,7 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
             ->paginate(5);
     }
 
-    public function negativeBalanceStore($request)
+    public function negativeBalanceStore($request, $userId = null)
     {
         $validatedData = $request->validate([
             'amount' => 'required|numeric|min:0.01',
@@ -166,6 +185,10 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
 
         try {
 
+            if(!$userId) {
+                $userId = Auth::guard('customer')->user()->id;
+            }
+
             DB::beginTransaction();
             $document3Paths = [];
             if ($request->hasFile('document_3')) {
@@ -175,7 +198,7 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
             }
             NegativeBalanceRequest::create([
                 'amount' => $validatedData['amount'],
-                'user_id' => Auth::guard('customer')->id(),
+                'user_id' => $userId,
                 'installment_plan_id' => $validatedData['installment_plan_id'],
                 'document' => $request->hasFile('document') ? Images::upload('balanceRequests', $request->document, 'documents') : null,
                 'document_2' => $request->hasFile('document_2') ? Images::upload('balanceRequests', $request->document_2, 'documents') : null,
@@ -188,7 +211,7 @@ class InstallmentPlanRepository implements InstallmentPlanInterface
 
             Notification::create([
                 'user_id' => Auth::guard('customer')->id(),
-                'message' => 'Negative Balance Requested by: ' . ucwords(Auth::guard('customer')->user()->name),
+                'message' => 'Negative Balance Requested by: ' . ucwords( Auth::guard('customer')->check() ? Auth::guard('customer')->user()->name : 'Mobile APP'),
                 'go_to_link' => route('admin.balance.request'),
             ]);
             DB::commit();

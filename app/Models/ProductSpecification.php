@@ -16,6 +16,7 @@ class ProductSpecification extends Model
         'type_id',
         'attribute_id',
         'key_feature',
+        'position'
     ];
 
     // Relationships

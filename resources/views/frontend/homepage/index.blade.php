@@ -44,10 +44,10 @@
                                 </div>
                             </div>
                             <div class="col-lg-9 col-md-8">
-                                <div class="cat_slider mt-4 mt-md-0 carousel_slider owl-carousel owl-theme nav_style5" data-loop="true" data-dots="false" data-nav="false" data-margin="30" data-responsive='{"0":{"items": "1"}, "380":{"items": "2"}, "991":{"items": "4"}, "1336":{"items": "5"}}'>
+                                <div class="cat_slider mt-4 mt-md-0 carousel_slider owl-carousel owl-theme nav_style5" data-loop="true" data-dots="false" data-nav="false" data-margin="30" data-responsive='{"0":{"items": "1"}, "380":{"items": "2"}, "991":{"items": "5"}, "1336":{"items": "5"}}'>
                                     @foreach ($featuredCategory as $feaCategory)
                                         <div class="item h-100">
-                                            <div class="categories_box">
+                                            <div class="categories_box ">
                                                 <a href="{{ route('slug.handle', $feaCategory->slug) }}">
                                                     <img src="{{ asset($feaCategory->photo) }}" alt="{{ $feaCategory->name }} Image">
                                                     <span>{{ $feaCategory->name }}</span>

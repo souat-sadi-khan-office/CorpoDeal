@@ -31,7 +31,7 @@
                 </li>
             @endcan
 
-            @if(Auth::guard('admin')->user()->hasPermissionTo('settings.general-settings'))
+            @if(Auth::guard('admin')->user()->hasPermissionTo('system-optimizer'))
                 <li class="nav-item" style="margin-right: 10px;">
                     <a href="javascript:;" class="btn btn-outline-dark istiyak btn-xs" id="clearCache" data-url="{{ route('admin.clear.cache') }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Optimize">
                         <i class="bi bi-stars"></i>
@@ -39,9 +39,15 @@
                 </li>
             @endcan
 
-            <li class="nav-item">
+            <li class="nav-item" style="margin-right: 10px;">
                 <a href="{{ route('home') }}" target="_blank" class="ml-2 btn btn-outline-dark istiyak btn-xs" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Website">
                     <i class="bi bi-globe-americas"></i>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('home') }}" target="_blank" class="ml-2 btn btn-outline-dark istiyak btn-xs" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tutorial">
+                    <i class="bi bi-youtube"></i>
                 </a>
             </li>
 
@@ -60,9 +66,9 @@
 
         <ul class="navbar-nav ms-end">
 
-            <a class="nav-link show-search-modal" href="javascript:;" role="button">
+            {{-- <a class="nav-link show-search-modal" href="javascript:;" role="button">
                 <i class="bi bi-search"></i>
-            </a>
+            </a> --}}
 
             <!-- Fullscreen Toggle -->
             <li class="nav-item">

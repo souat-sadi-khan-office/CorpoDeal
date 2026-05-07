@@ -1,7 +1,56 @@
+@php
+    $breadCrumbCounter = 1;
+    $schemaBreadcrumbs = [
+        [
+            '@type' => 'ListItem',
+            'position' => $breadCrumbCounter,
+            'name' => 'Home',
+            'item' => route('home')
+        ]
+    ];
+
+    foreach ($breadcrumb as $category) { 
+        $schemaBreadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => ++$breadCrumbCounter,
+            'name' => $category->name,
+            'item' => route('slug.handle', ['slug' => $category->slug])
+        ];
+    }
+
+    $schemaBreadcrumbsJson = json_encode($schemaBreadcrumbs);
+
+    $productSchemaArray = [];
+    foreach ($products as $key => $product) {
+        $productSchemaArray[] = [
+            '@type'     => 'ListItem',
+            'position'  => ++$key,
+            'url'       =>  route('slug.handle', $product['slug']),
+            'item'      => [
+                '@type' => 'Product',
+                'name'  => $product['name'],
+                'image' => asset($product['thumb_image']),
+                'description' => "Dell laptop with Intel i5, 8GB RAM, and SSD storage.",
+                'sku'   => $product['sku'],
+                "offers" => [
+                    "@type"=> "Offer",
+                    "priceCurrency" => "BDT",
+                    "price" => number_format(convert_price($product['unit_price']), 2, '.', ''),
+                    "availability" => "https://schema.org/InStock",
+                    "url" => route('slug.handle', $product['slug']),
+                    "itemCondition" => "https://schema.org/NewCondition"
+                ]
+            ]
+        ];
+    }
+
+    $schemaProductsJson = json_encode($productSchemaArray);
+
+@endphp
 @extends('frontend.layouts.app', ['title' => $model->site_title ])
 
 @section('meta')
-
+    
     <meta property="og:image:width" content="200">
     <meta property="og:image:height" content="200">
     <meta property="og:site_name" content="{{ get_settings('system_name') }}">
@@ -25,10 +74,70 @@
     <meta name="twitter:description" content="{{ $model->meta_description }}" />
     <meta name="twitter:site" content="{{ route('home') }}" />
     <meta name="twitter:image" content="{{ asset($model->photo) }}">
-    {!! $model->meta_article_tag !!}
-
+    
+    <!-- For Schema --> 
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "{{ $model->name }}",
+            "description": "{{ $model->meta_description }}",
+            "url": "{{ url()->current() }}",
+            "breadcrumb": {
+                "@type": "BreadcrumbList",
+                "itemListElement": {!! $schemaBreadcrumbsJson !!}
+            },
+            "mainEntity": {
+                "@type": "ItemList",
+                "name": "{{ $model->name }} Products",
+                "itemListOrder": "http://schema.org/ItemListOrderAscending",
+                "numberOfItems": {{ count($products) }},
+                "itemListElement": {!! $schemaProductsJson !!}
+            }
+        }
+    </script>
+    {{-- {!! $model->meta_article_tag !!} --}}
 @endsection
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        .custom-carousel-btn {
+            width: 25px;
+            height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
 
+        .custom-carousel-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .carousel-control-prev {
+            left: -10px;
+        }
+        .carousel-control-next {
+            right: -10px;
+        }
+
+        .custom-carousel-btn i {
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+@endpush
 @push('breadcrumb')
     <div class="breadcrumb_section page-title-mini">
         <div class="custom-container">
@@ -74,29 +183,45 @@
 
                 <div class="mt-10">
                     @if ($model->children)
-                        <ul class="list-9-col">
-                            @foreach ($model->children as $sub_category)
-                                <li>
-                                    <div class="pt-2 box-category hover-up">
-                                        <div class="text-info">
-                                            <a class="font-sm color-gray-900 font-bold" href="{{ $sub_category->slug }}">
-                                                {{ $sub_category->name }}
-                                            </a>
-                                            <p class="mb-0 font-xs color-gray-500">{{ $sub_category->product->where('status', 1)->count() }} products</p>
+                        <div id="categoryCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+                            <div class="carousel-inner">
+                                @foreach ($model->children->chunk(6) as $chunkIndex => $chunk)
+                                    <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
+                                        <div class="row g-3">
+                                            @foreach ($chunk as $sub_category)
+                                                <div class="col-6 border col-md-4 col-lg-2">
+                                                    <div class="pt-2 box-category hover-up text-center">
+                                                        <div class="text-info">
+                                                            <a class="font-sm color-gray-900 font-bold" href="{{ $sub_category->slug }}">
+                                                                {{ $sub_category->name }}
+                                                            </a>
+                                                            <p class="mb-0 font-xs color-gray-500">
+                                                                {{ $sub_category->getAllProductsCount() }} products
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                </li>
-                            @endforeach
-                        </ul>
+                                @endforeach
+                            </div>
+
+                            <!-- Professional Rounded Navigation -->
+                            <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
 @endpush
-@push('styles')
 
-@endpush
 @section('content')
     <div class="section bg_gray pt-2">
         <div class="custom-container">
@@ -190,7 +315,6 @@
                                         </div>
                                     @endforeach
                                 @endif
-
 
                                 <!-- Availability -->
                                 <div class="widget mb-3">
@@ -432,11 +556,11 @@
                         <div class="d-lg-flex justify-content-between align-items-center">
                             <div class="mb-3 mb-lg-0">
                                 <p class="mb-0">
-                                    Showing <span class="text-dark">{{ $productCount }}</span> <b></b> out of <span class="text-dark">{{ $allProductCount }}</span>  Products
+                                    {{-- Showing <span class="text-dark">{{ $productCount }}</span> <b></b> out of <span class="text-dark">{{ $allProductCount }}</span>  Products --}}
+                                    Showing <span class="text-dark">{{ $productCount . ' '. $model->name }}</span> Products. 
                                 </p>
                             </div>
 
-                            <!-- icon -->
                             <div class="d-md-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
@@ -460,10 +584,10 @@
                                 <div class="d-flex mt-2 mt-lg-0">
                                     <div class="mobile-full-width">
                                         <select id="sort-by" class="form-control form-control-sm">
-                                            <option value="popularity">Sort by popularity</option>
-                                            <option value="date">Sort by newness</option>
-                                            <option value="price">Sort by price: low to high</option>
-                                            <option value="price-desc">Sort by price: high to low</option>
+                                            <option value="popularity">Sort by Popularity</option>
+                                            <option value="date">Sort by Newest</option>
+                                            <option value="price">Sort by Price: Low to High</option>
+                                            <option value="price-desc">Sort by Price: High to Low</option>
                                         </select>
                                     </div>
                                 </div>
@@ -487,19 +611,72 @@
 @endphp
 @push('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Swiper(".categorySwiper", {
+                slidesPerView: "auto",
+                spaceBetween: 15,
+                loop: false,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    640: { slidesPerView: 3 },
+                    768: { slidesPerView: 5 },
+                    1024: { slidesPerView: 7 },
+                }
+            });
+        });
 
+        $(document).ready(function () {
+            var params = new URLSearchParams(window.location.search);
 
-        function updateActiveSort() {
-            var currentSort = $('#sort-by').val();  // Get the current selected sort value
-            $('.nav-link').removeClass('active');  // Remove active class from all links
+            // Availability filters restore
+            if (params.get('in_stock') == 1) {
+                $('#in_stock_availability').prop('checked', true);
+            }
+            if (params.get('out_of_stock') == 1) {
+                $('#out_of_stock_availability').prop('checked', true);
+            }
+            if (params.get('pre_order') == 1) {
+                $('#pre_order_availability').prop('checked', true);
+            }
+            if (params.get('up_coming') == 1) {
+                $('#up_coming_availability').prop('checked', true);
+            }
 
-            // Add active class to the correct sort option
-            $('.nav-link[data-sort="' + currentSort + '"]').addClass('active');
-        }
+            // Sort restore
+            if (params.get('sort')) {
+                $('#sort-by').val(params.get('sort'));
+            }
 
-        $(document).ready(function() {
+            // Show restore
+            if (params.get('show')) {
+                $('.number-of-data-show select').val(params.get('show'));
+            }
 
-            //Price Range Filter
+            // Brand restore
+            var brands = params.getAll('brand[]');
+            brands.forEach(function (b) {
+                $('input[name^="brand"][value="' + b + '"]').prop('checked', true);
+            });
+
+            // Specification restore
+            var specs = params.getAll('specification[]');
+            specs.forEach(function (s) {
+                $('input[name^="specification"][value="' + s + '"]').prop('checked', true);
+            });
+
+            // Rating restore
+            var ratings = params.getAll('rating[]');
+            ratings.forEach(function (r) {
+                $('.rating-checkbox[value="' + r + '"]').prop('checked', true);
+            });
+            
             var $priceFilter = $('#price_filter');
             var minPrice = parseInt($priceFilter.data('min-value'));
             var maxPrice = parseInt($priceFilter.data('max-value'));
@@ -516,137 +693,131 @@
                     updatePriceRange(ui.values[0], ui.values[1]);
                 }
             });
-            var debounceTimeout;
+
             function updatePriceRange(minValue, maxValue) {
-                var priceSign = $priceFilter.data('price-sign');  // Get the currency symbol
-
+                var priceSign = $priceFilter.data('price-sign');
                 $priceDisplay.text(priceSign + minValue + " - " + priceSign + maxValue);
-
                 $priceFirst.val(minValue);
                 $priceSecond.val(maxValue);
-                clearTimeout(debounceTimeout);
-
-                debounceTimeout = setTimeout(function () {
-                    filterProducts();
-                }, 1500);
+                applyFilters();
             }
 
-            // Trigger filterProducts on checkbox or select changes (including brand/specification changes)
-            $('.form-check, .custom_select select').on('change', function() {
-                filterProducts();
-            });
+            $('.form-check, .custom_select select, #sort-by, .rating-checkbox, input[name^="brand"], input[name^="specification"]')
+                .on('change', applyFilters);
 
-            $(document).on('change', '#sort-by', function() {
-                filterProducts();
-            });
-
-            // Brand filter
-            $('input[name^="brand"]').on('change', function () {
-                filterProducts();
-            });
-
-            //Rating Filter
-            $('.rating-checkbox').on('change', function () {
-                filterProducts();
-
-            });
-
-            // Specification filter
-            $('input[name^="specification"]').on('change', function () {
-                filterProducts();
-            });
-
-            // Handle sorting by clicking on nav links
-            $(document).on('click', '.sort-option', function() {
-                var sortBy = $(this).data('sort'); // Get the sorting value from data-sort attribute
-                $('#sort-by').val(sortBy);  // Update the hidden select dropdown to match the selected sort option
-
-                // Update the active class for the sorting links
+            $(document).on('click', '.sort-option', function () {
+                var sortBy = $(this).data('sort');
+                $('#sort-by').val(sortBy);
                 $('.nav-link').removeClass('active');
                 $(this).addClass('active');
-
-                // Trigger the filter function to apply new sort criteria
-                filterProducts();
+                applyFilters();
             });
 
-            // Filter products function
-            function filterProducts() {
-                // Get checkbox values
-                var in_stock = $('#in_stock_availability').is(':checked');
-                var out_of_stock = $('#out_of_stock_availability').is(':checked');
-                var pre_order = $('#pre_order_availability').is(':checked');
-                var up_coming = $('#up_coming_availability').is(':checked');
-                var price_range=[
-                    $('#price_first').val(),
-                    $('#price_second').val(),
-                ];
-                // Get the selected sort value from the hidden select dropdown
-                var sortBy = $('#sort-by').val();
-                var showData = $('.number-of-data-show select').val();
+            function applyFilters() {
+                var params = new URLSearchParams(window.location.search);
 
-                var brands = [];
-                var specifications = [];
-
-
-                // Get selected brands
-                $('input[name^="brand"]:checked').each(function () {
-                    brands.push($(this).val());
-                });
-
-                // Get selected specifications
-                $('input[name^="specification"]:checked').each(function () {
-                    specifications.push($(this).val());
-                });
-
-                // Get category ID
-                var catId = $('#routeCID').val();
-                var rating=[];
-                var selectedRatings = $('.rating-checkbox:checked').map(function () {
-                    return parseInt($(this).val());
-                }).get();
-
-                if (selectedRatings.length > 0) {
-                    var minRating = Math.min.apply(null, selectedRatings);
-                    var maxRating = Math.max.apply(null, selectedRatings) + 0.99;
-
-                    maxRating = maxRating > 5 ? 5 : maxRating;
-                     rating=[
-                        minRating,
-                        maxRating,
-                    ];
+                // Availability filters
+                if ($('#in_stock_availability').is(':checked')) {
+                    params.set('in_stock', 1);
+                } else {
+                    params.delete('in_stock');
                 }
 
-                // Show loading overlay
-                // $('.preloader').show();
+                if ($('#out_of_stock_availability').is(':checked')) {
+                    params.set('out_of_stock', 1);
+                } else {
+                    params.delete('out_of_stock');
+                }
 
-                // Send AJAX request
-                $.ajax({
-                    url: '{{ route('filter.products')}}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        in_stock: in_stock == true ? in_stock : null,
-                        out_of_stock: out_of_stock == true ? out_of_stock : null,
-                        pre_order: pre_order == true ? pre_order : null,
-                        up_coming: up_coming == true ? pre_order : null,
-                        category_id: catId,
-                        sortBy: sortBy,
-                        brands: brands,
-                        specifications: specifications,
-                        price_range: price_range,
-                        rating: rating,
-                        showData: showData
-                    },
-                    success: function(response) {
-                        // Hide loading overlay and update the product area
-                        $('#product-area').html(response);
-                        $('.preloader').hide();
-                    },
-                    error: function(xhr, status, error) {
-                        $('.preloader').hide();
-                    }
-                });
+                if ($('#pre_order_availability').is(':checked')) {
+                    params.set('pre_order', 1);
+                } else {
+                    params.delete('pre_order');
+                }
+
+                if ($('#up_coming_availability').is(':checked')) {
+                    params.set('up_coming', 1);
+                } else {
+                    params.delete('up_coming');
+                }
+
+                // Price filter (only if changed)
+                let minPrice = $('#price_first').val();
+                let maxPrice = $('#price_second').val();
+                if (minPrice && maxPrice) {
+                    params.set('price_min', minPrice);
+                    params.set('price_max', maxPrice);
+                } else {
+                    params.delete('price_min');
+                    params.delete('price_max');
+                }
+
+                // Sort filter (only if selected)
+                let sort = $('#sort-by').val();
+                if (sort) {
+                    params.set('sort', sort);
+                } else {
+                    params.delete('sort');
+                }
+
+                // Show filter (only if selected)
+                let show = $('.number-of-data-show select').val();
+                if (show) {
+                    params.set('show', show);
+                } else {
+                    params.delete('show');
+                }
+
+                // Brand filter
+                var brands = $('input[name^="brand"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                params.delete('brand[]');
+                if (brands.length) {
+                    brands.forEach(b => params.append('brand[]', b));
+                }
+
+                // Specification filter
+                var specs = $('input[name^="specification"]:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                params.delete('specification[]');
+                if (specs.length) {
+                    specs.forEach(s => params.append('specification[]', s));
+                }
+
+                // Rating filter
+                var ratings = $('.rating-checkbox:checked').map(function () {
+                    return $(this).val();
+                }).get();
+                params.delete('rating[]');
+                if (ratings.length) {
+                    ratings.forEach(r => params.append('rating[]', r));
+                }
+
+                // Redirect with only selected filters
+                window.location = window.location.pathname + '?' + params.toString();
             }
+
         });
+
+        // function updatePriceRange(minValue, maxValue) {
+        //     var priceSign = $priceFilter.data('price-sign');
+
+        //     $priceDisplay.text(priceSign + minValue + " - " + priceSign + maxValue);
+
+        //     $priceFirst.val(minValue);
+        //     $priceSecond.val(maxValue);
+
+        //     clearTimeout(debounceTimeout);
+        //     debounceTimeout = setTimeout(function () {
+        //         let params = new URLSearchParams(window.location.search);
+        //         params.set('price_min', minValue);
+        //         params.set('price_max', maxValue);
+        //         window.location.search = params.toString();
+        //     }, 500);
+        // }
+
+
     </script>
 @endpush

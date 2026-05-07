@@ -258,3 +258,40 @@
         </div>
     </div>
 </div>
+
+<style>
+    .footer-modal .modal-dialog {
+        position: fixed;
+        bottom: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+    }
+
+    .footer-modal.show .modal-dialog {
+        transform: translateY(0);
+    }
+
+    .footer-modal .modal-content {
+        border-radius: 0px;
+    }
+
+    .footer-modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out;
+    }
+</style>
+<div class="modal fade footer-modal"  id="footerModal" tabindex="-1" aria-labelledby="footerModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+     
+    <div class="modal-dialog">
+        <div class="modal-content">
+        
+            <div class="modal-body">
+                This modal slides in from the bottom 🚀 <br>
+                (Clicking outside will NOT close this modal)
+            </div>
+            
+        </div>
+    </div>
+</div>

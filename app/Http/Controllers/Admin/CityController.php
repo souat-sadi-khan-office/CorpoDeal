@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Country;
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use Illuminate\Http\Request;
 use App\Repositories\Interface\CityRepositoryInterface;
 
@@ -14,6 +15,12 @@ class CityController extends Controller
     public function __construct(CityRepositoryInterface $cityRepository)
     {
         $this->cityRepository = $cityRepository;
+    }
+
+    public function api()
+    {
+        $models = City::where('status', 1)->where('country_id', 6)->orderBy('name', 'ASC')->get();
+        return response()->json($models);
     }
 
     public function index(Request $request)

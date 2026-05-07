@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use DataTables;
 use App\CPU\Images;
+use App\Models\CustomerNotification;
 use App\Models\Page;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class PageRepository implements PageRepositoryInterface
                 return $model->parent_id != null ? $model->parent->title : 'Parent Page';
             })
             ->editColumn('url', function ($model) {
-                return '<a href="'. URL::to($model->slug) .'" target="_blank">'. URL::to($model->slug) .'</a>';
+                return '<a style="color: #000;" href="'. URL::to($model->slug) .'" target="_blank"> Visit '. $model->title .' Page</a>';
             })
             ->editColumn('status', function ($model) {
                 $checked = $model->status == 1 ? 'checked' : '';
@@ -82,6 +83,13 @@ class PageRepository implements PageRepositoryInterface
         if($data->meta_image) {
             $page->meta_image = Images::upload('pages', $data->meta_image);
         }
+
+        // Send Notification
+        CustomerNotification::create([
+            'title'       => 'Policy Updated',
+            'message'     => $data->name . 'page policy is updated.',
+            'type'        => 'policy',
+        ]);
 
         $page->update();
 

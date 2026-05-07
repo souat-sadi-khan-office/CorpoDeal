@@ -104,16 +104,12 @@
                                 <div class="mb-3 col-6">
                                     <label for="meta_article_tag" class="form-label">
                                         Meta Article Tag 
-                                        <span class="text-danger"> Use Comma " , "</span>
                                     </label>
                                     <textarea name="meta_article_tag" id="meta_article_tag" cols="30" rows="3" class="form-control">{{ $category->meta_article_tag }}</textarea>
                                 </div>
                                 <div class="mb-3 col-6">
                                     <label for="meta_script_tag" class="form-label">
                                         Meta Script Tag 
-                                        <span class="text-danger"> 
-                                            Use Comma " , "
-                                        </span>
                                     </label>
                                     <textarea name="meta_script_tag" id="meta_script_tag" cols="30" rows="3" class="form-control">{{ $category->meta_script_tag }}</textarea>
                                 </div>
