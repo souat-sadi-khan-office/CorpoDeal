@@ -4,7 +4,6 @@
 
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <link rel="canonical" href="{{ url()->current() }}" />
-    <meta name="robots" content="noindex">
 
     <!-- Required CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/assets/bootstrap/css/bootstrap.min.css') }}">
