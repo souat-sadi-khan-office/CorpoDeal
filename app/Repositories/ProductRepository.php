@@ -542,7 +542,7 @@ class ProductRepository implements ProductRepositoryInterface
             });
 
             return $products->setCollection($mappedProducts);
-        } 
+        }
     }
 
     public function filterProducts($request)
@@ -1718,8 +1718,8 @@ class ProductRepository implements ProductRepositoryInterface
                             'casing_psu_installed' => $request->casing_psu_installed,
                             'casing_fan_installed' => $request->casing_fan_installed,
                             'casing_number_of_fan_front' => $request->casing_number_of_fan_front,
-                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top,
-                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back
+                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top ?? 0,
+                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back ?? 0
                         ]);
                         break;
                     case 'processor':
@@ -1730,8 +1730,8 @@ class ProductRepository implements ProductRepositoryInterface
                             'cpu_generation' => $request->cpu_generation,
                             'socket_type' => $request->socket_type,
                             'default_tdp' => $request->default_tdp ?? 0,
-                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top,
-                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back
+                            'casing_number_of_fan_top' => $request->casing_number_of_fan_top ?? 0,
+                            'casing_number_of_fan_back' => $request->casing_number_of_fan_back ?? 0
                         ]);
                         break;
                     case 'motherboard':
@@ -2444,7 +2444,7 @@ class ProductRepository implements ProductRepositoryInterface
                         <div class="col-auto">
                             ' . Images::show($model['thumb_image']) . '
                         </div>
-                        
+
                         <div class="col">
                             ' . $model['name'] . '
                         </div>
@@ -2696,14 +2696,14 @@ class ProductRepository implements ProductRepositoryInterface
 
 
             return response()->json([
-                'status' => true, 
-                'load' => true, 
+                'status' => true,
+                'load' => true,
                 'message' => 'Product Specifications Created successfully.'
             ]);
         }
 
         return response()->json([
-            'status' => false, 
+            'status' => false,
             'message' => 'No Specifications Posted.'
         ]);
     }

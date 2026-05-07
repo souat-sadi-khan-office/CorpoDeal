@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => $model->site_title ])
+@extends('frontend.layouts.app', ['title' => $model->meta_title ])
 
 @push('page_meta_information')
 
@@ -383,7 +383,7 @@
             ratings.forEach(function (r) {
                 $('.rating-checkbox[value="' + r + '"]').prop('checked', true);
             });
-            
+
             var $priceFilter = $('#price_filter');
             var minPrice = parseInt($priceFilter.data('min-value'));
             var maxPrice = parseInt($priceFilter.data('max-value'));
