@@ -75,7 +75,7 @@ class ProductRepository implements ProductRepositoryInterface
                 });
         } elseif (isset($request->on_sale_product)) {
             return Product::where('status', 1)
-                ->where('is_discounted', 1)
+                // ->where('is_discounted', 1)
                 ->withCount('ratings')
                 ->with(['ratings' => function ($query) {
                     $query->select('product_id', DB::raw('AVG(rating) as averageRating'))
@@ -2401,10 +2401,9 @@ class ProductRepository implements ProductRepositoryInterface
     private function product_cache_forget()
     {
         Cache::forget('homeProducts_');
-        Cache::forget('on_sale_products_');
-        Cache::forget('on_sale_products_');
+        Cache::forget('on_sale_products');
         Cache::forget('trending_');
-        Cache::forget('featured_products_');
+        Cache::forget('featured_products');
         Cache::forget('top_rated_product');
         Cache::forget('trending_');
         Cache::forget('newProducts');

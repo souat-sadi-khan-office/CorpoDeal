@@ -18,7 +18,7 @@
             <div class="item">
                 @foreach($products as $index => $product)
                     @include('frontend.components.product_main', ['tag' => 'discount_price', 'listing' => 'short'])
-            
+
                     @if(($index + 1) % 3 == 0)
                         </div><div class="item">
                     @endif

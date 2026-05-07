@@ -282,13 +282,13 @@ class HomePageController extends Controller
                 return view('frontend.homepage.offred-tab', compact('products'));
             } elseif (isset($request->on_sale_product)) {
 
-                $products = Cache::remember('on_sale_products_', (36000 * 10), function () use ($request) {
+                $products = Cache::remember('on_sale_products', (36000 * 10), function () use ($request) {
                     return $this->product->index($request, null);
                 });
 
                 return view('frontend.homepage.on-sale-tab-tab', compact('products'));
             } elseif (isset($request->is_featured_list)) {
-                $products = Cache::remember('featured_products_', (36000 * 10), function () use ($request) {
+                $products = Cache::remember('featured_products', (36000 * 10), function () use ($request) {
                     return $this->product->index($request, null);
                 });
 
@@ -659,9 +659,9 @@ class HomePageController extends Controller
             ->where('status', 1)
             ->whereNull('parent_id')
             ->orderByDesc('children_count')
-            ->orderBy('name', 'ASC') 
+            ->orderBy('name', 'ASC')
             ->get();
-            
+
         return view('frontend.categories', compact('categories'));
     }
 
