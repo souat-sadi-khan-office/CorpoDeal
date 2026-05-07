@@ -214,7 +214,7 @@ class ProductStockRepository implements ProductStockRepositoryInterface
         Artisan::call('optimize:clear');
 
         return response()->json(['status' => true, 'message' => 'Stock created successfully.', 'goto' => route('admin.stock.index')]);
-    }
+    }           
 
     public function deleteStock($id)
     {

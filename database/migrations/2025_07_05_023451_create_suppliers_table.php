@@ -26,37 +26,6 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('admins')->onDelete('set null');
             $table->timestamps();
         });
-        $permissions = [
-            'supplier.create',
-            'supplier.view',
-            'supplier.edit',
-            'supplier.assign',
-            'product-sale-report.view',
-            'order-report.view',
-            'stock-purchase-report.view',
-            'transaction-report.view',
-            'payments.view',
-        ];
-
-        foreach ($permissions as $permission) {
-            if (!Permission::where('name', $permission)->exists()) {
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'admin',
-                ]);
-            }
-        }
-
-        $role = Role::find(1);
-
-        if ($role) {
-            foreach ($permissions as $permission) {
-                $perm = Permission::findByName($permission, 'admin');
-                if ($perm && !$role->hasPermissionTo($perm)) {
-                    $role->givePermissionTo($perm);
-                }
-            }
-        }
     }
 
     /**

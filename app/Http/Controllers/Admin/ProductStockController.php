@@ -11,6 +11,10 @@ use App\Repositories\Interface\ZoneRepositoryInterface;
 use App\Repositories\Interface\CountryRepositoryInterface;
 use App\Repositories\Interface\CurrencyRepositoryInterface;
 use App\Repositories\Interface\ProductStockRepositoryInterface;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+
+
 
 class ProductStockController extends Controller
 {
@@ -94,6 +98,53 @@ class ProductStockController extends Controller
 
         return $this->stockRepository->createStock($request->all());
     }
+
+    public function generateStockForAll()
+    {
+        DB::beginTransaction();
+        try {
+            $products = Product::all();
+
+            foreach ($products as $product) {
+                $randomUnitPrice = rand(10, 500); // random price between 10–500 USD
+                $purchaseUnitPrice = rand(5, $randomUnitPrice - 1);
+                $quantity = 100;
+
+                $data = [
+                    'product_id' => $product->id,
+                    'supplier_id' => 1,
+                    'currency_id' => 1,
+                    'sku' => $product->sku ?? 'SKU-' . strtoupper(uniqid()),
+                    'quantity' => $quantity,
+                    'unit_price' => $randomUnitPrice,
+                    'purchase_unit_price' => $purchaseUnitPrice,
+                    'purchase_total_price' => $purchaseUnitPrice * $quantity,
+                    'is_sellable' => 1,
+                    'stock_types' => 'globally',
+                    'globally_stock_amount' => $quantity,
+                    'low_stock_quantity' => 10, // default low stock alert
+                ];
+
+                // call repository method
+                $this->stockRepository->createStock($data);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Stock generated for all products successfully!',
+                'goto' => route('admin.stock.index')
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
 
     /**
      * Display the specified resource.

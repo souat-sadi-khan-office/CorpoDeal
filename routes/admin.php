@@ -165,6 +165,10 @@ Route::middleware(['isAdmin', 'web'])->group(function () {
     Route::post('stock/status/{id}', [ProductStockController::class, 'updateStatus'])->name('stock.status');
     Route::resource('stock', ProductStockController::class);
 
+    Route::get('stock/generate/all', [ProductStockController::class, 'generateStockForAll'])
+    ->name('stock.generate.all');
+
+
     // Product
     Route::post('product/duplicate/{id}', [ProductController::class, 'duplicate'])->name('product.duplicate');
     Route::get('product/stock/{id}', [ProductController::class, 'stock'])->name('product.stock');

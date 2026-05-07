@@ -24,31 +24,6 @@ return new class extends Migration
             $table->foreign('stock_purchase_id')->references('id')->on('stock_purchases')->onDelete('set null');
             $table->timestamps();
         });
-
-        $permissions = [
-            'product.serial-add',
-            'product.serial-view',
-        ];
-
-        foreach ($permissions as $permission) {
-            if (!Permission::where('name', $permission)->exists()) {
-                Permission::create([
-                    'name' => $permission,
-                    'guard_name' => 'admin',
-                ]);
-            }
-        }
-
-        $role = Role::find(1);
-
-        if ($role) {
-            foreach ($permissions as $permission) {
-                $perm = Permission::findByName($permission, 'admin');
-                if ($perm && !$role->hasPermissionTo($perm)) {
-                    $role->givePermissionTo($perm);
-                }
-            }
-        }
     }
 
     /**
