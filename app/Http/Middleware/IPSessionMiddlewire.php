@@ -404,14 +404,14 @@ class IPSessionMiddlewire
         // $ip = request()->ip() == '127.0.0.1' ? '221.120.227.235' : request()->ip();
         $ip = request()->ip() == '127.0.0.1' ? '217.79.105.36' : request()->ip();
         if (!Session::has('user_country') || !Session::has('user_country') || (Session::get('ip') != $ip)) {
-            
+
             $location = Location::get($ip);
 
             $currency_code = "USD";
             if ($location) {
                 $country = $location->countryCode;
                 $city = $location->cityName;
-                $currency_code = $currencyMap[$location->countryCode] ?? 'BDT';
+                $currency_code = $currencyMap[$location->countryCode] ?? 'SG';
 
                 $currency = Currency::where('status', 1)->where('code', $currency_code)->select('id', 'symbol')->first();
                 if (isset($currency)) {
@@ -421,8 +421,8 @@ class IPSessionMiddlewire
                 }
 
                 Session::put('country_flag', 'https://flagsapi.com/' . $location->countryCode . '/flat/64.png');
-                Session::put('user_country', $countryMap[$location->countryCode] ?? 'Bangladesh');
-                Session::put('country', $countryMap[$location->countryCode] ?? 'Bangladesh');
+                Session::put('user_country', $countryMap[$location->countryCode] ?? 'Singapore');
+                Session::put('country', $countryMap[$location->countryCode] ?? 'Singapore');
                 Session::put('user_city', $city);
                 Session::put('ip', $ip);
             }
