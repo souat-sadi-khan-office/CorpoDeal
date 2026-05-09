@@ -55,7 +55,7 @@
                         <select id="product_id" class="form-control"></select>
                         <small class="text-muted">
                             For selecting multiple product at a time, use your keyboard
-                            <b>Control</b> key and click on the products that you want to add. 
+                            <b>Control</b> key and click on the products that you want to add.
                         </small>
                     </div>
                 </div>
@@ -99,25 +99,25 @@
                                 <tr>
                                     <td>Sub Total</td>
                                     <td class="text-right">
-                                        <div id="total_sub_total">৳ 0.00</div>
+                                        <div id="total_sub_total">SG 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Shipping</td>
                                     <td class="text-right">
-                                        <div id="total_shipping">৳ 0.00</div>
+                                        <div id="total_shipping">SG 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Discount</td>
                                     <td class="text-right">
-                                        <div id="total_discount">৳ 0.00</div>
+                                        <div id="total_discount">SG 0.00</div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Total</th>
                                     <th class="text-right">
-                                        <div id="total_amount">৳ 0.00</div>
+                                        <div id="total_amount">SG 0.00</div>
                                         <input type="hidden" name="total_amount_value" id="total_amount_value" value="0">
                                     </th>
                                 </tr>
@@ -152,7 +152,7 @@
                             <textarea name="billing" id="billing" cols="30" rows="3" class="form-control" placeholder="Address, Area, City, zip, Country"></textarea>
                             <small class="text-muted">Leave Empty if Shipping and Billing Address are Same</small>
                         </div>
-                        
+
                         <div class="col-md-6 d-grid gap-2 mx-auto mt-3">
                             <button class="btn btn-outline-success btn-block" type="submit" id="submit">
                                 <i class="bi bi-send"></i>
@@ -266,7 +266,7 @@
                         // content = content.concat(row);
                     // });
 
-                    
+
                     $('#product_data').append(row);
 
                     calculateSubTotal();

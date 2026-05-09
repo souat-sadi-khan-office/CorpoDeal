@@ -202,7 +202,7 @@
                                     <label for="billing_city">City <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="billing_city" name="billing_city" required placeholder="City">
                                 </div>
-                                
+
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="billing_address">Address <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="billing_address" name="billing_address" required placeholder="Address" value="{{ $defaultAddress ? $defaultAddress->address : '' }}">
@@ -367,7 +367,7 @@
                                         <tr>
                                             <th>Total</th>
                                             <td class="product-subtotal text-right" id="product-total">
-                                                {{ format_price(convert_price(premium_user_price($total_price))) }} 
+                                                {{ format_price(convert_price(premium_user_price($total_price))) }}
 
                                                 <input type="hidden" name="totalAmount" id="totalAmount" value="{{ convert_price(premium_user_price($total_price)) }}">
                                             </td>
@@ -564,15 +564,15 @@
                     let total = totalAmount + discountAmount - homeDeliveryCost;
 
                     $('#store_pickup_content').slideDown();
-                    $('#shipping_change_content').html('+ ৳ ' + storePickupCost.toFixed(2));
-                    $('#product-total').html('৳ ' + total.toFixed(2));
+                    $('#shipping_change_content').html('+ SG ' + storePickupCost.toFixed(2));
+                    $('#product-total').html('SG ' + total.toFixed(2));
                     $('#totalAmount').val(total.toFixed(2));
                 } else {
                     let total = totalAmount;
 
                     $('#store_pickup_content').slideUp();
-                    $('#shipping_change_content').html('+ ৳ ' + homeDeliveryCost.toFixed(2));
-                    $('#product-total').html('৳ ' + total.toFixed(2));
+                    $('#shipping_change_content').html('+ SG ' + homeDeliveryCost.toFixed(2));
+                    $('#product-total').html('SG ' + total.toFixed(2));
                     $('#totalAmount').val(total.toFixed(2));
                 }
             }

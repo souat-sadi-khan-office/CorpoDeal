@@ -12,10 +12,10 @@
       @endif
 
       @include('frontend.layouts.partials.preloader')
-      
+
       <header class="header_wrap fixed-top header_with_topbar ">
          @include('frontend.layouts.partials.topbar')
-         
+
          @include('frontend.layouts.partials.topnav')
 
          @include('frontend.layouts.partials.navbar')
@@ -44,17 +44,17 @@
          <div class="offcanvas-footer">
             <div class="footer">
                <div class="promotion-code"></div>
-                        
+
                <div class="total">
                   <div class="title">Sub-Total</div>
-                  <div class="amount">0৳</div>
+                  <div class="amount">SG 0</div>
                </div>
-                        
+
                <div class="total">
                   <div class="title">Total</div>
-                  <div class="amount">0৳</div>
+                  <div class="amount">SG 0</div>
                </div>
-         
+
                <div class="checkout-btn">
                   <a title="Go to cart page" href="{{ route('cart') }}">
                      <button type="button" class="btn submit">
@@ -110,14 +110,14 @@
                </div>
                <div class="search-content text-left">
                   <div class="">
-      
+
                   </div>
                   <div class="">
-      
+
                   </div>
                </div>
             </div>
-            
+
          </div>
       </div>
 
@@ -132,14 +132,14 @@
                      </div>
                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  
+
                   <!-- <div class="my-5">
                      <input type="search" class="form-control" placeholder="Search your area">
                   </div> -->
-                  
+
                   <!-- <div class="d-flex justify-content-between align-items-center my-5">
                      <h6 class="mb-0">Select Location</h6>
-                     
+
                      <span class="location-loader" style="display: none;">
                         <i class="fas fa-spinner fa-spin" style="font-size: 15px;"></i>
                      </span>

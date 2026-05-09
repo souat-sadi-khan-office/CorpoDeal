@@ -33,7 +33,7 @@
                                     </a>
                                 </li>
                             @endif
-                            
+
 
                             @if (get_settings('system_youtube_link'))
                                 <li>
@@ -50,7 +50,7 @@
                                     </a>
                                 </li>
                             @endif
-                            
+
                             @if (get_settings('system_linkedin_link'))
                                 <li>
                                     <a target="_blank" title="Visit Our LinkedIn Page" href="{{ get_settings('system_linkedin_link') }}">
@@ -193,7 +193,7 @@
                         </a>
                 @endswitch
             @endif
-            
+
             <a title="Visit {{ get_settings('system_name') }} Home Page" class="mobile-widget plus-btn" href="{{ route('home') }}">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
@@ -203,7 +203,7 @@
                 <i class="fas fa-user"></i>
                 <span>Pc Builder</span>
             </a>
-            
+
             <a title="Go To My Profile Page" class="mobile-widget" href="{{ route('login') }}">
                 <i class="fas fa-envelope"></i>
                 <span>Account</span>
@@ -238,15 +238,15 @@
     </div>
     <div class="footer">
         <div class="promotion-code"></div>
-                
+
         <div class="total">
             <div class="title">Sub-Total</div>
-            <div class="amount">0৳</div>
+            <div class="amount">SG 0</div>
         </div>
-                
+
         <div class="total">
             <div class="title">Total</div>
-            <div class="amount">0৳</div>
+            <div class="amount">SG 0</div>
         </div>
 
         <div class="checkout-btn">
@@ -283,15 +283,15 @@
     }
 </style>
 <div class="modal fade footer-modal"  id="footerModal" tabindex="-1" aria-labelledby="footerModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-     
+
     <div class="modal-dialog">
         <div class="modal-content">
-        
+
             <div class="modal-body">
                 This modal slides in from the bottom 🚀 <br>
                 (Clicking outside will NOT close this modal)
             </div>
-            
+
         </div>
     </div>
 </div>
